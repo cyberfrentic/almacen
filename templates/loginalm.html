@@ -1,0 +1,54 @@
+{% extends 'menualm.html' %}
+<!-- Importamos unas macros de _macros.html -->
+{% from "_macros.html" import Deact_menu %}
+<!-- Llamado al macro que desactiva el menu dropdown si el usuario no se ha logeado -->
+{% block Deactivate_menu %}		
+	{{ Deact_menu() }}
+{% endblock %}
+
+{% block login %}
+
+	<script>	
+      
+    </script>		   
+
+    
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="text-center text-white mb-4">Accesar al Almacen</h2>
+            <div class="row">
+                <div class="col-md-6 mx-auto">
+                    <div class="card rounded-0">
+                        <div class="card-header">
+                           <center> <h3 class="mb-0">Acceso al Almacén</h3> <center>
+                        </div>
+                        <div class="card-body">
+                            <form class="form" data-toggle="validator" novalidate="true" role="form" autocomplete="off" id="loginForm" novalidate=""   method="POST">
+                                <div class="form-group">
+                                    <label for="uname1">Usuario</label>
+                                    <input type="text" class="form-control form-control-lg" name="username" id="nnombre" placeholder="User Name" required autofocus>
+                                    <div class="invalid-feedback">Introduzca su usuario</div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Contraseña</label>
+                                    <input type="password" class="form-control form-control-lg rounded-0" placeholder="Password" name="password" id="npassword" required autocomplete="new-password">
+                                    <div class="invalid-feedback">Introduzca su contraseña!</div>
+                                </div>
+
+                                <button type="submit" class="btn btn-success btn-lg float-right" id="btnLogin">Login</button>
+                                								
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div
+        </div>
+	</div>
+</div>
+<script src='http://code.jquery.com/jquery-1.11.1.min.js'></script>
+<script src='http://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.5.3/js/bootstrapValidator.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.5.3/js/language/es_ES.min.js'></script>
+<script src='index.js'></script>
+{% endblock %}

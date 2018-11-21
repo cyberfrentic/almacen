@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html lang="es">
+    <head>
+        <meta charset="utf-8"/>
+        <title>Conseguir hash de la url con javascript</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+ 
+        <script type="text/javascript">
+           $(document).ready(function(e) { 
+           // Cuando le dás click muestra #content
+           $('.btn-show-alert').click(function(){
+              $("#content").toggleClass("hide");  
+           });
+            
+           // Simular click
+           $('.btn-show-alert').click();
+           });
+       </script>
+    </head>
+    <body>
+      <div class="col-lg-10">
+      <br/>
+        <p>
+        <button class="btn btn-success btn-show-alert">Mostrar alerta</button>
+        </p>
+        <div id="content" class="hide alert alert-warning">Has dado click en el botón para mostrar esta alerta</div>
+       </div>
+    </body>
+</html>

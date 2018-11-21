@@ -1,0 +1,15 @@
+<html>
+<head>
+		<title> Mi pagina </title>
+</head>
+<body>
+	     <h1>En este espacio defino el block que jala las variables</h1>
+		 <h1>En ese caso el usuario user</h1>
+		 <br>
+		 {% if user %}
+		 <p>Bienvenido User, {{ user }} </p>
+		 {% else %}
+		 <p>Bienvenido sin User </p>
+		 {% endif %}	 			
+</body>
+</html>

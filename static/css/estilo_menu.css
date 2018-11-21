@@ -1,0 +1,98 @@
+*{
+	margin: 0px;
+	padding: 0px;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	box-sizing:border-box;
+}
+ 
+body{
+	background:#0b2027;
+	font-family: verdana;
+	line-height: 18px;
+}
+ 
+a{
+	text-decoration: none;
+	color: #fff;
+}
+ 
+header#menu{
+	position: absolute;
+	width: 170px;
+	height: 100%;
+	background-color: #1a95d5;
+}
+ 
+header#logo{	
+	margin: 10px;
+}
+ 
+header#menu .menu{
+	width: 100%;
+}
+ 
+header#menu .menu .icono{
+	font-size: 12px;
+	line-height: 18px;
+}
+ 
+header#menu .menu .icono.izquierda{
+	float: left;
+	margin-right: 10px;
+}
+ 
+header#menu .menu .icono.derecha{
+	float: right;
+	margin-left: : 10px;
+}
+ 
+.menu{
+    padding:0;
+    list-style:none;
+    font-size:18px;
+    background:#1a95d5;    
+}
+ 
+.menu li a{
+    display: block;
+    border-bottom: 1px solid rgba(0,0,0, 0.2);
+    border-top: 1px solid rgba(255,255,255, 0.2);
+    background:#1a95d5;
+    text-decoration:none;
+    color:#FFF;
+    text-shadow: 1px 0px 1px rgba(0,0,0,0.2);
+    filter: dropshadow(color=#000, offx=1, offy=0);
+    padding:10px;
+    padding-left:20px;
+}
+ 
+.menu li ul li a, .submenu li ul li a{
+    font-size:14px;
+    background:#4a6ba2;
+    text-shadow: 1px 0px 1px rgba(255,255,255,0.5);
+}
+ 
+.menu li a:hover{
+    background:#c1c1c1;
+    -moz-transition: background 0.3s ease-in;
+    -webkit-transition: background 0.3s ease-in;
+    -o-transition: background 0.3s ease-in;
+}
+ 
+ul.menu ul, ul.submenu ul{
+    margin:0;
+    padding:0;
+    list-style:none;
+    height:0;
+    overflow: hidden;
+    transition:0.3s;
+    -moz-transition:0.3s;
+    -webkit-transition:0.3s;
+}
+ 
+ul.menu > li:hover > ul, ul.submenu > li:hover > ul{
+    height:100%;
+    overflow:visible;
+ 
+}

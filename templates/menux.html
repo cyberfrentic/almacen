@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8"/>
+		<title>Almacen General</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+		<link rel="stylesheet"  href="{{ url_for('static', filename='css/bootstrap.min.css') }}" media="screen">
+		<link rel="stylesheet"  href="{{ url_for('static', filename='css/estilos.css') }}" media="screen">
+		<link rel="stylesheet"  href="{{ url_for('static', filename='css/estilo_menu.css') }}" media="screen">
+		<!--<link rel="stylesheet" href="/static/css/estilos.css"/> -->
+		<!--<link rel="stylesheet" href="/static/css/estilo_menu.css"/>-->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+        <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js')}}"></script> 
+        <script src="{{ url_for('static', filename='js/bootstrap.js')}}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+ 
+	</head>
+	<body background="{{ url_for('static', filename='img/capa.jpg') }}">
+        <a href="{{ url_for('hola') }}"> Haz click </a>
+    	
+		<header id="menu">
+			<header id="logo">
+				<a href="index.php">
+					<img src="img/header2comision.jpg"/>
+				</a>
+			</header>
+			<ul class="menu">
+				<li><a href="#"><i class="icono izquierda fa fa-cogs" aria-hidden="true"></i>Menu Principal<i class="icono derecha fa fa-chevron-down" aria-hidden="true"></i></a>
+					<ul class="submenu">
+						<li><a href="#">Entradas al Almacen<i class="icono derecha fa fa-chevron-down" aria-hidden="true"></i></a>
+							<ul>
+								<li><a href="#">Por Orden de Compra</a></li>
+								<li><a href="#">Por Contrato</a></li>
+								<li><a href="#">Por Compra Directa</a></li>
+								<li><a href="#">Sobrantes de Obras</a></li>
+							</ul>
+						</li>
+						<!-- <li><a href="#">item 3</a></li> -->
+						<!-- <li><a href="#">item 4</a></li> -->
+						<li><a href="#">Salidas del Almacen <i class="icono derecha fa fa-chevron-down" aria-hidden="true"></i></a>
+							<ul>
+								<li><a href="#">Por Orden de Compra</a></li>
+								<li><a href="#">Por Contrato</a></li>
+								<li><a href="#">Por Compra Directa</a></li>
+								<li><a href="#">Salidas directas</a></li>
+							</ul>
+						</li>
+						<li><a href="#">Consultas/Reportes<i class="icono derecha fa fa-chevron-down" aria-hidden="true"></i></a>
+							<ul>
+								<li><a href="#">Productos por código</a></li>
+								<li><a href="#">Salidas x Contrato</a></li>
+								<li><a href="#">Salidas x Orden de Compra</a></li>
+								<li><a href="#">Salidas directas</a></li>
+								<li><a href="#">Inventario físico</a></li>
+								<li><a href="#">Saldos en inventario físico</a></li>	
+								<li><a href="#">Reimpresion de E/S</a></li>
+								<li><a href="#">Artículos con existencias mínimas</a></li>
+								<li><a href="#">Otros1</a></li>
+								<li><a href="#">Otros2</a></li>							
+							</ul>
+						</li>							
+					</ul>
+				</li>
+			</ul>
+		</header>
+ 
+ 
+	</body>
+</html>
