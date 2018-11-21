@@ -67,7 +67,7 @@ def index():
 		nombre = session['username'].upper()
 		return render_template("menualm.html",nombre=nombre)
 	else:
-		return. redirect(url_for('login'))
+		return redirect(url_for('login'))
 
 
 @app.route('/entradas', methods=['GET', 'POST'])	
