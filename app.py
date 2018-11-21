@@ -30,14 +30,14 @@ crsf = CSRFProtect()
 #################################################
 # CONEXION A SQL SERVER 2012
 # Creo la cadena de conexion 
-connection = pypyodbc.connect('Driver={SQL Server};Server=.;Database=capaPrueba;uid=sa;pwd=12345')
+# connection = pypyodbc.connect('Driver={SQL Server};Server=.;Database=capaPrueba;uid=sa;pwd=12345')
 
-try :
-   # Creacion del cursor
-   cursor = connection.cursor()  
-   print("Conexion establecida con exito")
-except:
-   print("No hay Conexion a SQL SERVER")   
+# try :
+#    # Creacion del cursor
+#    cursor = connection.cursor()  
+#    print("Conexion establecida con exito")
+# except:
+#    print("No hay Conexion a SQL SERVER")   
 ##################################################
 
 ######## Variables Globales ########################
