@@ -1,15 +1,10 @@
-{% extends 'menualm.html' %}
+{% extends 'index.html' %}
 {% from "_macros.html" import render_field %} 
-{%block nombre%}  
-   {% if nombre %}
-      <li><a href="#"> <img class="img-fluid" alt="Responsive image" src="/static/img/glyph-iconset-master/svg/si-glyph-sign-in.svg" width="16" height="16"> {{nombre}}</a></li>
-   {% else %}
-       <li><a href="/login"><icon class="icon-user icon-white"></icon>Iniciar Sesión</a></li> 
-   {% endif %}
-{%endblock%}  
-{% block buscaprod_ %}  
+
+{% block content %}  
         {% if listapxn %} 
-           <form   method="POST"  >   
+           <form   method="POST"  >  
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/> 
             <div class="container">                                
               <!--<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Ver listado de productos</button> -->
               <!-- Modal -->

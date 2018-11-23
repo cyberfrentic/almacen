@@ -98,13 +98,13 @@
             </li>
             <li class="divider-vertical"></li>
 			<ul class="nav pull-right">
-			  {%block nombre%}  
+
 			  {% if nombre %}
 		         <li><a href="#"> <img class="img-fluid" alt="Responsive image" src="/static/img/glyph-iconset-master/svg/si-glyph-sign-in.svg" width="16" height="16"> {{nombre}}</a></li>
 		 	  {% else %}
 			     <li><a href="/login"><icon class="icon-user icon-white"></icon>Iniciar Sesión</a></li> 
 			  {% endif %}
-			  {%endblock%}  
+
 			     <li class="divider-vertical"></li>
 			     <li><a href="/logout"><icon class="icon-off icon-white"></icon>Cerrar Sesión</a></li>
 		    </ul>            
@@ -126,13 +126,10 @@
             {% endwith %}
           </div>
         </div>
-		{% block login %}		
-        {% endblock %}	
-		{% block buscaprod_ %}		
+<!-- ##################### contenido de la pagina web  ###############################-->
+        {% block content %}      
         {% endblock %}
-        {% block buscaentrada_ %}      
-        {% endblock %}
-        				
+<!-- ##################### contenido de la pagina web  ###############################-->        				
    <!-- /.container -->
 	<br>
     <br>

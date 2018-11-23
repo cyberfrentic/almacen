@@ -1,14 +1,9 @@
-{% extends 'menualm.html' %}
+{% extends 'index.html' %}
 {% from "_macros.html" import render_field %} 
-{%block nombre%}  
-   {% if nombre %}
-      <li><a href="#"> <img class="img-fluid" alt="Responsive image" src="/static/img/glyph-iconset-master/svg/si-glyph-sign-in.svg" width="16" height="16"> {{nombre}}</a></li>
-   {% else %}
-       <li><a href="/login"><icon class="icon-user icon-white"></icon>Iniciar Sesión</a></li> 
-   {% endif %}
-{%endblock%}
- {% block buscaentrada_ %}      
-<form   method="POST"  >  
+
+ {% block content %}      
+<form   method="POST"  >
+ <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>  
 <div class="w3-card-4" style="width:25%;">
                 <header class="w3-container  w3-teal">
           			  <h3>Número de entrada, orden o contrato con proveedor</h3>

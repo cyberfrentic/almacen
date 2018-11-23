@@ -17,27 +17,41 @@ from flask import Flask, flash, redirect, render_template, request, session, abo
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
 from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada
 import os
-import pypyodbc 
+from models import db, User
+
+from config import DevelopmentConfig
+import pymssql 
 from bs4 import BeautifulSoup
 from flask_wtf import CSRFProtect
 
+###########################################
+# CONEXION A MYSQL
+# creo la importacion 
+import pymysql
+
+pymysql.install_as_MySQLdb()
+###########################################
+
 
 app = Flask(__name__)
-app.secret_key = "my_secret_key"
+app.config.from_object(DevelopmentConfig)
 crsf = CSRFProtect()
-#app.config.from_object(DevelopmentConfig)
 
 #################################################
 # CONEXION A SQL SERVER 2012
 # Creo la cadena de conexion 
-# connection = pypyodbc.connect('Driver={SQL Server};Server=.;Database=capaPrueba;uid=sa;pwd=12345')
+server ="DESKTOP-TRVGHH8\\SQLHUGO"
+user="sa"
+password="12345"
+base ="capa"
+connection = pymssql.connect(host=server, user=user, password=password, database=base)
 
-# try :
-#    # Creacion del cursor
-#    cursor = connection.cursor()  
-#    print("Conexion establecida con exito")
-# except:
-#    print("No hay Conexion a SQL SERVER")   
+try :
+   # Creacion del cursor
+   cursor = connection.cursor()  
+   print("Conexion establecida con exito")
+except:
+   print("No hay Conexion a SQL SERVER")   
 ##################################################
 
 ######## Variables Globales ########################
@@ -59,13 +73,29 @@ def before_request():
 			return redirect(url_for('index'))
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    if 'username' in session:
+    	nombre = (session['username']).upper()
+    	return render_template('404.html', nombre=nombre), 404
+    else:
+    	return render_template('404.html'), 404
+
+
+@app.errorhandler(400)
+def regreso(e):
+    nombre = (session['username']).upper()
+    x = request.endpoint
+    return render_template(x + '.html', nombre=nombre), 400
+
+
 # Paso en la url un nombre de usuario
 @app.route("/index/")
 @app.route("/")
 def index():
 	if 'username' in session:
 		nombre = session['username'].upper()
-		return render_template("menualm.html",nombre=nombre)
+		return render_template("index.html",nombre=nombre)
 	else:
 		return redirect(url_for('login'))
 
@@ -79,7 +109,7 @@ def entradas():
 			print('Entradas-Boton buscar funcionando')
 	else:
 		print("Entradas-No entro al método POST")
-	return render_template("entradasalm.html",form=form_buscaentrada,nombre=nombre)
+	return render_template("entradas.html",form=form_buscaentrada,nombre=nombre)
 	
 	
 @app.route('/login', methods=['GET', 'POST'])
@@ -110,7 +140,7 @@ def login():
 			error_message = '{} No es un usuario del sistema'.format(username)
 			flash(error_message)
 			return redirect(url_for('login'))
-	return render_template('loginalm.html', form = login_form)
+	return render_template('login.html', form = login_form)
 
 
 @app.route('/logout')
@@ -300,11 +330,15 @@ def buscaprod():
 	return render_template('buscaprod.html',form=form_buscap,listaglobal=listatotal)
 		
 	
-@app.route('/verlista_', methods=['GET', 'POST'])
-def verlista_():	
-	return render_template('ver_listaprod.html',listaglobal=listatotal)
+@app.route('/verlista', methods=['GET', 'POST'])
+def verlista():	
+	return render_template('verlista.html',listaglobal=listatotal)
 
 	
-if __name__== "__main__":
-		app.run()
+if __name__ == '__main__':
+    crsf.init_app(app)
+    db.init_app(app)
+    with app.app_context():
+        db.create_all()
+    app.run(port=8000, host='0.0.0.0')
 	

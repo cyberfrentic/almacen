@@ -1,4 +1,4 @@
-{% extends 'menualm.html' %}
+{% extends 'index.html' %}
 <!-- Importamos unas macros de _macros.html -->
 {% from "_macros.html" import Deact_menu %}
 <!-- Llamado al macro que desactiva el menu dropdown si el usuario no se ha logeado -->
@@ -6,7 +6,7 @@
 	{{ Deact_menu() }}
 {% endblock %}
 
-{% block login %}
+{% block content %}
 
 	<script>	
       
@@ -25,6 +25,7 @@
                         </div>
                         <div class="card-body">
                             <form class="form" data-toggle="validator" novalidate="true" role="form" autocomplete="off" id="loginForm" novalidate=""   method="POST">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 <div class="form-group">
                                     <label for="uname1">Usuario</label>
                                     <input type="text" class="form-control form-control-lg" name="username" id="nnombre" placeholder="User Name" required autofocus>
