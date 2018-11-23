@@ -17,7 +17,7 @@ from flask import Flask, flash, redirect, render_template, request, session, abo
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
 from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada
 import os
-from models import db, User
+from models import db, User, inventario
 
 from config import DevelopmentConfig
 import pymssql 
@@ -100,6 +100,31 @@ def index():
 		return redirect(url_for('login'))
 
 
+@app.route('/crearUser', methods=['GET', 'POST'])
+def crearUser():
+    pri = ""
+    crear = Create_Form(request.form)
+    if request.method == 'POST' and crear.validate():
+        user = crear.username.data
+        usuar = User.query.filter_by(username=user).first()
+        if usuar is None:
+                user = User(crear.username.data,
+                            crear.password.data,
+                            crear.email.data,
+                            )
+                db.session.add(user)
+                db.session.commit()
+                succes_message = 'Usuario registrado en la base de datos'
+                flash(succes_message)
+                return redirect(url_for('crearUser'))
+        else:
+            succes_message = 'El usuario existe en la base de datos'
+            flash(succes_message)
+            return redirect(url_for('crearUser'))
+    nombre = (session['username']).upper()
+    return render_template('crearUser.html', form=crear, nombre=nombre)
+
+
 @app.route('/entradas', methods=['GET', 'POST'])	
 def entradas():
 	nombre = session['username'].upper()
@@ -122,16 +147,9 @@ def login():
 		password = login_form.password.data
 		print(username)
 		print(password)
-		buscaUser = """SELECT * FROM USER_LOGIN WHERE USER_LOGIN_ID ='%s'"""%username
-		cursor.execute(buscaUser)
-		Found = cursor.fetchall()
+		user = User.query.filter_by(username=username).first()
 		#Buscamos en el cursor los primeros dos campos que contienen usuario y contraseña
-		for row in Found:
-		    username_ = row[0] # usuario
-		    password_ = row[1] # contraseña
-		    print(username_)
-		    print(password_)
-		if username_ and password == password_ :
+		if user is not None and user.verify_password(password):
 			sucess_message = 'Bienvenido {}'.format(username)
 			flash(sucess_message)
 			session['username'] = username
