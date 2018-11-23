@@ -153,6 +153,7 @@ def logout():
 	
 @app.route('/buscaprod', methods=['GET', 'POST'])
 def buscaprod():
+	nombre = session['username'].upper()
 	global bolsa
 	global listatotal
 	Localizado = []
@@ -179,7 +180,7 @@ def buscaprod():
 					pos += 1					
 			print(listatotal)
 			verlista =  True
-			return render_template('buscaprod.html',form=form_buscap,listaglobal=listatotal,verlista=verlista)
+			return render_template('buscaprod.html',form=form_buscap,listaglobal=listatotal,verlista=verlista, nombre=nombre)
 		if 'agregarpxn' in request.form['addsalida']:
 			global Localizado2
 			valor_chkpxn = request.form.getlist('chkpxn')
@@ -208,7 +209,7 @@ def buscaprod():
 			print("entro a añadir producto a la lista x nombre")              
 			#listatotal.append(bolsa)
 			print(valor_chkpxn)
-			return render_template('buscaprod.html',form=form_buscap,lista=lista,listaglobal=listatotal)
+			return render_template('buscaprod.html',form=form_buscap,lista=lista,listaglobal=listatotal, nombre=nombre)
 		
 		if 'agregar' in request.form['addsalida']:
 			global Localizado
@@ -238,17 +239,17 @@ def buscaprod():
 			print("entro a añadir producto a la lista x Clave")              
 			#listatotal.append(bolsa)
 			print(valor_chkp)
-			return render_template('buscaprod.html',form=form_buscap,lista=lista,listaglobal=listatotal)
+			return render_template('buscaprod.html',form=form_buscap,lista=lista,listaglobal=listatotal, nombre=nombre)
 
 		if 'agregar_2' in request.form['addsalida']:
 			print("entro a añadir producto a la lista")              
 			listatotal.append(bolsa)
 			print(listatotal)
-			return render_template('buscaprod.html',form=form_buscap,lista=lista,listaglobal=listatotal)
+			return render_template('buscaprod.html',form=form_buscap,lista=lista,listaglobal=listatotal, nombre=nombre)
 
 		elif 'buscaotro' in request.form['addsalida']:
 			print( 'agregar otro producto')
-			return render_template('buscaprod.html',form=form_buscap,listaglobal=listatotal)
+			return render_template('buscaprod.html',form=form_buscap,listaglobal=listatotal, nombre=nombre)
 
 		elif 'versalida' in request.form['addsalida']:
 			print('Listado total de productos')
@@ -256,12 +257,12 @@ def buscaprod():
 				error_message = '¡ATENCION! No hay productos en la lista'
 				flash(error_message)
 			print(listatotal)
-			return render_template('buscaprod.html',form=form_buscap,listaglobal=listatotal)
+			return render_template('buscaprod.html',form=form_buscap,listaglobal=listatotal, nombre=nombre)
 			#return render_template('buscaprod.html',form=form_buscap,lista=lista,listaglobal=listatotal)
 
 		elif 'borrarsalida' in request.form['addsalida']:
 			listatotal.clear()
-			return render_template('buscaprod.html',form=form_buscap,lista=lista,listaglobal=listatotal)	
+			return render_template('buscaprod.html',form=form_buscap,lista=lista,listaglobal=listatotal, nombre=nombre)	
 
 		elif 'buscar' in request.form['addsalida']:
 			print('Buscando producto')
@@ -307,7 +308,7 @@ def buscaprod():
 					#bolsa = lista
 					#print("Producto buscado por codigo")
 					#print(bolsa)
-				return render_template('buscaprod.html',form=form_buscap,lista=Localizado,listaglobal=listatotal)
+				return render_template('buscaprod.html',form=form_buscap,lista=Localizado,listaglobal=listatotal, nombre=nombre)
 
 			if Localizado2: # Si la busqueda obtuvo exito x nombre del producto
 				for row in Localizado2:
@@ -317,7 +318,7 @@ def buscaprod():
 			           #bolsa = lista
 			         print("Listado de la consulta x nombre")	
 			         print(Localizado2)	
-			         return render_template('buscaprod.html',form=form_buscap ,listapxn=Localizado2,listaglobal=listatotal,productpxn=product_name)
+			         return render_template('buscaprod.html',form=form_buscap ,listapxn=Localizado2,listaglobal=listatotal,productpxn=product_name, nombre=nombre)
 			else:
 				 error_message = 'El producto: '+'{} no existe'.format(product_id)
 				 flash(error_message)
@@ -327,7 +328,7 @@ def buscaprod():
 			return render_template('buscaprod.html',form=form_buscap)
 	else:
 		 print("No entro al metodo POST")		
-	return render_template('buscaprod.html',form=form_buscap,listaglobal=listatotal)
+	return render_template('buscaprod.html',form=form_buscap,listaglobal=listatotal, nombre=nombre)
 		
 	
 @app.route('/verlista', methods=['GET', 'POST'])
