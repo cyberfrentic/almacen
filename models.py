@@ -108,3 +108,42 @@ class inventario(db.Model):
 		self.f_salida = f_salida
 		self.tipo_compra = tipo_compra
 		self.actividad = actividad
+
+
+class data_import_party(db.Model):
+	group_name = db.Column(db.String(1000))
+	group_name_local = db.Column(db.String(1000))
+	external_id = db.Column(db.String(20), primary_key=True)
+	parent_external_id = db.Column(db.String(20))
+	nivel = db.Column(db.String(20))
+	rol = db.Column(db.String(255))
+	rfc = db.Column(db.String(255))
+	moneda = db.Column(db.String(20))
+	node = db.Column(db.String(1))
+	state = db.Column(db.String(1))
+	user_login_id = db.Column(db.String(250))
+	import_status_id = db.Column(db.String(20))
+	import_error = db.Column(db.String(8000))
+	last_modifield_date = db.Column(db.DateTime,default=datetime.datetime.now)
+	processed_timestamp =db.Column(db.DateTime,default=datetime.datetime.now)
+	last_updated_stamp = db.Column(db.DateTime, default=datetime.datetime.now)
+	last_updated_tx_stamp = db.Column(db.DateTime, default=datetime.datetime.now)
+	created_stamp = db.Column(db.DateTime, default=datetime.datetime.now)
+	created_tx_stamp =db.Column(db.DateTime, default=datetime.datetime.now)
+
+	def __init__(self, group_name, group_name_local, external_id, parent_external_id, nivel, rol, rfc, moneda, node,
+		state, user_login_id, import_status_id, import_error):
+		self.group_name = group_name
+		self.group_name_local = group_name_local
+		self.external_id = external_id
+		self.parent_external_id = parent_external_id
+		self.nivel = nivel
+		self.rol = rol
+		self.rfc = rfc
+		self.moneda = moneda
+		self.node = node
+		self.state = state
+		self.user_login_id = user_login_id
+		self.import_status_id = import_status_id
+		self.import_error = import_error
+		
