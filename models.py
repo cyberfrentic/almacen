@@ -146,4 +146,34 @@ class data_import_party(db.Model):
 		self.user_login_id = user_login_id
 		self.import_status_id = import_status_id
 		self.import_error = import_error
-		
+
+
+class party_group(db.Model):
+	party_id = db.Column(db.String(20), primary_key=True)
+	group_name = db.Column(db.String(255))
+	group_name_local = db.Column(db.String(255))
+	federal_tax_id = db.Column(db.String(255))
+	rfc = db.Column(db.String(20))
+	regimen_id = db.Column(db.String(20))
+	sector_economico_id = db.Column(db.String(20))
+	origen_capital_id = db.Column(db.String(20))
+	giro_empresa = db.Column(db.String(8000))
+	nacional_extranjero = db.Column(db.String(60))
+	correo_electronico = db.Column(db.String(60))
+	pagina_web = db.Column(db.String(60))
+
+
+	def __init__(self, party_id, group_name, group_name_local, federal_tax_id, rfc, regimen_id, sector_economico_id,
+		origen_capital_id, giro_empresa, nacional_extranjero, correo_electronico, pagina_web):
+		self.party_id = party_id
+		self.group_name = group_name
+		self.group_name_local = group_name_local
+		self.federal_tax_id = federal_txt_id
+		self.rfc = rfc
+		self.regimen_id = regimen_id
+		self.sector_economico_id = sector_economico_id
+		self.origen_capital_id = origen_capital_id
+		self.giro_empresa = giro_empresa
+		self.nacional_extranjero = nacional_extranjero
+		self.correo_electronico = correo_electronico
+		self.pagina_web = pagina_web
