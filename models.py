@@ -45,7 +45,6 @@ class inventario(db.Model):
 	modelo = db.Column(db.String(50))
 	num_parte = db.Column(db.String(30))
 	num_serie = db.Column(db.String(30))
-	id_proveed = db.Column(db.String(20))
 	f_recepcion = db.Column(db.DateTime)
 	f_fabricacion = db.Column(db.Date)
 	f_caducidad = db.Column(db.Date)
@@ -53,56 +52,59 @@ class inventario(db.Model):
 	cant_dispon = db.Column(db.Numeric(18,6))
 	costo_unit = db.Column(db.Numeric(18,6))
 	moneda = db.Column(db.String(10))
-	id_area_soli = db.Column(db.String(20))
-	folio_entrada = db.Column(db.String(30))
-	folio_salida = db.Column(db.String(30))
-	folio_e_s = db.Column(db.String(30))
+	id_area_solici = db.Column(db.String(20))
 	solic_tansfer = db.Column(db.String(30))
 	observaciones = db.Column(db.String(50))
+	usuario =  db.Column(db.String(250))
+	fol_entrada = db.Column(db.String(30))
+	fol_salida = db.Column(db.String(30))
+	oficio_e_s = db.Column(db.String(30))
+	id_proveed = db.Column(db.String(20))
 	orden_compra = db.Column(db.String(50))
-	num_requerim = db.Column(db.String(50))
-	factura_nota = db.Column(db.String(50))
+	num_requerim = db.Column(db.String(20))
+	n_fact_nota = db.Column(db.String(30))
 	f_salida = db.Column(db.DateTime)
 	tipo_compra = db.Column(db.String(30))
-	actividad = db.Column(db.String(100))
-	num_oper = db.Column(db.Integer)
+	actividad = db.Column(db.String(30))
 
-	def __init__(self, id_item, id_prod, tipo_prod, nom_prod, nom_interno, descripcion, um, id_area, activo, id_familia, procedencia,
-	 modelo, num_parte, num_serie, id_proveed, f_recepcion, f_fabricacion, f_caducidad, cant_exist, cant_dispon, costo_unit, moneda,
-	  id_area_soli, folio_entrada, folio_salida, folio_e_s, solic_tansfer, observaciones, orden_compra, num_requerim, factura_nota, 
-	  f_salida, tipo_compra, actividad,num_oper):
-		self.id_item = id_item
-		self.id_prod = id_prod
+	def __init__(self,id_item, id_prod,tipo_prod,	nom_prod,nom_interno,descripcion,um,id_area,f_alta,ultim_modif,activo,
+		id_familia,	procedencia, modelo, num_parte, num_serie,	f_recepcion,f_fabricacion,f_caducidad,cant_exist,cant_dispon,
+		costo_unit,	moneda,id_area_solici,solic_tansfer,observaciones,usuario,	fol_entrada,	fol_salida,	oficio_e_s,	id_proveed,
+		orden_compra,	num_requerim,	n_fact_nota,	f_salida,	tipo_compra,	actividad):
+		self.id_item =id_item
+		self.id_prod =id_prod
 		self.tipo_prod = tipo_prod
 		self.nom_prod = nom_prod
 		self.nom_interno = nom_interno
-		self.descripcion = descripcion
-		self.um = um
+		self.descripcion =descripcion
+		self.um =um
 		self.id_area = id_area
+		self.f_alta = f_alta
+		self.ultim_modif = ultim_modif
 		self.activo = activo
 		self.id_familia = id_familia
 		self.procedencia = procedencia
 		self.modelo = modelo
 		self.num_parte = num_parte
 		self.num_serie = num_serie
-		self.id_proveed = id_proveed
 		self.f_recepcion = f_recepcion
 		self.f_fabricacion = f_fabricacion
 		self.f_caducidad = f_caducidad
 		self.cant_exist = cant_exist
-		self.cant_dispon = cant_dispon
+		self.cant_dispon = cant_dispon 
 		self.costo_unit = costo_unit
 		self.moneda = moneda
-		self.id_area_soli = id_area_soli
-		self.folio_entrada = folio_entrada
-		self.folio_salida = folio_salida
-		self.folio_e_s =folio_e_s
+		self.id_area_solici  = id_area_solici
 		self.solic_tansfer = solic_tansfer
 		self.observaciones = observaciones
+		self.usuario = usuario
+		self.fol_entrada = fol_entrada
+		self.fol_salida = fol_salida
+		self.oficio_e_s = oficio_e_s
+		self.id_proveed = id_proveed
 		self.orden_compra = orden_compra
 		self.num_requerim = num_requerim
-		self.factura_nota = factura_nota
+		self.n_fact_nota = n_fact_nota
 		self.f_salida = f_salida
 		self.tipo_compra = tipo_compra
 		self.actividad = actividad
-		self.num_oper = num_oper
