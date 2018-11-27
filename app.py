@@ -231,7 +231,7 @@ def buscaprod():
 		
 		if 'agregar' in request.form['addsalida']:
 			global Localizado
-			valor_chkpxn = request.form.getlist('chklista0')
+			valor_chkp = request.form.getlist('chklista0')
 			if valor_chkp == []:
 				 error_message = '¡ATENCION! No se agrego ningún producto'
 				 flash(error_message)
