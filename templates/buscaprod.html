@@ -112,6 +112,7 @@
         }
     </style>
          <form  method="POST">  
+           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/> 
                 <h3> Datos del producto </h3>
                   <center>
               <div class="table table-responsive"  >
@@ -186,7 +187,8 @@
                            
             </form>  
     	{%else%}
-            <form   method="POST"  >  
+            <form   method="POST"  > 
+             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>  
             <div class="w3-card-4" style="width:21%;">
                 <header class="w3-container  w3-teal">
           			  <h3>Clave del producto</h3>
@@ -224,7 +226,8 @@
             </form>             
                       {% endif %}                          
                        {% if listaglobal %}   
-                       <form method="POST">                    
+                       <form method="POST"> 
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>                    
                             <div class="container">                                
                                 <!--<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Ver listado de productos</button> -->
                                 <!-- Modal -->

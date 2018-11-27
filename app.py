@@ -134,7 +134,7 @@ def entradas():
 			print('Entradas-Boton buscar funcionando')
 	else:
 		print("Entradas-No entro al método POST")
-	return render_template("entradas.html",form=form_buscaentrada,nombre=nombre)
+	return render_template("entradas.html", form=form_buscaentrada, nombre=nombre)
 	
 	
 @app.route('/login', methods=['GET', 'POST'])
@@ -346,12 +346,14 @@ def buscaprod():
 			return render_template('buscaprod.html',form=form_buscap)
 	else:
 		 print("No entro al metodo POST")		
-	return render_template('buscaprod.html',form=form_buscap,listaglobal=listatotal, nombre=nombre)
+	return render_template('buscaprod.html', form=form_buscap, listaglobal=listatotal, nombre=nombre)
 		
 	
 @app.route('/verlista', methods=['GET', 'POST'])
 def verlista():	
 	return render_template('verlista.html',listaglobal=listatotal)
+
+
 
 	
 if __name__ == '__main__':
