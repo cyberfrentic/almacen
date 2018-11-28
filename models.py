@@ -53,7 +53,7 @@ class inventario(db.Model):
 	costo_unit = db.Column(db.Numeric(18,6))
 	moneda = db.Column(db.String(10))
 	id_area_solici = db.Column(db.String(20))
-	solic_tansfer = db.Column(db.String(30))
+	solic_transfer = db.Column(db.String(30))
 	observaciones = db.Column(db.String(50))
 	usuario =  db.Column(db.String(250))
 	fol_entrada = db.Column(db.String(30))
@@ -69,7 +69,7 @@ class inventario(db.Model):
 
 	def __init__(self,id_item, id_prod,tipo_prod,	nom_prod,nom_interno,descripcion,um,id_area,f_alta,ultim_modif,activo,
 		id_familia,	procedencia, modelo, num_parte, num_serie,	f_recepcion,f_fabricacion,f_caducidad,cant_exist,cant_dispon,
-		costo_unit,	moneda,id_area_solici,solic_tansfer,observaciones,usuario,	fol_entrada,	fol_salida,	oficio_e_s,	id_proveed,
+		costo_unit,	moneda,id_area_solici,solic_transfer,observaciones,usuario,	fol_entrada,	fol_salida,	oficio_e_s,	id_proveed,
 		orden_compra,	num_requerim,	n_fact_nota,	f_salida,	tipo_compra,	actividad):
 		self.id_item =id_item
 		self.id_prod =id_prod
@@ -95,7 +95,7 @@ class inventario(db.Model):
 		self.costo_unit = costo_unit
 		self.moneda = moneda
 		self.id_area_solici  = id_area_solici
-		self.solic_tansfer = solic_tansfer
+		self.solic_transfer = solic_transfer
 		self.observaciones = observaciones
 		self.usuario = usuario
 		self.fol_entrada = fol_entrada
@@ -177,3 +177,101 @@ class party_group(db.Model):
 		self.nacional_extranjero = nacional_extranjero
 		self.correo_electronico = correo_electronico
 		self.pagina_web = pagina_web
+
+	def __repr__(self):
+		return '{}'.format(self.group_name)
+
+class proveedor(db.Model):
+	__tablename__= "proveedores"
+	CONTACT_MECH_ID = db.Column(db.String(20), primary_key=True)
+	TO_NAME = db.Column(db.String(100))
+	ATTN_NAME = db.Column(db.String(100))
+	ADDRESS1 = db.Column(db.String(255))
+	ADDRESS2 = db.Column(db.String(255))
+	DIRECTIONS = db.Column(db.String(255))
+	CITY = db.Column(db.String(100))
+	POSTAL_CODE = db.Column(db.String(60))
+	LAST_UPDATED_STAMP = db.Column(db.DateTime, default=datetime.datetime.now)
+	MUNICIPALITY_GEO_ID = db.Column(db.String(20))
+	BANCO_ID = db.Column(db.String(20))
+	NUMERO_CUENTA = db.Column(db.String(20))
+	CLABE_INTERBANCARIA = db.Column(db.String(20))
+	RFC = db.Column(db.String(20))
+
+	def __init__(self, CONTACT_MECH_ID, TO_NAME, ATTN_NAME, ADDRESS1,ADDRESS2, DIRECTIONS, CITY, POSTAL_CODE, LAST_UPDATED_STAMP,
+		MUNICIPALITY_GEO_ID, BANCO_ID, NUMERO_CUENTA, CLABE_INTERBANCARIA, RFC):
+		self.CONTACT_MECH_ID = CONTACT_MECH_ID
+		self.TO_NAME = TO_NAME
+		self.ATTN_NAME = ATTN_NAME
+		self.ADDRESS1 = ADDRESS1
+		self.ADDRESS2 = ADDRESS2
+		self.DIRECTIONS = DIRECTIONS
+		self.CITY = CITY
+		self.POSTAL_CODE = POSTAL_CODE
+		self.LAST_UPDATED_STAMP = LAST_UPDATED_STAMP
+		self.MUNICIPALITY_GEO_ID = MUNICIPALITY_GEO_ID
+		self.BANCO_ID = BANCO_ID
+		self.NUMERO_CUENTA = NUMERO_CUENTA
+		self.CLABE_INTERBANCARIA = CLABE_INTERBANCARIA
+		self.RFC = RFC
+
+	def __repr__(self):
+		return '{}'.format(self.TO_NAME)
+		
+
+
+class entradas(db.Model):
+	__tablename__ = "Entradas"
+	id = db.Column(db.Integer, primary_key= True)
+	entra_Articulo = db.relationship("entra_Articulos")
+	proveedor = db.Column(db.String(255))
+	nomComer = db.Column(db.String(255))
+	fol_entrada = db.Column(db.String(30))
+	fecha = db.Column(db.Date)
+	factura = db.Column(db.String(2))
+	nFactura = db.Column(db.String(15))
+	ordenCompra = db.Column(db.String(15))
+	depSolici = db.Column(db.String(50))
+	nReq = db.Column(db.String(15))
+	oSolicitnte = db.Column(db.String(30))
+	tCompraContrato = db.Column(db.String(20))
+	total = db.Column(db.Float)
+	observaciones = db.Column(db.Text)
+
+	def __init__(self, proveedor, nomComer, fol_entrada, fecha, factura, nFactura, ordenCompra,
+		depSolici, nReq, oSolicitnte, tCompraContrato, total, observaciones):
+		self.proveedor = proveedor
+		self.nomComer = nomComer
+		self.fol_entrada = fol_entrada
+		self.fecha = fecha
+		self.factura = factura
+		self.nFactura = nFactura
+		self.ordenCompra = ordenCompra
+		self.depSolici = depSolici
+		self.nReq = nReq
+		self.oSolicitnte = oSolicitnte
+		self.tCompraContrato = tCompraContrato
+		self.total = total
+		self.observaciones = observaciones
+
+
+class entra_Articulos(db.Model):
+	__tablename__ = "entradaArticulos"
+	id = db.Column(db.Integer, primary_key=True)
+	entradas_id = db.Column(db.Integer, db.ForeignKey("Entradas.id"))
+	cantidad = db.Column(db.Float)
+	udm = db.Column(db.String(15))
+	codigo = db.Column(db.String(35))
+	descripcion = db.Column(db.String(150))
+	p_unit = db.Column(db.Float)
+	total = db.Column(db.Float)
+	ordenCompra = db.Column(db.String(15))
+
+	def __init___(self, cantidad, udm, codigo, descripcion, p_unit, total, ordenCompra):
+		self.cantidad = cantidad
+		self.udm = udm
+		self.codigo = codigo
+		self.descripcion = descripcion
+		self.p_unit = p_unit
+		self.total = total
+		self.ordenCompra = ordenCompra

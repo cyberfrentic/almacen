@@ -15,7 +15,7 @@
 from flask import url_for
 from flask import Flask, flash, redirect, render_template, request, session, abort
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
-from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada
+from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada, form_salida_orden
 import os
 from models import db, User, inventario
 
@@ -353,6 +353,14 @@ def buscaprod():
 def verlista():	
 	return render_template('verlista.html',listaglobal=listatotal)
 
+
+@app.route('/entradasAlmacen/OrdenCompra', methods=['GET', 'POST'])
+def EntradaOrden():
+	nombre = session['username']
+	form = form_salida_orden(request.form)
+	if request.method == 'POST' and form.validate():
+		pass
+	return render_template("entradaOrden.html", nombre=nombre, form=form)
 
 
 	

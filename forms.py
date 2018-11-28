@@ -4,7 +4,11 @@ from wtforms.fields.html5 import EmailField
 from wtforms import PasswordField
 from wtforms import HiddenField
 from wtforms import validators
+from wtforms import DateField, DateTimeField, IntegerField
 from models import User
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
+from models import db
+from models import User, proveedor
 
 
 def length_honeypot(form, field):
@@ -59,5 +63,29 @@ class formbuscaentrada(Form):
         [validators.Required(message = 'Debe proporcional el número de entrada u orden!.'),
         validators.length(max = 12, message='El campo debe contener 12 caracteres como máximo')
         ])
+
+def get_pk(obj):
+    return str(obj)
+
+def prov():
+    return proveedor.query.order_by('TO_NAME')
     
-        
+class form_salida_orden(Form):
+    proveedor = QuerySelectField(label=None, query_factory = prov, get_pk=get_pk, allow_blank=True)
+    fecha = DateField('',
+        [validators.Required(message="Debe de capturar la fecha"),
+        validators.length(min=10, max=10, message="el formato de la fecha es el sig. dd/mm/YYYY")
+        ])
+    nomComer = StringField("",
+        [validators.Required(message="Dede elejir un nombre comercial"),
+        validators.length(min=5, max=255, message="el nombre debe ser minimo 5 y maximo 255 caracteres")
+        ])
+    folio = IntegerField("", [validators.required()])
+    factura = StringField("", [validators.required()])
+    numFactura = StringField("", [validators.required()])
+    orden = StringField("", [validators.required()])
+    dep_soli = StringField("", [validators.required()])
+    nReq = StringField("", [validators.required()])
+    oSoli = StringField("", [validators.required()])
+    tCompra = StringField("", [validators.required()])
+    obser = TextField("",[validators.required()])
