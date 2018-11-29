@@ -147,6 +147,9 @@ class data_import_party(db.Model):
 		self.import_status_id = import_status_id
 		self.import_error = import_error
 
+	def __repr__(self):
+		return '{}'.format(self.group_name_local)
+
 
 class party_group(db.Model):
 	party_id = db.Column(db.String(20), primary_key=True)

@@ -16,36 +16,88 @@
     <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
 </head>
 <body>
+<form method="POST" accept-charset="utf-8">
 <div class="container">
 	<div class="container-fluid">
   		<div class="row" style="background-image:{{url_for('static', filename='img/logo.jpg') }}; width: 100%; height: 100vh; "">
     		<div class="col-12">
     			<div class="row">
-    				<div class="col-3">
-    				
+    				<div class="col-2"></div>
+    				<div class="col-8">
+    					<center>
+      						<h5>Comision de Agua Potable y Alcantarillado del Estado de Quintana Roo</h5>
+      						<h6>Direccion de Recursos Materiales</h6>
+      						<h6>Departamento de Almacen General</h6>
+      						<h6>Formato de ntrada de materiales de Almacen</h6>
+      					</center>
+    				</div>
+    				<div class="col-2"></div>
     			</div>
-    			<div class="col-6">
-    				<center>
-      				<h4>Comision de Agua Potable y Alcantarillado</h4>
-      				<h4>del Estado de Quintana Roo</h4>
-      				<h5>Direccion de Recursos Materiales</h5>
-      				<h5>Departamento de Almacen General</h5>
-      				<h5>Formato de ntrada de materiales de Almacen</h5>
-      			</center>
-    			</div>
-    			<div class="col-3"></div>
-    			</div>
-      			<div class="row align-items-center">
-        			<div class="col-2 bg-secondary">Proveedor:</div>
-        			<div class="col-6 bg-light">{{ render_field(form.proveedor, class="form-control")}}</div>
-        			<div class="col-2 bg-secondary">Fecha:</div>
-        			<div class="col-2 bg-light"></div>
+    			<div class="row">
+        			<div class="col-sm-2 list-group-item-info">Proveedor:</div>
+        			<div class="col-sm-6 list-group-item-action list-group-item-warning">{{ render_field(form.proveedor, class="form-control")}}</div>
+        			<div class="col-sm-2 list-group-item-info">Fecha:</div>
+        			<div class="col-sm-2 list-group-item-action list-group-item-warning">{{render_field(form.fecha, class="form-control")}}</div>
       			</div>
-    		</div>
-  		</div>
-	</div>
+      			<div class="row">
+        			<div class="col-2 list-group-item-info">Nombre Comercial:</div>
+        			<div class="col-6 list-group-item-action list-group-item-warning">{{ render_field(form.nomComer, class="form-control")}}</div>
+        			<div class="col-2 list-group-item-info">Folio:</div>
+        			<div class="col-2 list-group-item-action list-group-item-warning">{{render_field(form.folio, class="form-control")}}</div>
+      			</div>
+      			<div class="row">
+        			<div class="col-2 list-group-item-info">Factura, Nota o Cotización:</div>
+        			<div class="col-2 list-group-item-action list-group-item-warning">{{ render_field(form.factura, class="form-control")}}</div>
+        			<div class="col-4 list-group-item-action list-group-item-warning">{{ render_field(form.numFactura, class="form-control", placeholder="Numero de folio de la factura")}}</div>
+        			<div class="col-2 list-group-item-info">Orden de Compra:</div>
+        			<div class="col-2 list-group-item-action list-group-item-warning">{{ render_field(form.orden, class="form-control")}}</div>
+      			</div>
+      			<div class="row">
+        			<div class="col-2 list-group-item-info">Departamento Solicitante:</div>
+        			<div class="col-6 list-group-item-action list-group-item-warning">{{ render_field(form.dep_soli, class="form-control")}}</div>
+        			<div class="col-2 list-group-item-info">Requerimiento:</div>
+        			<div class="col-2 list-group-item-action list-group-item-warning">{{ render_field(form.orden, class="form-control")}}</div>
+      			</div>
+      			<div class="row">
+        			<div class="col-2 list-group-item-info">Oficio Solicitante:</div>
+        			<div class="col-6 list-group-item-action list-group-item-warning">{{ render_field(form.oSoli, class="form-control")}}</div>
+        			<div class="col-2 list-group-item-info">Tipo de Compra o Contrato:</div>
+        			<div class="col-2 list-group-item-action list-group-item-warning">{{ render_field(form.tCompra, class="form-control")}}</div>
+      			</div>
+      			<br>
+				<table class="table table-hover table-striped">
+    				<thead>
+      				<tr class="table-success">
+        				<th>Cant.</th>
+        				<th>UDM</th>
+        				<th>Código</th>
+        				<th>Descripción o Nombre del Articulo</th>
+        				<th>P. Unitario</th>
+        				<th>Total</th>
+      				</tr>
+    				</thead>
+    				<tbody>
+    					<tr class="table-warning">
+    						<td>1</td>
+        					<td>pzas</td>
+        					<td>21101213003</td>
+        					<td>Tarjetas Blancas 1/2 carta cartulina opalina </td>
+        					<td>39.000000 </td>
+        					<td>39.000000 </td>
+    					</tr>
+    				</tbody>
+  				</table>
+  				<div class="row">
+  					<div class="col-2 list-group-item-info">Observaciones:</div>
+  					<div class="col-6 list-group-item-action list-group-item-warning">{{ render_field(form.obser, class="form-control", rows="3", cols="50", placeholder="Capture sus observaciones")}}</div>
+  					<div class="col-2 list-group-item-info">Total:</div>
+  					<div class="col-2 list-group-item-action list-group-item-warning">{{ render_field(form.total, class="form-control")}}</div>
+  				</div>
+			</div>
+    	</div>
+    </div>
 </div>
+</form>
 </body>
 </html>
-
 {% endblock %}
