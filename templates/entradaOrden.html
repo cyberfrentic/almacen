@@ -68,22 +68,25 @@
 				<table class="table table-hover table-striped">
     				<thead>
       				<tr class="table-success">
-        				<th>Cant.</th>
-        				<th>UDM</th>
-        				<th>Código</th>
-        				<th>Descripción o Nombre del Articulo</th>
-        				<th>P. Unitario</th>
-        				<th>Total</th>
+        				<td><strong>Código</strong></td>
+                <td><strong>Producto</strong></td>
+                <td><strong>Existencias</strong></td>
+                <td><strong>Unidad de medida</strong></td>
+                <td><strong>Disponibles</strong></td>
+                <td><strong>Precio.Unit.</strong></td>
+                <td><strong>Item ID</strong></td>
+                <td><strong>A entrar</strong></td>
       				</tr>
     				</thead>
     				<tbody>
     					<tr class="table-warning">
-    						<td>1</td>
-        					<td>pzas</td>
-        					<td>21101213003</td>
-        					<td>Tarjetas Blancas 1/2 carta cartulina opalina </td>
-        					<td>39.000000 </td>
-        					<td>39.000000 </td>
+    						{% for fila in listaglobal %}                                 
+                				<tr class="info" style="font:11px Arial">             
+                    				{% for col in fila %} 
+                      					<td>  {{ col }} </td>
+                    				{%endfor%}
+                				</tr>
+                			{% endfor %}                                             
     					</tr>
     				</tbody>
   				</table>
@@ -98,6 +101,8 @@
     </div>
 </div>
 </form>
+<br>
+<br>
 </body>
 </html>
 {% endblock %}

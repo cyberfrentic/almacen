@@ -1,0 +1,23 @@
+{% extends 'index.html' %}
+{% from "_macros.html" import render_field %} 
+
+ {% block content %}      
+<form   method="POST"  >
+ <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>  
+<div class="w3-card-4" style="width:25%;">
+                <header class="w3-container  w3-teal">
+          			  <h3>Número de orden de compra</h3>
+                </header>   
+          			   <!--div class="invalid-feedback">Clave del producto</div> -->
+          			   <div class="form-group">
+          			     <!--input type="text" class="form-control form-control-lg" name="product_id" id="product_id" -->
+                         <!--placeholder="Ingrese la clave del producto" required autofocus size="40" maxlength="40"-->
+                           {{ render_field(form.order_id, class='form-control', placeholder="Ingrese el número de entrada u orden") }}      
+          			    </div>
+                <footer class="w3-container w3-teal">
+                <h5>Realizar una salida</h5>
+               </footer>  
+  	           <button type="submit" class="btn btn-primary" name="addentrada" value="buscar"> Buscar </button>                                    
+</div>
+</form>
+ {% endblock %}

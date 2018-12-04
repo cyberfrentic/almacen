@@ -57,11 +57,24 @@ except:
 ######## Variables Globales ########################
 global Localizado2
 global Localizado
+global Cantidades
 listatotal = []  # lista global que contendra los articulos para e/s
 bolsa = [] # lista donde se encuentra el producto buscado y que ira llenando la listatotal
 Localizado2 = []
 Localizado  = []
+Cantidades  = []
 ####################################################
+
+def listaGlobal():
+	for item in listatotal:
+		if len(item) ==9:
+			print(item)
+			lg = item.pop(len(item)-2)
+			print("aqui estoy")
+			print (lg)
+		else:
+			lg = listatotal
+	return lg
 
 @app.before_request
 def before_request():
@@ -137,6 +150,33 @@ def entradas():
 	return render_template("entradas.html", form=form_buscaentrada, nombre=nombre)
 	
 	
+@app.route('/salidas', methods=['GET', 'POST'])	
+def salidas():
+	nombre = session['username'].upper()
+	form_buscaentrada = formbuscaentrada(request.form)
+	if request.method == 'POST':
+		id_orden = form_buscaentrada.order_id.data
+		if 'buscar' in request.form['addentrada']:
+			print('Salidas-Boton buscar funcionando')			
+			orden = """SELECT * FROM entradas a INNER JOIN entradaarticulos b ON a.ordencompra = b.ordencompra  WHERE a.ordencompra='%s'"""%(id_orden)
+			total_o= """SELECT sum( total ) FROM entradaarticulos WHERE ordencompra = '%s'"""%(id_orden)
+			det_orden = db.session.execute(orden).fetchall()
+			total_ord = db.session.execute(total_o).fetchall()
+			if det_orden:
+				print("RESULTADO DE LA CONSULTA POR ORDEN")
+				print(det_orden)
+				print("IMPRIMO LAS FILAS")
+				print("total de la orden")
+				print(total_ord[0])
+				for fila in det_orden:
+					print(fila)
+			else:
+				print("NINGUN RESULTADO DE LA ORDEN:"+id_orden)
+	else:
+		print("Salidas-No entro al método POST")
+	return render_template("salidas.html", form=form_buscaentrada, nombre=nombre)
+	
+	
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	username_ =""
@@ -174,7 +214,6 @@ def buscaprod():
 	nombre = session['username'].upper()
 	global bolsa
 	global listatotal
-	Localizado = []
 	lista = []
 	print("inicio...")
 	result_ = "Fallo la busqueda"
@@ -189,7 +228,9 @@ def buscaprod():
 				pos = 0 
 				for fila in listatotal:
 					for col in fila:
-						if item in fila:
+						# Para SQL Server es: if item in fila:
+						# Para MYSQL Server es: if item == fila:
+						if item == col:
 							print("Borrando tupla que contenga el elemento:" + item)
 							listatotal.pop(pos)
 							break
@@ -212,7 +253,9 @@ def buscaprod():
 					pos = 0
 					for fila in Localizado2:
 						for col in fila:
-							if item in fila:
+							# Para SQL Server es: if item in fila:
+						    # Para MYSQL Server es: if item == fila:
+							if item == col:
 								print("Si esta en Localizado2")
 								a = fila
 								listatotal.append(a)
@@ -230,19 +273,32 @@ def buscaprod():
 			return render_template('buscaprod.html',form=form_buscap,lista=lista,listaglobal=listatotal, nombre=nombre)
 		
 		if 'agregar' in request.form['addsalida']:
+			print("If agregar in request.form['addsalida']:")
 			global Localizado
+			global Localizado3
 			valor_chkp = request.form.getlist('chklista0')
 			if valor_chkp == []:
 				 error_message = '¡ATENCION! No se agrego ningún producto'
 				 flash(error_message)
 			else:
-				print("A ver si existe Localizado")
+				print("A ver si existe Localizado MYSQL")
 				print(Localizado)
+				print("Localizado3 SQL server")
+				print(Localizado3)
+				print(valor_chkp)
 				for item in valor_chkp:
 					pos = 0
 					for fila in Localizado:
+						print("Imprimo Fila")
+						print(fila)
 						for col in fila:
-							if item in fila:
+							print("Imprimo Columnna")
+							print(col)
+							#Para Sql Server es : if item in fila:
+							#Para MySql es if item == col:
+							if item == col:
+								print("Imprimo item")
+								print(item)
 								print("Si esta en Localizado")
 								a = fila
 								listatotal.append(a)
@@ -291,24 +347,38 @@ def buscaprod():
 			#product_id = request.form['product_id']
 			print("Product_id es:" + product_id)
 			print("Product_name es:" + product_name)
+			busca_pr = """SELECT  id_prod,nom_prod,cant_exist,um,cant_dispon,costo_unit,id_item FROM inventario  WHERE id_prod='%s'"""%(product_id)
+			prod_tmp = db.session.execute(busca_pr).fetchall()
+
+			#prod_tmp = inventario.query.filter_by(id_prod=product_id).all()
+			if prod_tmp is None:
+				print("No hay productos en mysql")
+			elif prod_tmp:
+				print("Productos de mysql")
+				print(prod_tmp)
 			#Creamos la consulta
 			pxn='%'+product_name+'%'
 			if product_id:
 				print("Entro a Product_id ")
 				#buscap = """SELECT * FROM PRODUCT WHERE PRODUCT_ID ='%s'"""%product_id
 				#buscap = ("SELECT a.PRODUCT_ID,INTERNAL_NAME,QUANTITY_ON_HAND_TOTAL,QUANTITY_UOM_ID,AVAILABLE_TO_PROMISE_TOTAL FROM PRODUCT a, INVENTORY_ITEM b WHERE a.PRODUCT_ID = %sproduct_id AND  b.PRODUCT_ID= %sproduct_id")				
-				buscap = """SELECT  a.PRODUCT_ID,INTERNAL_NAME,QUANTITY_ON_HAND_TOTAL,QUANTITY_UOM_ID,AVAILABLE_TO_PROMISE_TOTAL, UNIT_COST,INVENTORY_ITEM_ID FROM PRODUCT a INNER JOIN INVENTORY_ITEM b ON a.PRODUCT_ID =  b.PRODUCT_ID  AND a.PRODUCT_ID='%s'"""%(product_id)
-				cursor.execute(buscap)
-				Localizado = cursor.fetchall()
+				buscap3 = """SELECT  a.PRODUCT_ID,INTERNAL_NAME,QUANTITY_ON_HAND_TOTAL,QUANTITY_UOM_ID,AVAILABLE_TO_PROMISE_TOTAL, UNIT_COST,INVENTORY_ITEM_ID FROM PRODUCT a INNER JOIN INVENTORY_ITEM b ON a.PRODUCT_ID =  b.PRODUCT_ID  AND a.PRODUCT_ID='%s'"""%(product_id)
+				buscap = """SELECT  id_prod,nom_prod,cant_exist,um,cant_dispon,costo_unit,id_item FROM inventario  WHERE id_prod='%s'"""%(product_id)
+				cursor.execute(buscap3)
+				Localizado = db.session.execute(buscap).fetchall()
+				Localizado3 = cursor.fetchall()
 				Localizado2 = []
+
 				print("Imprimo consulta de  Product_id ")
 				print(Localizado)
 			elif product_name:
 				print("Entro a Product_name ")
-				buscapxn = """SELECT PRODUCT.PRODUCT_ID,INTERNAL_NAME,QUANTITY_ON_HAND_TOTAL,QUANTITY_UOM_ID,AVAILABLE_TO_PROMISE_TOTAL,UNIT_COST,INVENTORY_ITEM_ID FROM PRODUCT,INVENTORY_ITEM WHERE PRODUCT_NAME LIKE '%s' AND PRODUCT.PRODUCT_ID = INVENTORY_ITEM.PRODUCT_ID"""%pxn
+				#buscapxn = """SELECT PRODUCT.PRODUCT_ID,INTERNAL_NAME,QUANTITY_ON_HAND_TOTAL,QUANTITY_UOM_ID,AVAILABLE_TO_PROMISE_TOTAL,UNIT_COST,INVENTORY_ITEM_ID FROM PRODUCT,INVENTORY_ITEM WHERE PRODUCT_NAME LIKE '%s' AND PRODUCT.PRODUCT_ID = INVENTORY_ITEM.PRODUCT_ID"""%pxn
+				buscapxn = """SELECT id_prod,nom_prod,cant_exist,um,cant_dispon,costo_unit,id_item FROM inventario WHERE nom_prod LIKE '%s' """%pxn
 				#buscapxn = """SELECT PRODUCT_ID, PRODUCT_TYPE_ID, INTERNAL_ID, FAMILIA_ID FROM PRODUCT WHERE PRODUCT_ID ='%s'"""%product_id
-				cursor.execute(buscapxn)
-				Localizado2 = cursor.fetchall()	
+				#cursor.execute(buscapxn)
+				#Localizado2 = cursor.fetchall()	
+				Localizado2 = db.session.execute(buscapxn).fetchall()
 				print("Imprimo consulta por Nombre ")
 				print(Localizado2)
 				Localizado = []
@@ -338,9 +408,30 @@ def buscaprod():
 			         print(Localizado2)	
 			         return render_template('buscaprod.html',form=form_buscap ,listapxn=Localizado2,listaglobal=listatotal,productpxn=product_name, nombre=nombre)
 			else:
-				 error_message = 'El producto: '+'{} no existe'.format(product_id)
+				 error_message = '¡ATENCION! El producto: '+'{} no existe'.format(product_id)
 				 flash(error_message)
 				 print(result_)
+		elif 'entrada_alm' in request.form['addsalida']:
+				global listatotal
+				global Cantidades
+				Cantidades = request.form.getlist('cants')
+				pos = 0
+				print('Insertando elementos dentro de cada lista, (lista de listas)')
+				#Convierto la lista de tuplas en lista de listas para poder modificarlos
+				listatotal = [list(fila) for fila in listatotal]	
+				for item in Cantidades:
+					j= listatotal[pos]
+					j.append(item)
+					pos += 1
+					print("Lista final para Entrada")
+					print(listatotal)
+				return redirect(url_for('EntradaOrden'))
+
+		elif 'salida_alm' in request.form['addsalida']:	
+				global listatotal
+				cantidades = request.form.getlist('cants')
+				print("Lista final para Salida")
+				print(listatotal,cantidades)		 
 		else:
 			flash('No se encuentra la opcion del boton')
 			return render_template('buscaprod.html',form=form_buscap)
@@ -358,9 +449,11 @@ def verlista():
 def EntradaOrden():
 	nombre = session['username']
 	form = form_salida_orden(request.form)
+	listaGlobal()
 	if request.method == 'POST' and form.validate():
-		pass
-	return render_template("entradaOrden.html", nombre=nombre, form=form)
+		print(listatotal)
+
+	return render_template("entradaOrden.html", nombre=nombre, form=form, listaglobal=listatotal)
 
 
 	
@@ -370,4 +463,3 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(port=8000, host='0.0.0.0')
-	

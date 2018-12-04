@@ -145,8 +145,6 @@
                 </center>
                 <button type="submit" class="btn btn-success" name="addsalida" value="agregar"><i class="icon-wrench icon-white"></i> Añadir a la lista</button>
                 <button type="submit" class="btn btn-primary" name="addsalida" value="buscaotro"> Buscar Otro </button>
-                <button type="submit" class="btn btn-info"    name="addsalida" value="versalida" > Ver lista actual </button>
-                <button type="submit" class="btn btn-danger"  name="addsalida" value="borrasalida">Borrar lista </button>
               <script>  
                  $(function(){
                    $('input:checkbox').change(function(){
@@ -244,12 +242,15 @@
                                                 <table class="table table-hover table-responsive table-bordered" >
                                                     <thead>
                                                         <tr class="success" style="font:11px Arial"> 
-                                                            
-                                                            <th>Producto</th>
-                                                            <th>Tipo de Producto</th>
-                                                            <th>Descripción</th>
-                                                            <th>Familia</th>
-                                                            <th>Selec.</th>
+                                                            <td><strong>Código</strong></td>
+                                                            <td><strong>Producto</strong></td>
+                                                            <td><strong>Existencias</strong></td>
+                                                            <td><strong>Unidad de medida</strong></td>
+                                                            <td><strong>Disponibles</strong></td>
+                                                            <td><strong>Precio.Unit.</strong></td>
+                                                            <td><strong>Item ID</strong></td>
+                                                            <td><strong>A procesar</strong></td>
+                                                            <td><strong>Seleccionar</strong></td>
                                                         </tr>
                                                             
                                                     </thead> 
@@ -260,7 +261,9 @@
                                                            {% for col in fila %} 
                                                                <td>  {{ col }} </td>
                                                            {%endfor%}
-                                                               <td><input type="checkbox"  id = "borrar" name="chklista" value="{{ fila[0] }}"></td>    
+                                                                <td><input type="text"  name="cants" id="cantidad" value="1" required autofocus size="15" maxlength="15" style="text-align: center;"></td>
+                                                                 <td><center><input type="checkbox"  id = "borrar" name="chklistafin" value="{{ fila[0]}}"><center>
+                                                                </td>     
 
                                                                <!--td><button type="button" class="btn btn-danger" id = "borrar" name="borrar" value="{{ fila[0] }}+'-'+'1'">Borrar </button></td-->    
                                                                              
@@ -288,8 +291,9 @@
                                                             });
                                                         });
                                                     </script>   
-
-                                                    <button type="button" class="btn btn-default" data-dismiss="modal">REALIZAR SALIDA</button>
+                                                    <!--button type="submit" class="btn btn-primary" id = "enviar" name="addsalida" onclick="" value="entrada_alm">REALIZAR ENTRADA</button-->
+                                                    <button type="submit" class="btn btn-primary" id = "enviar" name="addsalida" onclick="" value="entrada_alm">REALIZAR ENTRADA</button>
+                                                    <button type="submit" class="btn btn-info" id = "enviar" name="addsalida" onclick="" value="salida_alm">REALIZAR SALIDA</button>
                                                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                                                 </div>
                                         </div>
