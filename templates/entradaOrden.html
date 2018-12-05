@@ -65,36 +65,42 @@
         			<div class="col-2 list-group-item-action list-group-item-warning">{{ render_field(form.tCompra, class="form-control")}}</div>
       			</div>
       			<br>
-				<table class="table table-hover table-striped">
-    				<thead>
-      				<tr class="table-success">
-        				<td><strong>Código</strong></td>
-                <td><strong>Producto</strong></td>
-                <td><strong>Existencias</strong></td>
-                <td><strong>Unidad de medida</strong></td>
-                <td><strong>Disponibles</strong></td>
-                <td><strong>Precio.Unit.</strong></td>
-                <td><strong>Item ID</strong></td>
-                <td><strong>A entrar</strong></td>
-      				</tr>
-    				</thead>
-    				<tbody>
-    					<tr class="table-warning">
-    						{% for fila in listaglobal %}                                 
-                				<tr class="info" style="font:11px Arial">             
-                    				{% for col in fila %} 
-                      					<td>  {{ col }} </td>
-                    				{%endfor%}
-                				</tr>
-                			{% endfor %}                                             
-    					</tr>
-    				</tbody>
-  				</table>
+      			{% if listaglobal %}
+					<table class="table table-hover table-striped">
+	    				<thead>
+		      				<tr class="table-success">
+		        				<td><strong>Código</strong></td>
+		                		<td><strong>Producto</strong></td>
+		                		<td><strong>Existencias</strong></td>
+		                		<td><strong>Unidad de medida</strong></td>
+		                		<td><strong>Disponibles</strong></td>
+		                		<td><strong>Precio.Unit.</strong></td>
+		                		<td><strong>Item ID</strong></td>
+		                		<td><strong>A entrar</strong></td>
+		      				</tr>
+	    				</thead>
+	    				<tbody>
+	    					<tr class="table-warning">
+	    						{% for fila in listaglobal %}                                 
+	                				<tr class="info" style="font:11px Arial">             
+	                    				{% for col in fila %} 
+	                      					<td>  {{ col }} </td>
+	                    				{%endfor%}
+	                				</tr>
+	                			{% endfor %}                                             
+	    					</tr>
+	    				</tbody>
+	  				</table>
+	  			{%endif%}
   				<div class="row">
   					<div class="col-2 list-group-item-info">Observaciones:</div>
   					<div class="col-6 list-group-item-action list-group-item-warning">{{ render_field(form.obser, class="form-control", rows="3", cols="50", placeholder="Capture sus observaciones")}}</div>
   					<div class="col-2 list-group-item-info">Total:</div>
   					<div class="col-2 list-group-item-action list-group-item-warning">{{ render_field(form.total, class="form-control")}}</div>
+  					<br>
+  					<div class="col-2">
+  						<button type="button" class="btn btn-outline-danger">Guardar</button>
+  					</div>
   				</div>
 			</div>
     	</div>

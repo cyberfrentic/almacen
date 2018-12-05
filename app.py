@@ -65,16 +65,16 @@ Localizado  = []
 Cantidades  = []
 ####################################################
 
-def listaGlobal():
-	for item in listatotal:
-		if len(item) ==9:
-			print(item)
-			lg = item.pop(len(item)-2)
-			print("aqui estoy")
-			print (lg)
+def listaGlobal(lista):
+	listatotal=[]
+	for item in lista:
+		if len(item) == 9:
+			del item[7]
+			listatotal.append(item)
 		else:
-			lg = listatotal
-	return lg
+			listatotal.append(item)
+	return listatotal
+
 
 @app.before_request
 def before_request():
@@ -449,11 +449,9 @@ def verlista():
 def EntradaOrden():
 	nombre = session['username']
 	form = form_salida_orden(request.form)
-	listaGlobal()
 	if request.method == 'POST' and form.validate():
-		print(listatotal)
-
-	return render_template("entradaOrden.html", nombre=nombre, form=form, listaglobal=listatotal)
+		pass
+	return render_template("entradaOrden.html", nombre=nombre, form=form, listaglobal=listaGlobal(listatotal))
 
 
 	
