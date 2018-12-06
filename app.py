@@ -17,7 +17,7 @@ from flask import Flask, flash, redirect, render_template, request, session, abo
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
 from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada, form_salida_orden
 import os
-from models import db, User, inventario
+from models import db, User, inventario, Articulos, Entrada
 
 from config import DevelopmentConfig
 import pymssql 
@@ -449,8 +449,86 @@ def verlista():
 def EntradaOrden():
 	nombre = session['username']
 	form = form_salida_orden(request.form)
-	if request.method == 'POST' and form.validate():
-		pass
+	if request.method == 'POST':
+		proveedor = str(form.proveedor.data).replace('(','').replace("'",'').replace(')','').replace(',','')
+		fecha = form.fecha.data
+		nomComer = str(form.nomComer.data).replace('(','').replace("'",'').replace(')','').replace(',','')
+		folio = form.folio.data
+		factura = form.factura.data
+		numFactura = form.numFactura.data
+		orden1 = form.orden.data
+		dep_soli = str(form.dep_soli.data).replace('(','').replace("'",'').replace(')','').replace(',','')
+		nReq = form.nReq.data
+		oSoli = form.oSoli.data
+		tCompra = form.tCompra.data
+		obser = form.obser.data
+		total = form.total.data
+		if len(proveedor) < 5:
+			flash("El campo {} es requerido".format('Proveedores'))
+		elif len(str(fecha))< 5:
+			flash("El campo {} es requerido".format("Fecha"))
+		elif len(str(nomComer))< 5:
+			flash("El campo {} es requerido".format("Nombre Comercial"))
+		elif len(str(folio))< 5:
+			flash("El campo {} es requerido".format("Folio"))
+		elif len(str(factura))< 1:
+			flash("El campo {} es requerido".format("Factura"))
+		elif len(str(numFactura))< 1:
+			flash("El campo {} es requerido".format("Número de Factura"))
+		elif len(str(orden1))< 1:
+			flash("El campo {} es requerido".format("Orden de Compra"))
+		elif len(str(dep_soli))< 5:
+			flash("El campo {} es requerido".format("Departamento Solicitante"))
+		elif len(str(nReq))< 1:
+			flash("El campo {} es requerido".format("Número de Requerimiento"))
+		elif len(str(oSoli))< 5:
+			flash("El campo {} es requerido".format("Oficio Solicitante"))
+		elif len(str(tCompra))< 5:
+			flash("El campo {} es requerido".format("Tipo de Compra"))
+		elif len(str(obser)) < 5:
+			flash("El campo {} es requerido".format("Observaciones"))
+		else:
+			query = Entrada.query.filter_by(ordenCompra=orden1)
+			datos=0
+			for dato in query:
+				datos = dato.id
+			if datos == 0:
+				Entra = Entrada(proveedor,
+					nomComer,
+					folio,
+					fecha,
+					factura,
+					numFactura,
+					orden1,
+					dep_soli,
+					nReq,
+					oSoli,
+					tCompra,
+					total,
+					obser,
+				)
+				db.session.add(Entra)
+				db.session.commit()
+				query = Entrada.query.filter_by(ordenCompra=orden1)
+				for dato in query:
+					datos = dato.id
+				for item in listatotal:
+					total = float(item[5])*float(item[7])
+					arti = Articulos(entradas_id = datos,
+						cantidad = item[7],
+						udm = item[3],
+						codigo = item[0],
+						descripcion = item[1],
+						p_unit = item[5],
+						total = total,
+						ordenCompra = orden1,
+						imtemId = item[6],)
+					db.session.add(arti)
+					db.session.commit()
+				flash("Entrada Núm {} Realizada con exito".format(datos))
+				return redirect(url_for("entradas"))
+			else:
+				flash("La orden núm. {} ya ha sido capturada anteriormente".format(orden1))
 	return render_template("entradaOrden.html", nombre=nombre, form=form, listaglobal=listaGlobal(listatotal))
 
 

@@ -80,14 +80,10 @@ def prov2():
     
 class form_salida_orden(Form):
     proveedor = QuerySelectField("", query_factory = prov, get_pk=get_pk, allow_blank=True)
-    fecha = DateField('',
-        [validators.Required(message="Debe de capturar la fecha"),
-        validators.length(min=10, max=10, message="el formato de la fecha es el sig. dd/mm/YYYY")
-        ])
+    fecha = DateField('', format='%d/%m/%Y',validators=(validators.Optional(),))
     nomComer = QuerySelectField("", query_factory = prov2, get_pk=get_pk, allow_blank=True)
     folio = IntegerField("", [validators.required()])
-    factura = SelectField('',
-                               choices=[('', ''), ('F', 'Factura'), ('N', 'Nota'), ("C", 'Cotiación')], )
+    factura = SelectField('', choices=[('', ''), ('F', 'Factura'), ('N', 'Nota'), ("C", 'Cotiación')], )
     numFactura = StringField("", [validators.required()])
     orden = StringField("", [validators.required()])
     dep_soli = QuerySelectField("", query_factory = departamentos, get_pk=get_pk, allow_blank=True)
