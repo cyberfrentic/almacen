@@ -27,7 +27,7 @@ class User(db.Model):
 		return check_password_hash(self.password, password)
 
 
-class inventario(db.Model):
+class Inventario(db.Model):
 	__tablename__ = 'inventario'
 	id_item = db.Column(db.String(20), primary_key=True, comment='codigo producto')
 	id_prod = db.Column(db.String(20))

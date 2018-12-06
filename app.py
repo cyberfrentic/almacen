@@ -17,7 +17,7 @@ from flask import Flask, flash, redirect, render_template, request, session, abo
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
 from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada, form_salida_orden
 import os
-from models import db, User, inventario, Articulos, Entrada
+from models import db, User, Inventario, Articulos, Entrada
 
 from config import DevelopmentConfig
 import pymssql 
@@ -524,6 +524,14 @@ def EntradaOrden():
 						ordenCompra = orden1,
 						imtemId = item[6],)
 					db.session.add(arti)
+					db.session.commit()
+					canti = Inventario.query.filter_by(id_item = item[6]).one()
+					print(canti)
+					saldo = canti.cant_exist
+					print(saldo)
+					t = float(item[7])+ float(saldo)
+					print(t)
+					canti.cant_exist = t
 					db.session.commit()
 				flash("Entrada Núm {} Realizada con exito".format(datos))
 				return redirect(url_for("entradas"))
