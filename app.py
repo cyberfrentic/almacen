@@ -23,6 +23,7 @@ from config import DevelopmentConfig
 import pymssql 
 from bs4 import BeautifulSoup
 from flask_wtf import CSRFProtect
+from tools.fpdf import entradaPdf
 
 ###########################################
 # CONEXION A MYSQL
@@ -507,6 +508,20 @@ def EntradaOrden():
 					total,
 					obser,
 				)
+				generales=list()
+				generales.append(proveedor)
+				generales.append(fecha)
+				generales.append(nomComer)
+				generales.append(folio)
+				generales.append(factura)
+				generales.append(numFactura)
+				generales.append(orden1)
+				generales.append(dep_soli)
+				generales.append(nReq)
+				generales.append(oSoli)
+				generales.append(tCompra)
+				generales.append(total)
+				generales.append(obser)
 				db.session.add(Entra)
 				db.session.commit()
 				query = Entrada.query.filter_by(ordenCompra=orden1)
@@ -534,7 +549,11 @@ def EntradaOrden():
 					canti.cant_exist = t
 					db.session.commit()
 				flash("Entrada Núm {} Realizada con exito".format(datos))
-				return redirect(url_for("entradas"))
+				listas = list()
+				listas.append('Proveedor:')
+				listas.append('Nombre Comercial:')
+				x = entradaPdf("Entrada", listas, generales, listatotal)
+				return x
 			else:
 				flash("La orden núm. {} ya ha sido capturada anteriormente".format(orden1))
 	return render_template("entradaOrden.html", nombre=nombre, form=form, listaglobal=listaGlobal(listatotal))
