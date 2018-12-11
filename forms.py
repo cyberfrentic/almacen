@@ -92,3 +92,7 @@ class form_salida_orden(Form):
     tCompra = StringField("", [validators.required()])
     obser = TextField("",[validators.required()])
     total = DecimalField('',  places=4, rounding=None)
+
+
+class form_consul_entrada(Form):
+    nOrden = StringField("",[validators.DataRequired(message = 'Debe proporcional el número de orden!.')])

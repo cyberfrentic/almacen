@@ -15,7 +15,7 @@
 from flask import url_for
 from flask import Flask, flash, redirect, render_template, request, session, abort
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
-from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada, form_salida_orden
+from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada, form_salida_orden, form_consul_entrada
 import os
 from models import db, User, Inventario, Articulos, Entrada
 
@@ -558,6 +558,48 @@ def EntradaOrden():
 				flash("La orden núm. {} ya ha sido capturada anteriormente".format(orden1))
 	return render_template("entradaOrden.html", nombre=nombre, form=form, listaglobal=listaGlobal(listatotal))
 
+
+@app.route('/consulta', methods=['GET', 'POST'])
+def ConsultaEntrada():
+	nombre = session['username'] 
+	form = form_consul_entrada(request.form)
+	if request.method == 'POST':
+		orden = form.nOrden.data
+		xa = request.form['addOrdenSal'][:10]
+		if 'reimprimir' in xa:
+			query = Entrada.query.filter_by(ordenCompra=request.form['addOrdenSal'][10:]).one()
+			arti = Articulos.query.filter_by(ordenCompra = request.form['addOrdenSal'][10:]).all()
+			generales=list()
+			generales.append(query.proveedor)
+			generales.append(query.fecha)
+			generales.append(query.nomComer)
+			generales.append(query.fol_entrada)
+			generales.append(query.factura)
+			generales.append(query.nFactura)
+			generales.append(query.ordenCompra)
+			generales.append(query.depSolici)
+			generales.append(query.nReq)
+			generales.append(query.oSolicitnte)
+			generales.append(query.tCompraContrato)
+			generales.append(query.total)
+			generales.append(query.observaciones)
+			listas = list()
+			listas.append('Proveedor:')
+			listas.append('Nombre Comercial:')
+			x = entradaPdf("Entrada Reimpresa", listas, generales, arti,1)
+			return x
+		elif 'buscarOrd' in xa:
+			try:
+				entra = Entrada.query.filter_by(ordenCompra = orden).one()
+			except Exception as e:
+				entra = 0
+			finally:
+				arti = Articulos.query.filter_by(ordenCompra = orden).all()
+			if entra == 0:
+				flash("El numero de orden no existe")
+			else:
+				return render_template("entradaOrden.html", nombre=nombre, reporte=entra, form=form, lista=arti)
+	return render_template("consulta.html", nombre=nombre, form=form)
 
 	
 if __name__ == '__main__':

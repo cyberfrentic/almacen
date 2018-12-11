@@ -38,7 +38,7 @@ class PDF(FPDF):
         self.ln(8)
         #self.set_fill_color(255, 255, 255)
         self.cell(20, 8, lista[0], 'TL' , 0, 'L')
-        self.cell(130, 8,str(datos1[0])[:40], 'TB',0,'L', 'True' )
+        self.cell(130, 8,str(datos1[0]), 'TB',0,'L', 'True' )
         self.cell(10, 8, "", 'T',0,'C', 'True' )
         self.cell(10, 8, 'Fecha: ', 'T' , 0, 'L')
         self.cell(19, 8, str(datos1[1]), 'TBR',0,'R', 'True' )
@@ -219,7 +219,7 @@ def fecha_actual():
     return (dia + ' de ' + meses[mes] + ' de ' + anio).upper()
 
 
-def entradaPdf(titulo, listas, datos, data2):
+def entradaPdf(titulo, listas, datos, data2,reim=0):
     global Titulo, lista, datos1
     Titulo=titulo
     lista = listas
@@ -257,15 +257,29 @@ def entradaPdf(titulo, listas, datos, data2):
     pdf.ln()
     lista = len(data2)
     banda=0
-    for i in data2:
-        banda+=1
-        print(i[5],i[7])
-        if banda == lista:
-            pdf.cell(col_width*3.46, th+2, ('observaciones: '+datos[12])[:97], 0,0,'L')
-            pdf.cell(col_width, th+2, "", border=0,align='C')
-            pdf.cell(col_width/2+5, th+2, "Total", border=1,align='C')
-            pdf.cell(col_width/2+5, th+2, str(datos[11]), border=1,align='C')
-        else:
+    if reim==1:
+        for i in data2:
+            banda+=1
+            m = banda % 2
+            if m == 0:
+                pdf.cell(col_width/2+5, th+2, str(i.cantidad), border=1,align='C', fill=True)
+                pdf.cell(col_width/2+5, th+2, str(i.udm), border=1,align='C', fill=True)
+                pdf.cell(col_width/2+5, th+2, str(i.codigo), border=1,align='C', fill=True)
+                pdf.cell(col_width*2.5, th+2, str(i.descripcion), border=1,align='C', fill=True)
+                pdf.cell(col_width/2+5, th+2, str(i.p_unit), border=1,align='C', fill=True)
+                pdf.cell(col_width/2+5, th+2, str(i.total), border=1,align='R', fill=True)
+            else:
+                pdf.cell(col_width/2+5, th+2, str(i.cantidad), border=1,align='C', fill=False)
+                pdf.cell(col_width/2+5, th+2, str(i.udm), border=1,align='C', fill=False)
+                pdf.cell(col_width/2+5, th+2, str(i.codigo), border=1,align='C', fill=False)
+                pdf.cell(col_width*2.5, th+2, str(i.descripcion), border=1,align='C', fill=False)
+                pdf.cell(col_width/2+5, th+2,str(i.p_unit), border=1,align='C', fill=False)
+                pdf.cell(col_width/2+5, th+2,  str(i.total), border=1,align='R', fill=False)                
+            pdf.ln()
+    else:
+        for i in data2:
+            banda+=1
+            print(i[5],i[7])
             m = banda % 2
             if m == 0:
                 pdf.cell(col_width/2+5, th+2, str(i[7]), border=1,align='C', fill=True)
@@ -282,6 +296,10 @@ def entradaPdf(titulo, listas, datos, data2):
                 pdf.cell(col_width/2+5, th+2, str(i[5]), border=1,align='C', fill=False)
                 pdf.cell(col_width/2+5, th+2, str((float(i[5])*float(i[7]))), border=1,align='R', fill=False)                
             pdf.ln()
+    pdf.cell(col_width*3.46, th+2, ('observaciones: '+datos[12])[:97], 0,0,'L')
+    pdf.cell(col_width, th+2, "", border=0,align='C')
+    pdf.cell(col_width/2+5, th+2, "Total", border=1,align='C')
+    pdf.cell(col_width/2+5, th+2, SetMoneda(datos[11],'$',2), border=1,align='R')
 
     pdf.ln()
     pdf.ln()

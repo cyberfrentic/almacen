@@ -85,7 +85,11 @@
                     <a class="dropdown-item" href="#">Salidas directas</a>
                     <a class="dropdown-item" href="#">Inventario físico</a>
                     <a class="dropdown-item" href="#">Saldos en inventario físico</a>
-                    <a class="dropdown-item" href="#">Reimpresion de E/S</a>
+                    <a class="dropdown-item dropdown-toggle" href="">Reimpresion de E/S</a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="background-color:  #3f4041 ;">
+                            <a class="dropdown-item" href="/vehiculo/captura"><img class="img-fluid" alt="Responsive image" src="{{ url_for('static', filename='img/svg/coche2.svg')}}" width="16" height="16">Captura</a>
+                            <a class="dropdown-item" href="/vehiculo/searchvehiculo"><img class="img-fluid" alt="Responsive image" src="{{ url_for('static', filename='img/svg/apoyo-tecnico.svg')}}" width="16" height="16">Consulta</a>
+                        </div>
                     <a class="dropdown-item" href="#">Artículos con existencias mínimas</a>
                     <a class="dropdown-item" href="#">Otros1</a>
                     <a class="dropdown-item" href="#">Otros2</a>
