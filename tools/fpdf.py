@@ -34,7 +34,10 @@ class PDF(FPDF):
         self.ln(4)
         self.cell(150, 10, '', 0, 0)
         self.set_fill_color(184, 188, 191)
-        self.cell(20, 8, Titulo, 0, 0, 'C', True)
+        if len(Titulo)<8:
+            self.cell(20, 8, Titulo, 0, 0, 'C', True)
+        else:
+            self.cell(30, 8, Titulo, 0, 0, 'C', True)
         self.ln(8)
         #self.set_fill_color(255, 255, 255)
         self.cell(20, 8, lista[0], 'TL' , 0, 'L')

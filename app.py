@@ -559,7 +559,7 @@ def EntradaOrden():
 	return render_template("entradaOrden.html", nombre=nombre, form=form, listaglobal=listaGlobal(listatotal))
 
 
-@app.route('/consulta', methods=['GET', 'POST'])
+@app.route('/consultayreportes/reimpresiondeE_S/entradas', methods=['GET', 'POST'])
 def ConsultaEntrada():
 	nombre = session['username'] 
 	form = form_consul_entrada(request.form)
