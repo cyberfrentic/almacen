@@ -222,7 +222,6 @@ class proveedor(db.Model):
 		return '{}'.format(self.TO_NAME)
 		
 
-
 class Entrada(db.Model):
 	__tablename__ = "Entradas"
 	id = db.Column(db.Integer, primary_key= True)
@@ -279,3 +278,63 @@ class Articulos(db.Model):
 		self.total = total
 		self.ordenCompra = ordenCompra
 		self.imtemId = imtemId
+
+
+class Salidas(db.Model):
+	__tablename__ = "salida"
+	id = db.Column(db.Integer, primary_key= True)
+	proveedor = db.Column(db.String(255))
+	nomComer = db.Column(db.String(255))
+	fol_entrada = db.Column(db.String(30))
+	fecha = db.Column(db.Date)
+	factura = db.Column(db.String(2))
+	nFactura = db.Column(db.String(15))
+	ordenCompra = db.Column(db.String(15))
+	depSolici = db.Column(db.String(150))
+	nReq = db.Column(db.String(15))
+	oSolicitnte = db.Column(db.String(30))
+	tCompraContrato = db.Column(db.String(20))
+	total = db.Column(db.Float)
+	observaciones = db.Column(db.Text)
+	actividad = db.Column(db.Text)
+
+	def __init__(self, proveedor, nomComer, fol_entrada, fecha, factura, nFactura, ordenCompra,
+		depSolici, nReq, oSolicitnte, tCompraContrato, total, observaciones,actividad):
+		self.proveedor = proveedor
+		self.nomComer = nomComer
+		self.fol_entrada = fol_entrada
+		self.fecha = fecha
+		self.factura = factura
+		self.nFactura = nFactura
+		self.ordenCompra = ordenCompra
+		self.depSolici = depSolici
+		self.nReq = nReq
+		self.oSolicitnte = oSolicitnte
+		self.tCompraContrato = tCompraContrato
+		self.total = total
+		self.observaciones = observaciones
+		self.actividad = actividad
+
+
+class Salida_Articulos(db.Model):
+	__tablename__ = "salidaArticulos"
+	id = db.Column(db.Integer, primary_key=True)
+	salidas_id = db.Column(db.Integer)
+	cantidad = db.Column(db.Float)
+	udm = db.Column(db.String(15))
+	codigo = db.Column(db.String(35))
+	descripcion = db.Column(db.String(150))
+	p_unit = db.Column(db.Float)
+	total = db.Column(db.Float)
+	ordenCompra = db.Column(db.String(15))
+	imtemId = db.Column(db.Integer)
+
+	def __init___(self, salidas_id, cantidad, udm, codigo, descripcion, p_unit, total, ordenCompra, imtemId):
+		self.salidas_id = salidas_id
+		self.cantidad = cantidad
+		self.udm = udm
+		self.codigo = codigo
+		self.descripcion = descripcion
+		self.p_unit = p_unit
+		self.total = total
+		self.ordenCompra = ordenCompra

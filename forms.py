@@ -96,3 +96,14 @@ class form_salida_orden(Form):
 
 class form_consul_entrada(Form):
     nOrden = StringField("",[validators.DataRequired(message = 'Debe proporcional el número de orden!.')])
+
+
+class formbuscasalida(Form):
+    order_id = StringField('',
+        [validators.Required(message = 'Debe proporcional el número de entrada u orden!.'),
+        validators.length(max = 12, message='El campo debe contener 12 caracteres como máximo')
+        ])
+    
+    actividad = StringField('',
+        [validators.Required(message = '¡Debe capturar la actividad para esta salida!')
+        ])

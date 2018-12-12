@@ -15,9 +15,9 @@
 from flask import url_for
 from flask import Flask, flash, redirect, render_template, request, session, abort
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
-from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada, form_salida_orden, form_consul_entrada
+from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada, form_salida_orden, form_consul_entrada, formbuscasalida
 import os
-from models import db, User, Inventario, Articulos, Entrada
+from models import db, User, Inventario, Articulos, Entrada, Salidas, Salida_Articulos
 
 from config import DevelopmentConfig
 import pymssql 
@@ -79,7 +79,7 @@ def listaGlobal(lista):
 
 @app.before_request
 def before_request():
-	if 'username' not in session and request.endpoint in ['index', 'entradas', 'buscaprod', 'verlista_']:
+	if 'username' not in session and request.endpoint in ['index', 'entradas', 'salidas', 'buscaprod', 'verlista', 'ConsultaEntrada', 'crearUser', 'EntradaOrden', 'ConsultaSalida']:
 		return redirect(url_for('login'))
 	elif 'username' in session:
 		usr = session['username']
@@ -100,6 +100,10 @@ def page_not_found(e):
 def regreso(e):
     nombre = (session['username']).upper()
     x = request.endpoint
+    if x=='salidas':
+    	nombre = session['username']
+    	form = form_consul_entrada(request.form)
+    	return render_template("salidas.html", form=form_buscasalida, nombre=nombre)
     return render_template(x + '.html', nombre=nombre), 400
 
 
@@ -149,33 +153,6 @@ def entradas():
 	else:
 		print("Entradas-No entro al método POST")
 	return render_template("entradas.html", form=form_buscaentrada, nombre=nombre)
-	
-	
-@app.route('/salidas', methods=['GET', 'POST'])	
-def salidas():
-	nombre = session['username'].upper()
-	form_buscaentrada = formbuscaentrada(request.form)
-	if request.method == 'POST':
-		id_orden = form_buscaentrada.order_id.data
-		if 'buscar' in request.form['addentrada']:
-			print('Salidas-Boton buscar funcionando')			
-			orden = """SELECT * FROM entradas a INNER JOIN entradaarticulos b ON a.ordencompra = b.ordencompra  WHERE a.ordencompra='%s'"""%(id_orden)
-			total_o= """SELECT sum( total ) FROM entradaarticulos WHERE ordencompra = '%s'"""%(id_orden)
-			det_orden = db.session.execute(orden).fetchall()
-			total_ord = db.session.execute(total_o).fetchall()
-			if det_orden:
-				print("RESULTADO DE LA CONSULTA POR ORDEN")
-				print(det_orden)
-				print("IMPRIMO LAS FILAS")
-				print("total de la orden")
-				print(total_ord[0])
-				for fila in det_orden:
-					print(fila)
-			else:
-				print("NINGUN RESULTADO DE LA ORDEN:"+id_orden)
-	else:
-		print("Salidas-No entro al método POST")
-	return render_template("salidas.html", form=form_buscaentrada, nombre=nombre)
 	
 	
 @app.route('/login', methods=['GET', 'POST'])
@@ -242,6 +219,11 @@ def buscaprod():
 			verlista =  True
 			return render_template('buscaprod.html',form=form_buscap,listaglobal=listatotal,verlista=verlista, nombre=nombre)
 		if 'agregarpxn' in request.form['addsalida']:
+			print("Agregar producto por nombre lista en este momento")
+			print("listatotal")
+			listaGlobal(listatotal)
+			print("Lista despues de la funcion")
+			print(listatotal)
 			global Localizado2
 			valor_chkpxn = request.form.getlist('chkpxn')
 			if valor_chkpxn == []:
@@ -257,7 +239,6 @@ def buscaprod():
 							# Para SQL Server es: if item in fila:
 						    # Para MYSQL Server es: if item == fila:
 							if item == col:
-								print("Si esta en Localizado2")
 								a = fila
 								listatotal.append(a)
 								sucess_message = '¡ATENCION! El producto se agrego correctamente'
@@ -266,7 +247,7 @@ def buscaprod():
 								print(a)
 								break
 							else:
-								print(" NO esta en localizado2")
+								print(" ")
 						pos += 1							
 			print("entro a añadir producto a la lista x nombre")              
 			#listatotal.append(bolsa)
@@ -282,10 +263,9 @@ def buscaprod():
 				 error_message = '¡ATENCION! No se agrego ningún producto'
 				 flash(error_message)
 			else:
+				listaGlobal(listatotal)
 				print("A ver si existe Localizado MYSQL")
 				print(Localizado)
-				print("Localizado3 SQL server")
-				print(Localizado3)
 				print(valor_chkp)
 				for item in valor_chkp:
 					pos = 0
@@ -327,6 +307,7 @@ def buscaprod():
 			return render_template('buscaprod.html',form=form_buscap,listaglobal=listatotal, nombre=nombre)
 
 		elif 'versalida' in request.form['addsalida']:
+			listaGlobal(listatotal)
 			print('Listado total de productos')
 			if listatotal == []:
 				error_message = '¡ATENCION! No hay productos en la lista'
@@ -340,6 +321,7 @@ def buscaprod():
 			return render_template('buscaprod.html',form=form_buscap,lista=lista,listaglobal=listatotal, nombre=nombre)	
 
 		elif 'buscar' in request.form['addsalida']:
+			listaGlobal(listatotal)
 			print('Buscando producto')
 			product_id = form_buscap.product_id.data
 			product_name = form_buscap.product_name.data
@@ -363,11 +345,11 @@ def buscaprod():
 				print("Entro a Product_id ")
 				#buscap = """SELECT * FROM PRODUCT WHERE PRODUCT_ID ='%s'"""%product_id
 				#buscap = ("SELECT a.PRODUCT_ID,INTERNAL_NAME,QUANTITY_ON_HAND_TOTAL,QUANTITY_UOM_ID,AVAILABLE_TO_PROMISE_TOTAL FROM PRODUCT a, INVENTORY_ITEM b WHERE a.PRODUCT_ID = %sproduct_id AND  b.PRODUCT_ID= %sproduct_id")				
-				buscap3 = """SELECT  a.PRODUCT_ID,INTERNAL_NAME,QUANTITY_ON_HAND_TOTAL,QUANTITY_UOM_ID,AVAILABLE_TO_PROMISE_TOTAL, UNIT_COST,INVENTORY_ITEM_ID FROM PRODUCT a INNER JOIN INVENTORY_ITEM b ON a.PRODUCT_ID =  b.PRODUCT_ID  AND a.PRODUCT_ID='%s'"""%(product_id)
+				#buscap3 = """SELECT  a.PRODUCT_ID,INTERNAL_NAME,QUANTITY_ON_HAND_TOTAL,QUANTITY_UOM_ID,AVAILABLE_TO_PROMISE_TOTAL, UNIT_COST,INVENTORY_ITEM_ID FROM PRODUCT a INNER JOIN INVENTORY_ITEM b ON a.PRODUCT_ID =  b.PRODUCT_ID  AND a.PRODUCT_ID='%s'"""%(product_id)
 				buscap = """SELECT  id_prod,nom_prod,cant_exist,um,cant_dispon,costo_unit,id_item FROM inventario  WHERE id_prod='%s'"""%(product_id)
-				cursor.execute(buscap3)
+				#cursor.execute(buscap3)
 				Localizado = db.session.execute(buscap).fetchall()
-				Localizado3 = cursor.fetchall()
+				#Localizado3 = cursor.fetchall()
 				Localizado2 = []
 
 				print("Imprimo consulta de  Product_id ")
@@ -397,7 +379,7 @@ def buscaprod():
 					#bolsa = lista
 					#print("Producto buscado por codigo")
 					#print(bolsa)
-				return render_template('buscaprod.html',form=form_buscap,lista=Localizado,listaglobal=listatotal, nombre=nombre)
+				return render_template('buscaprod.html',form=form_buscap,listapxn=Localizado,listaglobal=listatotal, nombre=nombre)
 
 			if Localizado2: # Si la busqueda obtuvo exito x nombre del producto
 				for row in Localizado2:
@@ -416,23 +398,26 @@ def buscaprod():
 				global listatotal
 				global Cantidades
 				Cantidades = request.form.getlist('cants')
-				pos = 0
 				print('Insertando elementos dentro de cada lista, (lista de listas)')
 				#Convierto la lista de tuplas en lista de listas para poder modificarlos
 				listatotal = [list(fila) for fila in listatotal]	
-				for item in Cantidades:
-					j= listatotal[pos]
-					j.append(item)
-					pos += 1
+				pos = 0
+				if listatotal:
+					for item in Cantidades:
+						j= listatotal[pos]
+						j.append(item)
+						pos += 1
 					print("Lista final para Entrada")
 					print(listatotal)
+				# Copio listatotal en ListaEntradas	
+				#ListaEntradas = listatotal[:]
+
 				return redirect(url_for('EntradaOrden'))
 
-		elif 'salida_alm' in request.form['addsalida']:	
-				global listatotal
-				cantidades = request.form.getlist('cants')
-				print("Lista final para Salida")
-				print(listatotal,cantidades)		 
+		elif 'salida_alm' in request.form['addsalida']:
+			print("BOTON A USAR A FUTURO PARA SALIDAS DIRECTAS SIN ORDEN DE COMPRA ")
+
+	 
 		else:
 			flash('No se encuentra la opcion del boton')
 			return render_template('buscaprod.html',form=form_buscap)
@@ -554,8 +539,10 @@ def EntradaOrden():
 				listas.append('Nombre Comercial:')
 				x = entradaPdf("Entrada", listas, generales, listatotal)
 				return x
+				#listatotal=[]
 			else:
 				flash("La orden núm. {} ya ha sido capturada anteriormente".format(orden1))
+	print(listatotal)
 	return render_template("entradaOrden.html", nombre=nombre, form=form, listaglobal=listaGlobal(listatotal))
 
 
@@ -599,7 +586,159 @@ def ConsultaEntrada():
 				flash("El numero de orden no existe")
 			else:
 				return render_template("entradaOrden.html", nombre=nombre, reporte=entra, form=form, lista=arti)
-	return render_template("consulta.html", nombre=nombre, form=form)
+	return render_template("consulta.html", nombre=nombre, form=form, titulo="Entradas")
+
+
+@app.route('/salidas_de_almacen/salidas_por_orden_de_compra', methods=['GET', 'POST'])	
+def salidas():	
+	nombre = session['username'].upper()
+	form_buscasalida = formbuscasalida(request.form)
+	if request.method == 'POST':
+		print("RECIBIO NUMERO DE ORDEN DE SALIDA ")
+		id_orden = form_buscasalida.order_id.data
+		print(len(id_orden))
+		if len(id_orden)==0:
+			flash('Debe capturar un numero de orden')
+			return redirect(url_for('salidas'))
+		if id_orden:			
+			if 'buscar' in request.form['addentrada']:
+				SqlQueryE = """SELECT * FROM entradas  WHERE entradas.ordencompra='%s'"""%(id_orden)
+				SqlQueryD = """SELECT * FROM entarti  WHERE entarti.ordencompra='%s'"""%(id_orden)
+				Enc_Orden = db.session.execute(SqlQueryE).fetchall()
+				Det_Orden = db.session.execute(SqlQueryD).fetchall()
+				if len(Enc_Orden)==0:
+					flash('El numero de orden no existe')
+					return redirect(url_for('salidas'))
+				if Enc_Orden:
+					global EncabeOrden
+					global DetalleOrden
+					EncabeOrden  = Enc_Orden[0]
+					DetalleOrden = Det_Orden[:]
+				return render_template("SalidaOrden.html", nombre=nombre,form=form_buscasalida,DetalleOrden=DetalleOrden,EncabeOrden=EncabeOrden)	
+		elif 'guardaSalida' in request.form['addOSalida'][:12]:
+			actividad = form_buscasalida.actividad.data
+			verifica = Salidas.query.filter_by(ordenCompra=request.form['addOSalida'][:12]).first()
+			if verifica==None:
+				if len(form_buscasalida.actividad.data)==0:
+					error_message = 'Debe capturar una actividad'
+					flash(error_message)
+					return redirect(url_for('salidas'))
+				print(request.form['addOSalida'][12:])
+				Enc_Orden = Entrada.query.filter_by(ordenCompra=request.form['addOSalida'][12:]).one()
+				Det_Orden = Articulos.query.filter_by(ordenCompra=request.form['addOSalida'][12:]).all()
+				print(Det_Orden)
+				print(Enc_Orden.nomComer)
+				Sali = Salidas(Enc_Orden.proveedor,
+					Enc_Orden.nomComer,
+					Enc_Orden.fol_entrada,
+					Enc_Orden.fecha,
+					Enc_Orden.factura,
+					Enc_Orden.nFactura,
+					Enc_Orden.ordenCompra,
+					Enc_Orden.depSolici,
+					Enc_Orden.nReq,
+					Enc_Orden.oSolicitnte,
+					Enc_Orden.tCompraContrato,
+					Enc_Orden.total,
+					Enc_Orden.observaciones,
+					form_buscasalida.actividad.data,
+				)
+				db.session.add(Sali)
+				db.session.commit()
+				salida_id = Salidas.query.filter_by(ordenCompra=Enc_Orden.ordenCompra).first()
+				print(salida_id.id)
+				for item in Det_Orden:
+					Sali_art = Salida_Articulos(salidas_id=salida_id.id,
+						cantidad=item.cantidad,
+						udm=item.udm,
+						codigo=item.codigo,
+						descripcion=item.descripcion,
+						p_unit=item.p_unit,
+						total=item.total,
+						ordenCompra=item.ordenCompra,
+						imtemId=item.imtemId,
+						)
+					db.session.add(Sali_art)
+					db.session.commit()
+					canti = Inventario.query.filter_by(id_item = item.imtemId).one()
+					print(canti)
+					saldo = canti.cant_exist
+					print(saldo)
+					t = float(saldo) - item.cantidad
+					print(t)
+					canti.cant_exist = t
+					db.session.commit()
+				arti = Salida_Articulos.query.filter_by(ordenCompra = Enc_Orden.ordenCompra).all()
+				query = Salidas.query.filter_by(ordenCompra=Enc_Orden.ordenCompra).one()
+				generales=list()
+				generales.append(query.proveedor)
+				generales.append(query.fecha)
+				generales.append(query.nomComer)
+				generales.append(query.fol_entrada)
+				generales.append(query.factura)
+				generales.append(query.nFactura)
+				generales.append(query.ordenCompra)
+				generales.append(query.depSolici)
+				generales.append(query.nReq)
+				generales.append(query.oSolicitnte)
+				generales.append(query.tCompraContrato)
+				generales.append(query.total)
+				generales.append(query.actividad)
+				listas = list()
+				listas.append('Proveedor:')
+				listas.append('Nombre Comercial:')
+				x = entradaPdf("Salida", listas, generales, arti,1)
+				return x
+		elif len(id_orden)==0:
+			print("XXXXXXXXXXXXXXXXXXXXX")
+			error_message = 'Debe capturar un numero de orden'
+			flash(error_message)
+			return redirect(url_for('salidas'))
+	return render_template("salidas.html", form=form_buscasalida, nombre=nombre)
+
+
+@app.route('/consultayreportes/reimpresiondeE_S/salidas', methods=['GET', 'POST'])
+def ConsultaSalida():
+	nombre = session['username'] 
+	form = form_consul_entrada(request.form)
+	if request.method == 'POST':
+		orden = form.nOrden.data
+		xa = request.form['addOrdenSal'][:10]
+		print(xa)
+		if 'reimprimir' in xa:
+			query = Salidas.query.filter_by(ordenCompra=request.form['addOrdenSal'][10:]).one()
+			arti = Salida_Articulos.query.filter_by(ordenCompra = request.form['addOrdenSal'][10:]).all()
+			generales=list()
+			generales.append(query.proveedor)
+			generales.append(query.fecha)
+			generales.append(query.nomComer)
+			generales.append(query.fol_entrada)
+			generales.append(query.factura)
+			generales.append(query.nFactura)
+			generales.append(query.ordenCompra)
+			generales.append(query.depSolici)
+			generales.append(query.nReq)
+			generales.append(query.oSolicitnte)
+			generales.append(query.tCompraContrato)
+			generales.append(query.total)
+			generales.append(query.observaciones)
+			listas = list()
+			listas.append('Proveedor:')
+			listas.append('Nombre Comercial:')
+			x = entradaPdf("Salida Reimpresa", listas, generales, arti,1)
+			return x
+		elif 'buscarOrd' in xa:
+			try:
+				entra = Salidas.query.filter_by(ordenCompra = orden).one()
+			except Exception as e:
+				entra = 0
+			finally:
+				arti = Salida_Articulos.query.filter_by(ordenCompra = orden).all()
+			if entra == 0:
+				flash("El numero de orden no existe")
+			else:
+				return render_template("entradaOrden.html", nombre=nombre, reporte=entra, form=form, lista=arti)
+	return render_template("consulta.html", nombre=nombre, form=form, titulo="Salidas")
 
 	
 if __name__ == '__main__':

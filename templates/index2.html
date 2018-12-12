@@ -11,16 +11,15 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-grid.css') }}"/>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-reboot.css') }}"/>
 	<link rel="stylesheet"  href="{{ url_for('static', filename='css/estilos.css') }}" media="screen">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">   
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js')}}"></script> 
     <script src="{{ url_for('static', filename='js/bootstrap.js')}}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 	<link href='http://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css' rel='stylesheet'>
-    <link href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.5.3/css/bootstrapValidator.min.css' rel='stylesheet'>	
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.5.3/css/bootstrapValidator.min.css' rel='stylesheet'>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js" integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU" crossorigin="anonymous"></script>
 </head>
 <body  background="{{ url_for('static', filename='img/fondo.jpg') }}">
 <style>
@@ -79,24 +78,18 @@
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink3" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Consultas y Reportes</a>
-                <ul class="nav navbar-nav dropdown-menu" style="background-color: #00a8b5";>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink4" style="background-color: #00a8b5;">
                     <a class="dropdown-item" href="/buscaprod">Productos por código</a>
                     <a class="dropdown-item" href="#">Salidas de Almacén</a>
                     <a class="dropdown-item" href="#">Salidas x Orden de Compra</a>
                     <a class="dropdown-item" href="#">Salidas directas</a>
                     <a class="dropdown-item" href="#">Inventario físico</a>
                     <a class="dropdown-item" href="#">Saldos en inventario físico</a>
-                       <li class="dropdown-submenu">
-                        <a class="dropdown-toggle dropdown-item" data-toggle="dropdown" href="#" data-toggle="dropdown">Reimpresión de E/S</a>
-                        <ul class="nav navbar-nav dropdown-menu" style="background-color: #00a8b5;">
-                            <li><a class="dropdown-item" href="/consultayreportes/reimpresiondeE_S/entradas">Reimprimir Entradas</a></li>
-                            <li><a class="dropdown-item" href="/consultayreportes/reimpresiondeE_S/salidas">Reimprimir Salidas</a></li>
-                        </ul>
-                    </li> 
+                    <a class="dropdown-item" href="">Reimpresion de E/S</a>
                     <a class="dropdown-item" href="#">Artículos con existencias mínimas</a>
                     <a class="dropdown-item" href="#">Otros1</a>
-                    <a class="dropdown-item" href="#">Otros2</a>                 
-                </ul>
+                    <a class="dropdown-item" href="#">Otros2</a>
+				</div>
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
