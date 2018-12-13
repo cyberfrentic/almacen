@@ -445,6 +445,8 @@ def buscaprod2():
 		if 'mostrar' in request.form['addsalida']:
 			print(session['listatotal'])
 			return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp2=session['listatotal'])
+		elif 'entrada' in request.form['addsalida']:
+			return redirect(url_for('EntradaOrden'))
 		elif 'eliminar' in request.form['addsalida']:
 			indice=0
 			elementos = request.form.getlist('optcheck')
@@ -471,6 +473,7 @@ def buscaprod2():
 				li.append(local.id_item)
 				li.append(local.nom_prod)
 				li.append(str(local.costo_unit))
+				li.append(str(local.um))
 				lis.append(li)
 				session['listatotal'] += lis
 				print(session['listatotal'])
@@ -576,24 +579,24 @@ def EntradaOrden():
 				query = Entrada.query.filter_by(ordenCompra=orden1)
 				for dato in query:
 					datos = dato.id
-				for item in listatotal:
-					total = float(item[5])*float(item[7])
+				for item in session['listatotal']:
+					total = float(item[0])*float(item[4])
 					arti = Articulos(entradas_id = datos,
-						cantidad = item[7],
-						udm = item[3],
-						codigo = item[0],
-						descripcion = item[1],
-						p_unit = item[5],
+						cantidad = item[0],
+						udm = item[5],
+						codigo = item[1],
+						descripcion = item[3],
+						p_unit = item[4],
 						total = total,
 						ordenCompra = orden1,
-						imtemId = item[6],)
+						imtemId = item[2],)
 					db.session.add(arti)
 					db.session.commit()
-					canti = Inventario.query.filter_by(id_item = item[6]).one()
+					canti = Inventario.query.filter_by(id_item = item[2]).one()
 					print(canti)
 					saldo = canti.cant_exist
 					print(saldo)
-					t = float(item[7])+ float(saldo)
+					t = float(item[0])+ float(saldo)
 					print(t)
 					canti.cant_exist = t
 					db.session.commit()
@@ -601,13 +604,13 @@ def EntradaOrden():
 				listas = list()
 				listas.append('Proveedor:')
 				listas.append('Nombre Comercial:')
-				x = entradaPdf("Entrada", listas, generales, listatotal)
+				x = entradaPdf("Entrada", listas, generales, session['listatotal'])
+				session.pop('listatotal')
+				session['listatotal']=[]
 				return x
-				#listatotal=[]
 			else:
 				flash("La orden núm. {} ya ha sido capturada anteriormente".format(orden1))
-	print(listatotal)
-	return render_template("entradaOrden.html", nombre=nombre, form=form, listaglobal=listaGlobal(listatotal))
+	return render_template("entradaOrden.html", nombre=nombre, form=form, listaglobal=session['listatotal'])
 
 
 @app.route('/consultayreportes/reimpresiondeE_S/entradas', methods=['GET', 'POST'])

@@ -282,22 +282,21 @@ def entradaPdf(titulo, listas, datos, data2,reim=0):
     else:
         for i in data2:
             banda+=1
-            print(i[5],i[7])
             m = banda % 2
             if m == 0:
-                pdf.cell(col_width/2+5, th+2, str(i[7]), border=1,align='C', fill=True)
-                pdf.cell(col_width/2+5, th+2, str(i[3]), border=1,align='C', fill=True)
                 pdf.cell(col_width/2+5, th+2, str(i[0]), border=1,align='C', fill=True)
-                pdf.cell(col_width*2.5, th+2, str(i[1]), border=1,align='C', fill=True)
                 pdf.cell(col_width/2+5, th+2, str(i[5]), border=1,align='C', fill=True)
-                pdf.cell(col_width/2+5, th+2, str((float(i[5])*float(i[7]))), border=1,align='R', fill=True)
+                pdf.cell(col_width/2+5, th+2, str(i[1]), border=1,align='C', fill=True)
+                pdf.cell(col_width*2.5, th+2, str(i[3]), border=1,align='C', fill=True)
+                pdf.cell(col_width/2+5, th+2, str(i[4]), border=1,align='C', fill=True)
+                pdf.cell(col_width/2+5, th+2, str((float(i[4])*float(i[0]))), border=1,align='R', fill=True)
             else:
-                pdf.cell(col_width/2+5, th+2, str(i[7]), border=1,align='C', fill=False)
-                pdf.cell(col_width/2+5, th+2, str(i[3]), border=1,align='C', fill=False)
                 pdf.cell(col_width/2+5, th+2, str(i[0]), border=1,align='C', fill=False)
-                pdf.cell(col_width*2.5, th+2, str(i[1]), border=1,align='C', fill=False)
                 pdf.cell(col_width/2+5, th+2, str(i[5]), border=1,align='C', fill=False)
-                pdf.cell(col_width/2+5, th+2, str((float(i[5])*float(i[7]))), border=1,align='R', fill=False)                
+                pdf.cell(col_width/2+5, th+2, str(i[1]), border=1,align='C', fill=False)
+                pdf.cell(col_width*2.5, th+2, str(i[3]), border=1,align='C', fill=False)
+                pdf.cell(col_width/2+5, th+2, str(i[4]), border=1,align='C', fill=False)
+                pdf.cell(col_width/2+5, th+2, str((float(i[4])*float(i[0]))), border=1,align='R', fill=False)                
             pdf.ln()
     pdf.cell(col_width*3.46, th+2, ('observaciones: '+datos[12])[:97], 0,0,'L')
     pdf.cell(col_width, th+2, "", border=0,align='C')
