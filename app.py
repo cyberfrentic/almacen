@@ -41,29 +41,29 @@ crsf = CSRFProtect()
 #################################################
 # CONEXION A SQL SERVER 2012
 # Creo la cadena de conexion 
-server ="DESKTOP-TRVGHH8\\SQLHUGO"
-user="sa"
-password="12345"
-base ="capa"
-connection = pymssql.connect(host=server, user=user, password=password, database=base)
+# server ="DESKTOP-TRVGHH8\\SQLHUGO"
+# user="sa"
+# password="12345"
+# base ="capa"
+# connection = pymssql.connect(host=server, user=user, password=password, database=base)
 
-try :
-   # Creacion del cursor
-   cursor = connection.cursor()  
-   print("Conexion establecida con exito")
-except:
-   print("No hay Conexion a SQL SERVER")   
-##################################################
+# try :
+#    # Creacion del cursor
+#    cursor = connection.cursor()  
+#    print("Conexion establecida con exito")
+# except:
+#    print("No hay Conexion a SQL SERVER")   
+# ##################################################
 
-######## Variables Globales ########################
-global Localizado2
-global Localizado
-global Cantidades
-listatotal = []  # lista global que contendra los articulos para e/s
-bolsa = [] # lista donde se encuentra el producto buscado y que ira llenando la listatotal
-Localizado2 = []
-Localizado  = []
-Cantidades  = []
+# ######## Variables Globales ########################
+# global Localizado2
+# global Localizado
+# global Cantidades
+# listatotal = []  # lista global que contendra los articulos para e/s
+# bolsa = [] # lista donde se encuentra el producto buscado y que ira llenando la listatotal
+# Localizado2 = []
+# Localizado  = []
+# Cantidades  = []
 ####################################################
 
 def listaGlobal(lista):
@@ -104,6 +104,10 @@ def regreso(e):
     	nombre = session['username']
     	form = form_consul_entrada(request.form)
     	return render_template("salidas.html", form=form_buscasalida, nombre=nombre)
+    elif x == 'buscaprod2':
+    	nombre = session['username']
+    	form_buscap = formbuscap(request.form)
+    	return render_template("buscar.html", nombre=nombre, form=form_buscap)
     return render_template(x + '.html', nombre=nombre), 400
 
 
@@ -171,6 +175,9 @@ def login():
 			sucess_message = 'Bienvenido {}'.format(username)
 			flash(sucess_message)
 			session['username'] = username
+			session['listatotal']=[]
+			#session['listacod'] = []
+			#session['listaName'] = []
 			return redirect(url_for('index'))
 		else:
 			error_message = '{} No es un usuario del sistema'.format(username)
@@ -182,12 +189,13 @@ def login():
 @app.route('/logout')
 def logout():
 	if 'username' in session:
-		connection.close()
+		#connection.close()
+		session.pop('listatotal')
 		session.pop('username')		    
 	return redirect(url_for('login'))
 
 	
-@app.route('/buscaprod', methods=['GET', 'POST'])
+@app.route('/buscaprod3', methods=['GET', 'POST'])
 def buscaprod():
 	nombre = session['username'].upper()
 	global bolsa
@@ -424,7 +432,63 @@ def buscaprod():
 	else:
 		 print("No entro al metodo POST")		
 	return render_template('buscaprod.html', form=form_buscap, listaglobal=listatotal, nombre=nombre)
-		
+
+
+@app.route('/buscaprod', methods=['GET', 'POST'])
+def buscaprod2():
+	nombre = session['username']
+	form_buscap = formbuscap(request.form)
+	if request.method == 'POST':
+		ArtCodigo = form_buscap.product_id.data
+		ArtName = form_buscap.product_name.data
+		print(request.form['addsalida'])
+		if 'mostrar' in request.form['addsalida']:
+			print(session['listatotal'])
+			return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp2=session['listatotal'])
+		elif 'eliminar' in request.form['addsalida']:
+			indice=0
+			elementos = request.form.getlist('optcheck')
+			for i in elementos:
+				for x in session['listatotal']:
+					indice+=1
+					if i in x:
+						print(indice-1)
+						temporal = session['listatotal']
+						temporal.pop(indice-1)
+						session.pop('listatotal')
+						session['listatotal']=temporal
+					else:
+						pass
+			return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp2=session['listatotal'])
+		elif 'selec' in request.form['addsalida']:
+			valor =request.form['optradio']
+			if valor:
+				local = Inventario.query.filter_by(id_item=request.form['optradio']).one()
+				li=list()
+				lis=list()
+				li.append('1')
+				li.append(local.id_prod)
+				li.append(local.id_item)
+				li.append(local.nom_prod)
+				li.append(str(local.costo_unit))
+				lis.append(li)
+				session['listatotal'] += lis
+				print(session['listatotal'])
+				return render_template("buscar.html", nombre=nombre, form=form_buscap)
+			else:
+				flash("debe elegir un articulo")
+				return render_template("buscar.html", nombre=nombre, form=form_buscap)
+		elif 'buscar' in request.form['addsalida']:
+			if ArtCodigo:
+				LocalCodigo = Inventario.query.filter_by(id_prod=ArtCodigo).all()
+				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalCodigo)
+			elif ArtName:
+				LocalName = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).all()
+				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalName)
+		else:
+			flash("Debe Llenar un campo")
+	return render_template("buscar.html", nombre=nombre, form=form_buscap)
+	
 	
 @app.route('/verlista', methods=['GET', 'POST'])
 def verlista():	

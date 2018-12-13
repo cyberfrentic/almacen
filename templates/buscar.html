@@ -1,0 +1,134 @@
+{% extends 'index.html' %}
+{% from "_macros.html" import render_field %}
+{% block content %}
+	<form method="POST">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+	    <div class="container">
+	    	<div class="row">
+		  		<div class="card">
+		    		<div class="card-header bg-info text-white">Buscar articulo por Código</div>
+		    		<div class="card-body">
+		    			<div class="p-3 mb-2 bg-success text-white">
+							{{ render_field(form.product_id, class='form-control', placeholder="Ingrese la clave del producto")}}
+		    			</div>
+						<div class="p-3 mb-2 bg-info text-white">Buscar articulo por Nombre</div>
+						<div class="p-3 mb-2 bg-success text-white">
+							{{render_field(form.product_name, class='form-control', placeholder="Ingrese el nombre del producto")}}
+						</div>
+		    		</div> 
+		    		<div class="card-footer bg-info text-white">
+		    			<button type="submit" class="btn btn-danger" name="addsalida" value="buscar"> Buscar </button>
+		    			<button type="submit" class="btn btn-danger" name="addsalida" value="mostrar"> Mostrar </button>
+		    		</div>
+		  		</div>
+		  	</div>
+		</div>
+	
+	{% if listatemp %}
+		
+			<div class="container mt-3">
+		  <h2>Filterable Table</h2>
+		  <p>Type something in the input field to search the table for first names, last names or emails:</p>  
+		  <input class="form-control" id="myInput" type="text" placeholder="Search..">
+		  <br>
+		  <table class="table table-bordered">
+		    <thead>
+		      <tr>
+		        <th>Código Art.</th>
+		        <th>id_Item</th>
+		        <th>Descripcion</th>
+		        <th>Cant. Exis</th>
+		        <th>Costo Unit</th>
+		        <th>Seleccionar</th>
+		      </tr>
+		    </thead>
+		    <tbody id="myTable">
+		    	{% for item in listatemp%}
+			      <tr>
+			        <td>{{item.id_prod}}</td>
+			        <td>{{item.id_item}}</td>
+			        <td>{{item.nom_prod}}</td>
+			        <td>{{item.cant_exist}}</td>
+			        <td>{{item.costo_unit}}</td>
+			        <td><center><input type="radio" class="form-check-input" name="optradio" value="{{item.id_item}}"></center></td>
+			      </tr>
+			     {%endfor%}
+		    </tbody>
+		  </table>
+		  
+		  <p>Note that we start the search in tbody, to prevent filtering the table headers.</p>
+		  <div class="p-3 mb-2 bg-info text-white">
+			<button type="submit" class="btn btn-danger" name="addsalida" value="selec"> Seleccionar </button>
+		</div>
+		</div>
+		
+		</form>
+		
+<br>
+<br>
+		<script>
+		$(document).ready(function(){
+		  $("#myInput").on("keyup", function() {
+		    var value = $(this).val().toLowerCase();
+		    $("#myTable tr").filter(function() {
+		      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+		    });
+		  });
+		});
+		</script>
+<!--#########################################################################################################################-->
+	{% elif listatemp2 %}
+		
+		<div class="container mt-3">
+		  <h2>Filterable Table</h2>
+		  <p>Type something in the input field to search the table for first names, last names or emails:</p>  
+		  <input class="form-control" id="myInput" type="text" placeholder="Search..">
+		  <br>
+		  <table class="table table-bordered">
+		    <thead>
+		      <tr>
+		        <th>Código Art.</th>
+		        <th>id_Item</th>
+		        <th>Descripcion</th>
+		        <th>Costo Unit</th>
+		        <th>Cantidad</th>
+		        <th>Eliminar</th>
+		      </tr>
+		    </thead>
+		    <tbody id="myTable">
+		    	{% for item in listatemp2%}
+			      <tr>
+			        <td>{{item[1]}}</td>
+			        <td>{{item[2]}}</td>
+			        <td>{{item[3]}}</td>
+			        <td>{{item[4]}}</td>
+			        <td><input type="text" class="form-control" id="usr" value="{{item[0]}}"></td>
+			        <td><center><input type="checkbox" class="form-check-input" name="optcheck" value="{{item[2]}}"></center></td>
+			      </tr>
+			     {%endfor%}
+		    </tbody>
+		  </table>
+		  
+		  <p>Note that we start the search in tbody, to prevent filtering the table headers.</p>
+		  <div class="p-3 mb-2 bg-info text-white">
+			<button type="submit" class="btn btn-danger" name="addsalida" value="eliminar"> Eliminar </button>
+			<button type="submit" class="btn btn-success" name="addsalida" value="entrada"> Generar entrada </button>
+		</div>
+		</div>
+		
+		</form>
+		
+<br>
+<br>
+		<script>
+		$(document).ready(function(){
+		  $("#myInput").on("keyup", function() {
+		    var value = $(this).val().toLowerCase();
+		    $("#myTable tr").filter(function() {
+		      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+		    });
+		  });
+		});
+		</script>
+	{% endif %}
+{% endblock %}
