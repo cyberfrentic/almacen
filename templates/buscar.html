@@ -1,6 +1,15 @@
 {% extends 'index.html' %}
 {% from "_macros.html" import render_field %}
 {% block content %}
+<head>
+	<script src='http://code.jquery.com/jquery-1.11.1.min.js'></script>
+    <script src='http://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.5.3/js/bootstrapValidator.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.5.3/js/language/es_ES.min.js'></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+            <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
 	<form method="POST">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 	    <div class="container">
@@ -25,45 +34,77 @@
 		</div>
 	
 	{% if listatemp %}
-		
-			<div class="container mt-3">
-		  <h2>Filterable Table</h2>
-		  <p>Type something in the input field to search the table for first names, last names or emails:</p>  
-		  <input class="form-control" id="myInput" type="text" placeholder="Search..">
-		  <br>
-		  <table class="table table-bordered">
-		    <thead>
-		      <tr>
-		        <th>Código Art.</th>
-		        <th>id_Item</th>
-		        <th>Descripcion</th>
-		        <th>Cant. Exis</th>
-		        <th>Costo Unit</th>
-		        <th>Seleccionar</th>
-		      </tr>
-		    </thead>
-		    <tbody id="myTable">
-		    	{% for item in listatemp%}
-			      <tr>
-			        <td>{{item.id_prod}}</td>
-			        <td>{{item.id_item}}</td>
-			        <td>{{item.nom_prod}}</td>
-			        <td>{{item.cant_exist}}</td>
-			        <td>{{item.costo_unit}}</td>
-			        <td><center><input type="radio" class="form-check-input" name="optradio" value="{{item.id_item}}"></center></td>
-			      </tr>
-			     {%endfor%}
-		    </tbody>
-		  </table>
-		  
-		  <p>Note that we start the search in tbody, to prevent filtering the table headers.</p>
-		  <div class="p-3 mb-2 bg-info text-white">
-			<button type="submit" class="btn btn-danger" name="addsalida" value="selec"> Seleccionar </button>
-		</div>
-		</div>
-		
-		</form>
-		
+	<form   method="POST"  >  
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/> 
+            <div class="container">                                
+              <!--<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Ver listado de productos</button> -->
+              <!-- Modal -->
+                <div class="modal fade" id="mylistapxn" role="dialog">
+                    <div class="modal-dialog modal-lg" id="mdialTamanio1">
+                        <!-- Contenido Modal-->
+                        <div class="modal-content">
+                               <div class="modal-header">
+                                  <!--button type="button" class="close" data-dismiss="modal">&times;</button-->
+                                  <h4 class="modal-title"> Producto buscado: </h4>
+                                  
+								    
+								  <input class="form-control" id="myInput" type="text" placeholder="Search..">
+								  <button type="button" class="close" data-dismiss="modal">&times;</button>
+								  <br>
+                               </div>
+                            <div class="modal-body">
+
+								  <table class="table table-hover table-responsive table-bordered">
+								    <thead>
+								      <tr class="success" style="font:11px Arial">
+								        <th>Código Art.</th>
+								        <th>id_Item</th>
+								        <th>Descripcion</th>
+								        <th>Cant. Exis</th>
+								        <th>Costo Unit</th>
+								        <th>Seleccionar</th>
+								      </tr>
+								    </thead>
+								    <tbody id="myTable">
+								    	{% for item in listatemp%}
+									       <tr class="info" style="font:11px Arial"> 
+									        <td>{{item.id_prod}}</td>
+									        <td>{{item.id_item}}</td>
+									        <td>{{item.nom_prod}}</td>
+									        <td>{{item.cant_exist}}</td>
+									        <td>{{item.costo_unit}}</td>
+									        <td><center><input type="radio" class="form-check-input" name="optradio" value="{{item.id_item}}"></center></td>
+									      </tr>
+									     {%endfor%}
+								    </tbody>
+								  </table>	
+                            </div>
+                                   <div class="modal-footer">
+                                   	  <button type="submit" class="btn btn-danger" name="addsalida" value="selec"> Seleccionar </button>
+                                      <button type="submit" class="btn btn-success" id = "addsalida" name="addsalida"  value="selec">Agregar Selección a la lista</button>                                    
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">CERRAR</button>
+                                    </div>
+                       </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+				$(document).ready(function(){
+				  $("#myInput").on("keyup", function() {
+				    var value = $(this).val().toLowerCase();
+				    $("#myTable tr").filter(function() {
+				      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+				    });
+				  });
+				});
+			</script>
+
+             <script type="text/javascript">
+              $(function(){
+                $("#mylistapxn").modal();
+              });
+           </script>
+    </form>
 <br>
 <br>
 		<script>
@@ -76,12 +117,12 @@
 		  });
 		});
 		</script>
+
 <!--#########################################################################################################################-->
 	{% elif listatemp2 %}
 		
 		<div class="container mt-3">
-		  <h2>Filterable Table</h2>
-		  <p>Type something in the input field to search the table for first names, last names or emails:</p>  
+		 <p>Type something in the input field to search the table for first names, last names or emails:</p>  
 		  <input class="form-control" id="myInput" type="text" placeholder="Search..">
 		  <br>
 		  <table class="table table-bordered">
