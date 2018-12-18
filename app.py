@@ -58,7 +58,7 @@ except:
 def listaGlobal(lista):
 	listatotal=[]
 	for item in lista:
-		if len(item) == 9:
+		if len(item) > 8:
 			del item[7]
 			listatotal.append(item)
 		else:
@@ -189,7 +189,7 @@ def buscaprod():
 		ArtName = form_buscap.product_name.data
 		print(request.form['addsalida'])
 		if 'mostrar' in request.form['addsalida']:
-			print(session['listatotal'])
+			#print(session['listatotal'])
 			return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp2=session['listatotal'])
 		elif 'entrada' in request.form['addsalida']:
 			x = request.form.getlist('cantidad')
@@ -197,9 +197,12 @@ def buscaprod():
 			print(x)
 			print(y)
 			indice =0
-			
 			nlista=[]
 			for item in session['listatotal']:
+				if len(item)>7:
+					tem=[item[0],item[1],item[2],item[3],item[4],item[5],item[7]]
+					item=[]
+					item=tem
 				if x[indice]=="":
 					item.append(1)
 				else:
