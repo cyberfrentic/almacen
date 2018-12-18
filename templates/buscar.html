@@ -60,20 +60,24 @@
 								        <th>Código Art.</th>
 								        <th>id_Item</th>
 								        <th>Descripcion</th>
-								        <th>Cant. Exis</th>
-								        <th>Costo Unit</th>
+								        <th>Tipo de Producto</th>
+								        <th>Familia</th>
+								        <th>existencia</th>
+								        <th>Precio Unit</th>
 								        <th>Seleccionar</th>
 								      </tr>
 								    </thead>
 								    <tbody id="myTable">
-								    	{% for item in listatemp%}
+								    	{% for item in listatemp %}
 									       <tr class="info" style="font:11px Arial"> 
-									        <td>{{item.id_prod}}</td>
-									        <td>{{item.id_item}}</td>
-									        <td>{{item.nom_prod}}</td>
-									        <td>{{item.cant_exist}}</td>
-									        <td>{{item.costo_unit}}</td>
-									        <td><center><input type="radio" class="form-check-input" name="optradio" value="{{item.id_item}}"></center></td>
+									        <td>{{item[0]}}</td>
+									        <td>{{item[4]}}</td>
+									        <td>{{item[1]}}</td>
+									        <td>{{item[2]}}</td>
+									        <td>{{item[3]}}</td>
+									        <td>{{item[5]}}</td>
+									        <td>{{item[6]}}</td>
+									        <td><center><input type="radio" class="form-check-input" name="optradio" value="{{item[4]}}"></center></td>
 									      </tr>
 									     {%endfor%}
 								    </tbody>
@@ -139,11 +143,11 @@
 		    <tbody id="myTable">
 		    	{% for item in listatemp2%}
 			      <tr>
-			        <td>{{item[1]}}</td>
-			        <td>{{item[2]}}</td>
-			        <td>{{item[3]}}</td>
+			        <td>{{item[0]}}</td>
 			        <td>{{item[4]}}</td>
-			        <td><input type="text" class="form-control" id="usr" value="{{item[0]}}"></td>
+			        <td>{{item[1]}}</td>
+			        <td><input type="text" class="form-control"  value="{{item[6]}}" name="costo"></td>
+			        <td><input type="text" class="form-control"  value="" name="cantidad"></td>
 			        <td><center><input type="checkbox" class="form-check-input" name="optcheck" value="{{item[2]}}"></center></td>
 			      </tr>
 			     {%endfor%}

@@ -175,7 +175,7 @@
 		        				<td><strong>Código</strong></td>
 		                		<td><strong>Producto</strong></td>
                         <td><strong>Item ID</strong></td>
-		                		<td><strong>Unidad de medida</strong></td>
+		                		<td><strong>Tipo de Producto</strong></td>
 		                		<td><strong>Precio.Unit.</strong></td>
 		                		<td><strong>A entrar</strong></td>
 		      				</tr>
@@ -184,12 +184,12 @@
 	    					
 	    						{% for item in listaglobal %}                                 
 	                				<tr class="info" style="font:11px Arial">             
-	                    				<td>{{item[1]}}</td>
-                              <td>{{item[3]}}</td>
-                              <td>{{item[2]}}</td>
-                              <td>{{item[5]}}</td>
+	                    				<td>{{item[0]}}</td>
+                              <td>{{item[1]}}</td>
                               <td>{{item[4]}}</td>
-                              <td>{{item[0]}}</td>
+                              <td>{{item[2]}}</td>
+                              <td>{{item[6]}}</td>
+                              <td>{{item[7]}}</td>
 	                				</tr>
 	                			{% endfor %}                                             
 

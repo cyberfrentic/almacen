@@ -1,8 +1,8 @@
 # Sistema web para la gestión del Almacén General de la CAPA
-#Programador: Cesar Herrera Mut ( Septiembre de 2018)
+#Programadores: Cesar Herrera Mut, Hugo Canul Echazarreta ( Septiembre de 2018)
 #Analista Profesional - Dirección de Informática - Direccion General
 #Desarrollado en Python 3.4
-#Si no logro terminarlo en diciembre va rodar mi cabeza :7 :/ 
+#Si no logro terminarlo en diciembre va rodar mi cabeza :7 : Ya! carnal ya no Rodo tu cabeza....../ 
 #      
 #      (° °)
 #        ~
@@ -41,29 +41,18 @@ crsf = CSRFProtect()
 #################################################
 # CONEXION A SQL SERVER 2012
 # Creo la cadena de conexion 
-# server ="DESKTOP-TRVGHH8\\SQLHUGO"
-# user="sa"
-# password="12345"
-# base ="capa"
-# connection = pymssql.connect(host=server, user=user, password=password, database=base)
+server ="DESKTOP-TRVGHH8\\SQLHUGO"
+user="sa"
+password="12345"
+base ="capa"
+connection = pymssql.connect(host=server, user=user, password=password, database=base)
 
-# try :
-#    # Creacion del cursor
-#    cursor = connection.cursor()  
-#    print("Conexion establecida con exito")
-# except:
-#    print("No hay Conexion a SQL SERVER")   
-# ##################################################
-
-# ######## Variables Globales ########################
-# global Localizado2
-# global Localizado
-# global Cantidades
-# listatotal = []  # lista global que contendra los articulos para e/s
-# bolsa = [] # lista donde se encuentra el producto buscado y que ira llenando la listatotal
-# Localizado2 = []
-# Localizado  = []
-# Cantidades  = []
+try :
+   # Creacion del cursor
+   cursor = connection.cursor()  
+   print("Conexion establecida con exito")
+except:
+   print("No hay Conexion a SQL SERVER")
 ####################################################
 
 def listaGlobal(lista):
@@ -167,8 +156,6 @@ def login():
 	if request.method == 'POST' and login_form.validate() :
 		username = login_form.username.data
 		password = login_form.password.data
-		print(username)
-		print(password)
 		user = User.query.filter_by(username=username).first()
 		#Buscamos en el cursor los primeros dos campos que contienen usuario y contraseña
 		if user is not None and user.verify_password(password):
@@ -176,8 +163,6 @@ def login():
 			flash(sucess_message)
 			session['username'] = username
 			session['listatotal']=[]
-			#session['listacod'] = []
-			#session['listaName'] = []
 			return redirect(url_for('index'))
 		else:
 			error_message = '{} No es un usuario del sistema'.format(username)
@@ -207,6 +192,24 @@ def buscaprod():
 			print(session['listatotal'])
 			return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp2=session['listatotal'])
 		elif 'entrada' in request.form['addsalida']:
+			x = request.form.getlist('cantidad')
+			y = request.form.getlist('costo')
+			print(x)
+			print(y)
+			indice =0
+			
+			nlista=[]
+			for item in session['listatotal']:
+				if x[indice]=="":
+					item.append(1)
+				else:
+					item.append(str(float(x[indice])))
+				item[6]=y[indice]
+				indice+=1
+				nlista.append(item)
+			session.pop('listatotal')
+			session['listatotal']=nlista
+			print(session['listatotal'])
 			return redirect(url_for('EntradaOrden'))
 		elif 'eliminar' in request.form['addsalida']:
 			indice=0
@@ -224,39 +227,54 @@ def buscaprod():
 						pass
 			return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp2=session['listatotal'])
 		elif 'selec' in request.form['addsalida']:
-			valor =request.form['optradio']
+			
+			valor = request.form['optradio']
+			print(valor)
 			if valor:
-				local = Inventario.query.filter_by(id_item=request.form['optradio']).one()
+				buscaitem = """SELECT PRODUCT.PRODUCT_ID,INTERNAL_NAME,PRODUCT_TYPE_ID,FAMILIA_ID,INVENTORY_ITEM_ID, INVENTORY_ITEM.QUANTITY_ON_HAND_TOTAL, INVENTORY_ITEM.UNIT_COST FROM PRODUCT,INVENTORY_ITEM WHERE INVENTORY_ITEM_ID = '%s' AND PRODUCT.PRODUCT_ID = INVENTORY_ITEM.PRODUCT_ID"""%valor
+				cursor.execute(buscaitem)
+				c_local = cursor.fetchall()
+				#local = Inventario.query.filter_by(id_item=request.form['optradio']).one()
+				local = c_local[0]
 				li=list()
 				lis=list()
-				li.append('1')
-				li.append(local.id_prod)
-				li.append(local.id_item)
-				li.append(local.nom_prod)
-				li.append(str(local.costo_unit))
-				li.append(str(local.um))
+				li.append(local[0])
+				li.append(local[1])
+				li.append(local[2])
+				li.append(str(local[3]))
+				li.append(str(local[4]))
+				li.append(str(local[5]))
+				li.append(str(local[6]))
 				lis.append(li)
 				session['listatotal'] += lis
 				print(session['listatotal'])
 				return render_template("buscar.html", nombre=nombre, form=form_buscap)
 			else:
-				flash("debe elegir un articulo")
+				flash("Debe elegir un articulo")
 				return render_template("buscar.html", nombre=nombre, form=form_buscap)
 		elif 'buscar' in request.form['addsalida']:
+			#Buscar por codigo
 			if ArtCodigo:
+				print("buscar x codigo")
+
 				LocalCodigo = Inventario.query.filter_by(id_prod=ArtCodigo).all()
+				
 				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalCodigo)
 			elif ArtName:
-				LocalName = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).all()
-				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalName)
+				print("buscar x Nombre")
+				#Buscar por nombre	
+				pxn='%'+ArtName+'%'
+				buscapxn = """SELECT PRODUCT.PRODUCT_ID, INTERNAL_NAME, PRODUCT_TYPE_ID, FAMILIA_ID, INVENTORY_ITEM_ID, INVENTORY_ITEM.QUANTITY_ON_HAND_TOTAL, INVENTORY_ITEM.UNIT_COST  FROM PRODUCT,INVENTORY_ITEM WHERE PRODUCT_NAME LIKE '%s' AND PRODUCT.PRODUCT_ID = INVENTORY_ITEM.PRODUCT_ID"""%pxn
+				cursor.execute(buscapxn)
+				Localname=list()
+				LocalName = cursor.fetchall()
+				print(LocalName)
+				#Localname = db.session.execute(buscapxn).fetchall()
+				#LocalName = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).all()
+				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalName,productpxn=ArtName)
 		else:
 			flash("Debe Llenar un campo")
 	return render_template("buscar.html", nombre=nombre, form=form_buscap)
-	
-	
-@app.route('/verlista', methods=['GET', 'POST'])
-def verlista():	
-	return render_template('verlista.html',listaglobal=listatotal)
 
 
 @app.route('/entradasAlmacen/OrdenCompra', methods=['GET', 'POST'])
@@ -283,8 +301,8 @@ def EntradaOrden():
 			flash("El campo {} es requerido".format("Fecha"))
 		elif len(str(nomComer))< 5:
 			flash("El campo {} es requerido".format("Nombre Comercial"))
-		elif len(str(folio))< 5:
-			flash("El campo {} es requerido".format("Folio"))
+		# elif len(str(folio))< 5:
+		# 	flash("El campo {} es requerido".format("Folio"))
 		elif len(str(factura))< 1:
 			flash("El campo {} es requerido".format("Factura"))
 		elif len(str(numFactura))< 1:
@@ -293,12 +311,12 @@ def EntradaOrden():
 			flash("El campo {} es requerido".format("Orden de Compra"))
 		elif len(str(dep_soli))< 5:
 			flash("El campo {} es requerido".format("Departamento Solicitante"))
-		elif len(str(nReq))< 1:
-			flash("El campo {} es requerido".format("Número de Requerimiento"))
+		# elif len(str(nReq))< 1:
+		# 	flash("El campo {} es requerido".format("Número de Requerimiento"))
 		elif len(str(oSoli))< 5:
 			flash("El campo {} es requerido".format("Oficio Solicitante"))
-		elif len(str(tCompra))< 5:
-			flash("El campo {} es requerido".format("Tipo de Compra"))
+		# elif len(str(tCompra))< 5:
+		# 	flash("El campo {} es requerido".format("Tipo de Compra"))
 		elif len(str(obser)) < 5:
 			flash("El campo {} es requerido".format("Observaciones"))
 		else:

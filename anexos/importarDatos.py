@@ -30,7 +30,7 @@ try:
 	cursorMysql= connmysql.cursor()
 	print("Conexiona Mysql Exitosa")
 except:
-	print("FAllo la conexion a MySQL")
+	print("Fallo la conexion a MySQL")
 
 x=tuple
 query = """select * from postal_address"""

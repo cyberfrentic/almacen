@@ -234,7 +234,7 @@ class Entrada(db.Model):
 	ordenCompra = db.Column(db.String(15))
 	depSolici = db.Column(db.String(150))
 	nReq = db.Column(db.String(15))
-	oSolicitnte = db.Column(db.String(30))
+	oSolicitnte = db.Column(db.String(60))
 	tCompraContrato = db.Column(db.String(20))
 	total = db.Column(db.Float)
 	observaciones = db.Column(db.Text)
