@@ -199,20 +199,19 @@ def buscaprod():
 			indice =0
 			nlista=[]
 			for item in session['listatotal']:
-				if len(item)>7:
-					tem=[item[0],item[1],item[2],item[3],item[4],item[5],item[7]]
+				if len(item)>8:
+					tem=[item[0],item[1],item[2],item[3],item[4],item[5],item[6], item[8]]
 					item=[]
 					item=tem
 				if x[indice]=="":
 					item.append(1)
 				else:
 					item.append(str(float(x[indice])))
-				item[6]=y[indice]
+				item[7]=y[indice]
 				indice+=1
 				nlista.append(item)
 			session.pop('listatotal')
 			session['listatotal']=nlista
-			print(session['listatotal'])
 			return redirect(url_for('EntradaOrden'))
 		elif 'eliminar' in request.form['addsalida']:
 			indice=0
@@ -234,7 +233,7 @@ def buscaprod():
 			valor = request.form['optradio']
 			print(valor)
 			if valor:
-				buscaitem = """SELECT PRODUCT.PRODUCT_ID,INTERNAL_NAME,PRODUCT_TYPE_ID,FAMILIA_ID,INVENTORY_ITEM_ID, INVENTORY_ITEM.QUANTITY_ON_HAND_TOTAL, INVENTORY_ITEM.UNIT_COST FROM PRODUCT,INVENTORY_ITEM WHERE INVENTORY_ITEM_ID = '%s' AND PRODUCT.PRODUCT_ID = INVENTORY_ITEM.PRODUCT_ID"""%valor
+				buscaitem = """SELECT PRODUCT.PRODUCT_ID,INTERNAL_NAME,PRODUCT_TYPE_ID,FAMILIA_ID,INVENTORY_ITEM_ID, INVENTORY_ITEM.QUANTITY_ON_HAND_TOTAL, PRODUCT.QUANTITY_UOM_ID, INVENTORY_ITEM.UNIT_COST FROM PRODUCT,INVENTORY_ITEM WHERE INVENTORY_ITEM_ID = '%s' AND PRODUCT.PRODUCT_ID = INVENTORY_ITEM.PRODUCT_ID"""%valor
 				cursor.execute(buscaitem)
 				c_local = cursor.fetchall()
 				#local = Inventario.query.filter_by(id_item=request.form['optradio']).one()
@@ -248,6 +247,7 @@ def buscaprod():
 				li.append(str(local[4]))
 				li.append(str(local[5]))
 				li.append(str(local[6]))
+				li.append(str(local[7]))
 				lis.append(li)
 				session['listatotal'] += lis
 				print(session['listatotal'])
@@ -271,10 +271,10 @@ def buscaprod():
 				cursor.execute(buscapxn)
 				Localname=list()
 				LocalName = cursor.fetchall()
-				print(LocalName)
+				#print(LocalName)
 				#Localname = db.session.execute(buscapxn).fetchall()
 				#LocalName = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).all()
-				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalName,productpxn=ArtName)
+				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalName, productpxn=ArtName)
 		else:
 			flash("Debe Llenar un campo")
 	return render_template("buscar.html", nombre=nombre, form=form_buscap)
@@ -362,19 +362,20 @@ def EntradaOrden():
 				for dato in query:
 					datos = dato.id
 				for item in session['listatotal']:
-					total = float(item[0])*float(item[4])
+					print(item)
+					total = float(item[8])*float(item[7])
 					arti = Articulos(entradas_id = datos,
-						cantidad = item[0],
-						udm = item[5],
-						codigo = item[1],
-						descripcion = item[3],
-						p_unit = item[4],
+						cantidad = item[7],
+						udm = item[6],
+						codigo = item[0],
+						descripcion = item[1],
+						p_unit = item[7],
 						total = total,
 						ordenCompra = orden1,
-						imtemId = item[2],)
+						imtemId = item[4],)
 					db.session.add(arti)
 					db.session.commit()
-					canti = Inventario.query.filter_by(id_item = item[2]).one()
+					canti = Inventario.query.filter_by(id_item = item[4]).one()
 					print(canti)
 					saldo = canti.cant_exist
 					print(saldo)
@@ -466,7 +467,6 @@ def salidas():
 					return redirect(url_for('salidas'))
 				if Enc_Orden:
 					EncabeOrden = Enc_Orden[0]
-					print(Enc_Orden)
 					DetalleOrden = Det_Orden
 				return render_template("SalidaOrden.html", nombre=nombre,form=form_buscasalida,DetalleOrden=DetalleOrden,EncabeOrden=EncabeOrden)	
 		elif 'guardaSalida' in request.form['addOSalida'][:12]:
