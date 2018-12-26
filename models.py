@@ -45,9 +45,9 @@ class Inventario(db.Model):
 	modelo = db.Column(db.String(50))
 	num_parte = db.Column(db.String(30))
 	num_serie = db.Column(db.String(30))
-	f_recepcion = db.Column(db.DateTime)
-	f_fabricacion = db.Column(db.Date)
-	f_caducidad = db.Column(db.Date)
+	f_recepcion = db.Column(db.DateTime, default=datetime.datetime.now)
+	f_fabricacion = db.Column(db.Date, default=datetime.datetime.now)
+	f_caducidad = db.Column(db.Date, default=datetime.datetime.now)
 	cant_exist = db.Column(db.Numeric(18,6))
 	cant_dispon = db.Column(db.Numeric(18,6))
 	costo_unit = db.Column(db.Numeric(18,6))
@@ -67,8 +67,8 @@ class Inventario(db.Model):
 	tipo_compra = db.Column(db.String(30))
 	actividad = db.Column(db.String(30))
 
-	def __init__(self,id_item, id_prod,tipo_prod,	nom_prod,nom_interno,descripcion,um,id_area,f_alta,ultim_modif,activo,
-		id_familia,	procedencia, modelo, num_parte, num_serie,	f_recepcion,f_fabricacion,f_caducidad,cant_exist,cant_dispon,
+	def __init__(self,id_item, id_prod,tipo_prod,	nom_prod,nom_interno,descripcion,um,id_area,activo,
+		id_familia,	procedencia, modelo, num_parte, num_serie,cant_exist,cant_dispon,
 		costo_unit,	moneda,id_area_solici,solic_transfer,observaciones,usuario,	fol_entrada,	fol_salida,	oficio_e_s,	id_proveed,
 		orden_compra,	num_requerim,	n_fact_nota,	f_salida,	tipo_compra,	actividad):
 		self.id_item =id_item
@@ -79,17 +79,17 @@ class Inventario(db.Model):
 		self.descripcion =descripcion
 		self.um =um
 		self.id_area = id_area
-		self.f_alta = f_alta
-		self.ultim_modif = ultim_modif
+		#self.f_alta = f_alta
+		#self.ultim_modif = ultim_modif
 		self.activo = activo
 		self.id_familia = id_familia
 		self.procedencia = procedencia
 		self.modelo = modelo
 		self.num_parte = num_parte
 		self.num_serie = num_serie
-		self.f_recepcion = f_recepcion
-		self.f_fabricacion = f_fabricacion
-		self.f_caducidad = f_caducidad
+		#self.f_recepcion = f_recepcion
+		#self.f_fabricacion = f_fabricacion
+		#self.f_caducidad = f_caducidad
 		self.cant_exist = cant_exist
 		self.cant_dispon = cant_dispon 
 		self.costo_unit = costo_unit

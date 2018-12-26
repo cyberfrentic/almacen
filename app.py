@@ -259,10 +259,11 @@ def buscaprod():
 			#Buscar por codigo
 			if ArtCodigo:
 				print("buscar x codigo")
-
-				LocalCodigo = Inventario.query.filter_by(id_prod=ArtCodigo).all()
-				
-				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalCodigo)
+				pxn = ArtCodigo
+				buscapxn = """SELECT PRODUCT.PRODUCT_ID, INTERNAL_NAME, PRODUCT_TYPE_ID, FAMILIA_ID, INVENTORY_ITEM_ID, INVENTORY_ITEM.QUANTITY_ON_HAND_TOTAL, INVENTORY_ITEM.UNIT_COST  FROM PRODUCT,INVENTORY_ITEM WHERE PRODUCT.PRODUCT_ID = '%s'"""%pxn
+				cursor.execute(buscapxn)
+				LocalCodigo=cursor.fetchall()
+				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalCodigo, productpxn=ArtCodigo)
 			elif ArtName:
 				print("buscar x Nombre")
 				#Buscar por nombre	
@@ -362,10 +363,10 @@ def EntradaOrden():
 				for dato in query:
 					datos = dato.id
 				for item in session['listatotal']:
-					print(item)
+					#print(item)
 					total = float(item[8])*float(item[7])
 					arti = Articulos(entradas_id = datos,
-						cantidad = item[7],
+						cantidad = item[8],
 						udm = item[6],
 						codigo = item[0],
 						descripcion = item[1],
@@ -375,13 +376,48 @@ def EntradaOrden():
 						imtemId = item[4],)
 					db.session.add(arti)
 					db.session.commit()
-					canti = Inventario.query.filter_by(id_item = item[4]).one()
-					print(canti)
-					saldo = canti.cant_exist
-					print(saldo)
-					t = float(item[0])+ float(saldo)
-					print(t)
-					canti.cant_exist = t
+					# canti = Inventario.query.filter_by(id_item = item[4]).one()
+					# print(canti)
+					# saldo = canti.cant_exist
+					# print(saldo)
+					# t = float(item[0])+ float(saldo)
+					# print(t)
+					# canti.cant_exist = t
+					inve = Inventario(
+						id_item = item[4],
+						id_prod = item[0], 
+						tipo_prod = item[2], 
+						nom_prod = item[1], 
+						nom_interno = item[1], 
+						descripcion = item[1], 
+						um = item[6], 
+						id_area = None,
+						activo = None, 
+						id_familia = None, 
+						procedencia = None, 
+						modelo = None, 
+						num_parte = None, 
+						num_serie = None,
+						cant_exist = item[8], 
+						cant_dispon = item[8], 
+						costo_unit = item[7], 
+						moneda= "MX", 
+						id_area_solici = None, 
+						solic_transfer = None, 
+						observaciones = obser,
+						usuario = session['username'], 
+						fol_entrada = orden1, 
+						fol_salida = None, 
+						oficio_e_s = oSoli, 
+						id_proveed = proveedor[:19], 
+						orden_compra = orden1, 
+						num_requerim = nReq, 
+						n_fact_nota = numFactura, 
+						f_salida = fecha, 
+						tipo_compra = None, 
+						actividad= None,
+						)
+					db.session.add(inve)
 					db.session.commit()
 				flash("Entrada Núm {} Realizada con exito".format(datos))
 				listas = list()
