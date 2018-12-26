@@ -557,6 +557,7 @@ def salidas():
 					t = float(saldo) - item.cantidad
 					print(t)
 					canti.cant_exist = t
+					canti.actividad="Surtido"
 					db.session.commit()
 				arti = Salida_Articulos.query.filter_by(ordenCompra = Enc_Orden.ordenCompra).all()
 				query = Salidas.query.filter_by(ordenCompra=Enc_Orden.ordenCompra).one()
