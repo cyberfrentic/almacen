@@ -229,7 +229,6 @@ def buscaprod():
 						pass
 			return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp2=session['listatotal'])
 		elif 'selec' in request.form['addsalida']:
-			
 			valor = request.form['optradio']
 			print(valor)
 			if valor:
@@ -276,6 +275,35 @@ def buscaprod():
 				#Localname = db.session.execute(buscapxn).fetchall()
 				#LocalName = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).all()
 				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalName, productpxn=ArtName)
+
+		elif 'costeo' in request.form['addsalida']:
+	 		if session['listatotal']:
+	 			# item 7 de listatotal es el costo
+	 			total_lista = 0
+	 			cantidades = request.form.getlist('cantidad')
+	 			print("Cantidades cantidades cantidades, recibido lista total")
+	 			print(session['listatotal'])
+	 			print(cantidades)
+	 			pos_cant = 0
+	 			# Calculamos el costo total de los prods, mult costo x cant en cada tupla
+	 			for tupla in session['listatotal']:
+	 				total_lista += float(tupla[7])*float(cantidades[pos_cant])
+	 				pos_cant += 1
+	 			pos = 0
+	 			# En listatotal posicion 8 estan las cantidades que por defecto es 1
+	 			# si el usuario modifica esa cantidad esta parte de codigo actualiza las cantidades dentro de listatotal
+	 			for item in cantidades:
+	 				tmp= session['listatotal']
+	 				j=tmp[pos]
+	 				# para cada lista dentro de la listatotal en la pos 7 cambia la cant que el user indicó
+	 				j[8] = item
+	 				pos += 1
+	 				session['listatotal'] = tmp
+	 			print("Lista final para Entrada")
+	 			print(session['listatotal'])
+	 			print("total_lista")
+	 			print(total_lista)
+	 			return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp2=session['listatotal'],total_lista=total_lista)	
 		else:
 			flash("Debe Llenar un campo")
 	return render_template("buscar.html", nombre=nombre, form=form_buscap)
