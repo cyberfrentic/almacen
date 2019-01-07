@@ -29,7 +29,8 @@ class User(db.Model):
 
 class Inventario(db.Model):
 	__tablename__ = 'inventario'
-	id_item = db.Column(db.String(20), primary_key=True, comment='codigo producto')
+	id = db.Column(db.Integer, primary_key=True, comment='Id de control primary Key')
+	id_item = db.Column(db.String(20), comment='codigo producto')
 	id_prod = db.Column(db.String(20))
 	tipo_prod = db.Column(db.String(20))
 	nom_prod = db.Column(db.String(255))
@@ -54,7 +55,7 @@ class Inventario(db.Model):
 	moneda = db.Column(db.String(10))
 	id_area_solici = db.Column(db.String(20))
 	solic_transfer = db.Column(db.String(30))
-	observaciones = db.Column(db.String(50))
+	observaciones = db.Column(db.String(150))
 	usuario =  db.Column(db.String(250))
 	fol_entrada = db.Column(db.String(30))
 	fol_salida = db.Column(db.String(30))
@@ -67,10 +68,11 @@ class Inventario(db.Model):
 	tipo_compra = db.Column(db.String(30))
 	actividad = db.Column(db.String(30))
 
-	def __init__(self,id_item, id_prod,tipo_prod,	nom_prod,nom_interno,descripcion,um,id_area,activo,
+	def __init__(self,id,id_item, id_prod,tipo_prod,	nom_prod,nom_interno,descripcion,um,id_area,activo,
 		id_familia,	procedencia, modelo, num_parte, num_serie,cant_exist,cant_dispon,
 		costo_unit,	moneda,id_area_solici,solic_transfer,observaciones,usuario,	fol_entrada,	fol_salida,	oficio_e_s,	id_proveed,
 		orden_compra,	num_requerim,	n_fact_nota,	f_salida,	tipo_compra,	actividad):
+		self.id =id
 		self.id_item =id_item
 		self.id_prod =id_prod
 		self.tipo_prod = tipo_prod

@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Bootstrap Example</title>
+  <title>Almacén - Sicopa</title>
   <meta charset="utf-8">
   <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
 	<link rel="stylesheet"  href="{{ url_for('static', filename='css/bootstrap.min.css') }}" media="screen">
@@ -34,7 +34,7 @@
                   <h5>Comision de Agua Potable y Alcantarillado del Estado de Quintana Roo</h5>
                   <h6>Direccion de Recursos Materiales</h6>
                   <h6>Departamento de Almacen General</h6>
-                  <h6>Formato de ntrada de materiales de Almacen</h6>
+                  <h6>Formato de entrada de materiales de Almacen</h6>
               </center>
             </div>
             <div class="col-2"></div>
@@ -146,8 +146,10 @@
         			<div class="col-2 list-group-item-info">Nombre Comercial:</div>
         			<div class="col-6 list-group-item-action list-group-item-warning">{{ render_field(form.nomComer, class="form-control")}}</div>
         			<div class="col-2 list-group-item-info">Folio:</div>
-        			<div class="col-2 list-group-item-action list-group-item-warning">{{render_field(form.folio, class="form-control")}}</div>
-      			</div>
+              <div class="col-2 list-group-item-action list-group-item-warning"> <input type="text" class="form-control" value="{{folio_e}}" name="folio"></div>  
+        			<!--div class="col-2 list-group-item-action list-group-item-warning">{{render_field(form.folio, class="form-control",id="folioe")}}</div-->
+      			
+            </div>
       			<div class="row">
         			<div class="col-2 list-group-item-info">Factura, Nota o Cotización:</div>
         			<div class="col-2 list-group-item-action list-group-item-warning">{{ render_field(form.factura, class="form-control")}}</div>
@@ -167,6 +169,11 @@
         			<div class="col-2 list-group-item-info">Tipo de Compra o Contrato:</div>
         			<div class="col-2 list-group-item-action list-group-item-warning">{{ render_field(form.tCompra, class="form-control")}}</div>
       			</div>
+            
+            <script>
+                document.getElementsById("folioe").value="folio"      
+            </script>
+              
       			<br>
       		{% if listaglobal %}
 					  <table class="table table-hover table-striped">
@@ -195,30 +202,36 @@
 
 	    				</tbody>
 	  				</table>
+
 	  			{%endif%}
   				<div class="row">
   					<div class="col-2 list-group-item-info">Observaciones:</div>
   					<div class="col-6 list-group-item-action list-group-item-warning">{{ render_field(form.obser, class="form-control", rows="3", cols="50", placeholder="Capture sus observaciones")}}</div>
   					<div class="col-2 list-group-item-info">Total:</div>
-  					<div class="col-2 list-group-item-action list-group-item-warning">{{ render_field(form.total, class="form-control")}}</div>
+  					<div class="col-2 list-group-item-action list-group-item-warning">
+              <input type="text" class="form-control" value="{{total1}}" name="total">
+              <!--{{ render_field(form.total, class="form-control")}}</div>-->
   					<br>
   					<div class="col-2">
   						<button type="submit" class="btn btn-outline-danger">Guardar</button>
+             
   					</div>
+             <br>
+<br>
+<br>
+<br>
+<br>
   				</div>
 			</div>
     </div>
+
     </div>
   </form>
 {% endif %}
-<br>
-<br>
-<br>
+
 </div>
-<br>
-<br>
-<br>
-<br>
+
+
 </body>
 </html>
 {% endblock %}

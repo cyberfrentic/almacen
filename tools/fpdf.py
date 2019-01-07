@@ -40,17 +40,17 @@ class PDF(FPDF):
             self.cell(30, 8, Titulo, 0, 0, 'C', True)
         self.ln(8)
         #self.set_fill_color(255, 255, 255)
-        self.cell(20, 8, lista[0], 'TL' , 0, 'L')
+        self.cell(20, 8, "Proveedor:", 'TL' , 0, 'L')
         self.cell(130, 8,str(datos1[0]), 'TB',0,'L', 'True' )
         self.cell(10, 8, "", 'T',0,'C', 'True' )
         self.cell(10, 8, 'Fecha: ', 'T' , 0, 'L')
         self.cell(19, 8, str(datos1[1]), 'TBR',0,'R', 'True' )
         self.ln(8)
-        self.cell(30, 8, lista[1], 'L' , 0, 'L')
-        self.cell(120, 8, str(datos1[2]), 'B',0,'C', 'True' )
-        self.cell(10, 8, "", 0,0,'C', 'True' )
-        self.cell(10, 8, 'Folio: ', 0 , 0, 'L')
-        self.cell(19, 8, str(datos1[3]), 'RB',0,'C')
+        self.cell(30, 8, "Nombre Comercial", 'L' , 0, 'L')
+        self.cell(120, 8, str(datos1[2])[:55], 'B',0,'C', 'True' )
+        self.cell(1, 8, "", 0,0,'C', 'True' )
+        self.cell(11, 8, 'Folio: ', 0 , 0, 'L')
+        self.cell(27, 8, str(datos1[3]), 'RB',0,'C')
         self.ln(8)
         self.cell(40, 8, 'Factura, Nota o Cotización:', 'L' , 0, 'L')
         self.cell(25, 8, str(datos1[4]), 'B',0,'C', 'True' )
@@ -60,12 +60,13 @@ class PDF(FPDF):
         self.cell(19, 8, str(datos1[6]), 'RB',0,'C')
         self.ln(8)
         self.cell(40, 8, 'Departamento Solicitante:', 'L' , 0, 'L')
-        self.cell(80, 8, str(datos1[7])[:40], 'B',0,'L', 'True' )
+        self.cell(80, 8, str(datos1[7])[:50], 'B',0,'L', 'True' )
         self.cell(10, 8, "", 0,0,'C', 'True' )
         self.cell(40, 8, 'Tipo de Compra o Contrato: ', 0 , 0, 'L')
-        self.cell(19, 8, str(datos1[8]), 'RB',0,'L')
+        self.cell(19, 8, str(datos1[10]), 'RB',0,'L')
         self.ln(8)
         self.cell(189, 3, "", 'LRB',0,'L')
+        self.ln(5)
 
 
     def footer(self):
@@ -224,7 +225,7 @@ def fecha_actual():
 
 def entradaPdf(titulo, listas, datos, data2,reim=0):
     global Titulo, lista, datos1
-    Titulo=titulo
+    Titulo = titulo
     lista = listas
     datos1 = datos
     global tamaño
@@ -238,7 +239,8 @@ def entradaPdf(titulo, listas, datos, data2,reim=0):
     pdf.set_draw_color(0, 0, 0)
     pdf.set_line_width(.3)
     pdf.set_font('', 'B')
-    pdf.set_font('Times', '', 10.0)
+    pdf.set_font('Arial', '', 8.0)
+    
 
     # Effective page width, or just epw
     epw = pdf.w - 2 * pdf.l_margin
@@ -260,41 +262,50 @@ def entradaPdf(titulo, listas, datos, data2,reim=0):
     pdf.ln()
     lista = len(data2)
     banda=0
+    pagina=0
     if reim==1:
         for i in data2:
+            pagina+=1
+            if pagina == 28:
+                pdf.add_page()
+                pagina=0
             banda+=1
             m = banda % 2
             if m == 0:
                 pdf.cell(col_width/2+5, th+2, str(i.cantidad), border=1,align='C', fill=True)
                 pdf.cell(col_width/2+5, th+2, str(i.udm), border=1,align='C', fill=True)
                 pdf.cell(col_width/2+5, th+2, str(i.codigo), border=1,align='C', fill=True)
-                pdf.cell(col_width*2.5, th+2, str(i.descripcion), border=1,align='C', fill=True)
+                pdf.cell(col_width*2.5, th+2, str(i.descripcion)[:50], border=1,align='C', fill=True)
                 pdf.cell(col_width/2+5, th+2, str(i.p_unit), border=1,align='C', fill=True)
                 pdf.cell(col_width/2+5, th+2, str(i.total), border=1,align='R', fill=True)
             else:
                 pdf.cell(col_width/2+5, th+2, str(i.cantidad), border=1,align='C', fill=False)
                 pdf.cell(col_width/2+5, th+2, str(i.udm), border=1,align='C', fill=False)
                 pdf.cell(col_width/2+5, th+2, str(i.codigo), border=1,align='C', fill=False)
-                pdf.cell(col_width*2.5, th+2, str(i.descripcion), border=1,align='C', fill=False)
+                pdf.cell(col_width*2.5, th+2, str(i.descripcion)[:50], border=1,align='C', fill=False)
                 pdf.cell(col_width/2+5, th+2,str(i.p_unit), border=1,align='C', fill=False)
                 pdf.cell(col_width/2+5, th+2,  str(i.total), border=1,align='R', fill=False)                
             pdf.ln()
     else:
         for i in data2:
             banda+=1
+            pagina+=1
+            if pagina == 28:
+                pdf.add_page()
+                pagina=0
             m = banda % 2
             if m == 0:
-                pdf.cell(col_width/2+5, th+2, str(i[7]), border=1,align='C', fill=True)
+                pdf.cell(col_width/2+5, th+2, str(i[8]), border=1,align='C', fill=True)
                 pdf.cell(col_width/2+5, th+2, str(i[6]), border=1,align='C', fill=True)
                 pdf.cell(col_width/2+5, th+2, str(i[0]), border=1,align='C', fill=True)
-                pdf.cell(col_width*2.5, th+2, str(i[1]), border=1,align='C', fill=True)
+                pdf.cell(col_width*2.5, th+2, str(i[1])[:50], border=1,align='C', fill=True)
                 pdf.cell(col_width/2+5, th+2, str(i[7]), border=1,align='C', fill=True)
                 pdf.cell(col_width/2+5, th+2, str((float(i[8])*float(i[7]))), border=1,align='R', fill=True)
             else:
-                pdf.cell(col_width/2+5, th+2, str(i[7]), border=1,align='C', fill=False)
+                pdf.cell(col_width/2+5, th+2, str(i[8]), border=1,align='C', fill=False)
                 pdf.cell(col_width/2+5, th+2, str(i[6]), border=1,align='C', fill=False)
                 pdf.cell(col_width/2+5, th+2, str(i[0]), border=1,align='C', fill=False)
-                pdf.cell(col_width*2.5, th+2, str(i[1]), border=1,align='C', fill=False)
+                pdf.cell(col_width*2.5, th+2, str(i[1])[:50], border=1,align='C', fill=False)
                 pdf.cell(col_width/2+5, th+2, str(i[7]), border=1,align='C', fill=False)
                 pdf.cell(col_width/2+5, th+2, str((float(i[8])*float(i[7]))), border=1,align='R', fill=False)                
             pdf.ln()

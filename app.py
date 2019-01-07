@@ -1,16 +1,17 @@
 # Sistema web para la gestión del Almacén General de la CAPA
 #Programadores: Cesar Herrera Mut, Hugo Canul Echazarreta ( Septiembre de 2018)
-#Analista Profesional - Dirección de Informática - Direccion General
+#Analista Profesional - Dirección de Informática - Direccion General y Jefe depto Org. Op. FCP Q.Roo
 #Desarrollado en Python 3.4
-#Si no logro terminarlo en diciembre va rodar mi cabeza :7 : Ya! carnal ya no Rodo tu cabeza....../ 
-#      
-#      (° °)
-#        ~
-#     --| |--
-#       | |
-#       | |
-#
-#
+#No logré terminarlo en diciembre, pero las pantallas enviadas sirvieron para
+#justificar en contraloría
+#             
+#     ---------|--
+#		| 	   | 
+#       |    (° °) 
+#       | 	    O...
+#		| 		 	
+#		| 
+#	    | 
 #
 from flask import url_for
 from flask import Flask, flash, redirect, render_template, request, session, abort
@@ -18,7 +19,7 @@ from wtforms import Form, TextField, TextAreaField, validators, StringField, Sub
 from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada, form_salida_orden, form_consul_entrada, formbuscasalida
 import os
 from models import db, User, Inventario, Articulos, Entrada, Salidas, Salida_Articulos
-
+from datetime import datetime
 from config import DevelopmentConfig
 import pymssql 
 from bs4 import BeautifulSoup
@@ -163,6 +164,7 @@ def login():
 			flash(sucess_message)
 			session['username'] = username
 			session['listatotal']=[]
+			
 			return redirect(url_for('index'))
 		else:
 			error_message = '{} No es un usuario del sistema'.format(username)
@@ -190,7 +192,15 @@ def buscaprod():
 		print(request.form['addsalida'])
 		if 'mostrar' in request.form['addsalida']:
 			#print(session['listatotal'])
-			return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp2=session['listatotal'])
+			# Calculamos el costo total de los prods, mult costo x cant en cada tupla
+			cantidades = request.form.getlist('cantidad')
+			print(cantidades)
+			total_lista = 0
+			pos_cant = 0
+			for tupla in session['listatotal']:
+				total_lista += float(tupla[7])*float(tupla[8])
+				pos_cant += 1
+			return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp2=session['listatotal'],total_lista=total_lista)
 		elif 'entrada' in request.form['addsalida']:
 			x = request.form.getlist('cantidad')
 			y = request.form.getlist('costo')
@@ -220,7 +230,6 @@ def buscaprod():
 				for x in session['listatotal']:
 					indice+=1
 					if i in x:
-						print(indice-1)
 						temporal = session['listatotal']
 						temporal.pop(indice-1)
 						session.pop('listatotal')
@@ -237,6 +246,7 @@ def buscaprod():
 				c_local = cursor.fetchall()
 				#local = Inventario.query.filter_by(id_item=request.form['optradio']).one()
 				local = c_local[0]
+				
 				li=list()
 				lis=list()
 				li.append(local[0])
@@ -247,22 +257,27 @@ def buscaprod():
 				li.append(str(local[5]))
 				li.append(str(local[6]))
 				li.append(str(local[7]))
+				li.append("1")
 				lis.append(li)
+				# Le agrego 1 a la cantidad cuando el user selecciona un producto.
+
 				session['listatotal'] += lis
+				
 				print(session['listatotal'])
-				return render_template("buscar.html", nombre=nombre, form=form_buscap)
+				
+				return render_template("buscar.html", nombre=nombre, form=form_buscap,listatemp2=session['listatotal'])
 			else:
 				flash("Debe elegir un articulo")
-				return render_template("buscar.html", nombre=nombre, form=form_buscap)
+				return render_template("buscar.html", nombre=nombre, form=form_buscap,listatemp2=session['listatotal'])
 		elif 'buscar' in request.form['addsalida']:
 			#Buscar por codigo
 			if ArtCodigo:
 				print("buscar x codigo")
 				pxn = ArtCodigo
-				buscapxn = """SELECT PRODUCT.PRODUCT_ID, INTERNAL_NAME, PRODUCT_TYPE_ID, FAMILIA_ID, INVENTORY_ITEM_ID, INVENTORY_ITEM.QUANTITY_ON_HAND_TOTAL, INVENTORY_ITEM.UNIT_COST  FROM PRODUCT,INVENTORY_ITEM WHERE PRODUCT.PRODUCT_ID = '%s'"""%pxn
+				buscapxn = """SELECT PRODUCT.PRODUCT_ID, INTERNAL_NAME, PRODUCT_TYPE_ID, FAMILIA_ID, INVENTORY_ITEM_ID, INVENTORY_ITEM.QUANTITY_ON_HAND_TOTAL, INVENTORY_ITEM.UNIT_COST  FROM PRODUCT,INVENTORY_ITEM WHERE PRODUCT.PRODUCT_ID LIKE '%s' AND PRODUCT.PRODUCT_ID = INVENTORY_ITEM.PRODUCT_ID"""%pxn
 				cursor.execute(buscapxn)
 				LocalCodigo=cursor.fetchall()
-				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalCodigo, productpxn=ArtCodigo)
+				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalCodigo,listatemp2=session['listatotal'], productpxn=ArtCodigo)
 			elif ArtName:
 				print("buscar x Nombre")
 				#Buscar por nombre	
@@ -274,21 +289,34 @@ def buscaprod():
 				#print(LocalName)
 				#Localname = db.session.execute(buscapxn).fetchall()
 				#LocalName = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).all()
-				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalName, productpxn=ArtName)
+				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalName,listatemp2=session['listatotal'], productpxn=ArtName)
 
 		elif 'costeo' in request.form['addsalida']:
 	 		if session['listatotal']:
-	 			# item 7 de listatotal es el costo
+	 			# item 6 de listatotal es el costo
 	 			total_lista = 0
 	 			cantidades = request.form.getlist('cantidad')
 	 			print("Cantidades cantidades cantidades, recibido lista total")
 	 			print(session['listatotal'])
 	 			print(cantidades)
+	 			# En listatotal posicion 7 estan los costos que por defecto son los del sicopa
+	 			# si el usuario modifica esa cantidad esta parte de codigo las actualiza dentro de listatotal
+	 			pos = 0
+	 			new_cost= request.form.getlist('costo')
+	 			for item in new_cost:
+	 				tmp_cost= session['listatotal']
+	 				j=tmp_cost[pos]
+	 				# para cada lista dentro de la listatotal en la pos 8 cambia la el costo x el que el user modificó
+	 				j[7] = item
+	 				pos += 1
+	 				session['listatotal'] = tmp_cost
+
 	 			pos_cant = 0
 	 			# Calculamos el costo total de los prods, mult costo x cant en cada tupla
 	 			for tupla in session['listatotal']:
 	 				total_lista += float(tupla[7])*float(cantidades[pos_cant])
 	 				pos_cant += 1
+	 			session['total']=total_lista
 	 			pos = 0
 	 			# En listatotal posicion 8 estan las cantidades que por defecto es 1
 	 			# si el usuario modifica esa cantidad esta parte de codigo actualiza las cantidades dentro de listatotal
@@ -303,10 +331,10 @@ def buscaprod():
 	 			print(session['listatotal'])
 	 			print("total_lista")
 	 			print(total_lista)
-	 			return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp2=session['listatotal'],total_lista=total_lista)	
+	 			return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp2=session['listatotal'],total_lista=total_lista)
 		else:
 			flash("Debe Llenar un campo")
-	return render_template("buscar.html", nombre=nombre, form=form_buscap)
+	return render_template("buscar.html", nombre=nombre, form=form_buscap,listatemp2=session['listatotal'])
 
 
 @app.route('/entradasAlmacen/OrdenCompra', methods=['GET', 'POST'])
@@ -317,7 +345,7 @@ def EntradaOrden():
 		proveedor = str(form.proveedor.data).replace('(','').replace("'",'').replace(')','').replace(',','')
 		fecha = form.fecha.data
 		nomComer = str(form.nomComer.data).replace('(','').replace("'",'').replace(')','').replace(',','')
-		folio = form.folio.data
+		folio = folio_e()
 		factura = form.factura.data
 		numFactura = form.numFactura.data
 		orden1 = form.orden.data
@@ -326,7 +354,8 @@ def EntradaOrden():
 		oSoli = form.oSoli.data
 		tCompra = form.tCompra.data
 		obser = form.obser.data
-		total = form.total.data
+		total = session['total']
+
 		if len(proveedor) < 5:
 			flash("El campo {} es requerido".format('Proveedores'))
 		elif len(str(fecha))< 5:
@@ -390,6 +419,9 @@ def EntradaOrden():
 				query = Entrada.query.filter_by(ordenCompra=orden1)
 				for dato in query:
 					datos = dato.id
+
+				print("Listatotal para entradas antes de darle boton guardar")	
+				print(session['listatotal'])	
 				for item in session['listatotal']:
 					#print(item)
 					total = float(item[8])*float(item[7])
@@ -404,13 +436,6 @@ def EntradaOrden():
 						imtemId = item[4],)
 					db.session.add(arti)
 					db.session.commit()
-					# canti = Inventario.query.filter_by(id_item = item[4]).one()
-					# print(canti)
-					# saldo = canti.cant_exist
-					# print(saldo)
-					# t = float(item[0])+ float(saldo)
-					# print(t)
-					# canti.cant_exist = t
 					inve = Inventario(
 						id_item = item[4],
 						id_prod = item[0], 
@@ -444,6 +469,7 @@ def EntradaOrden():
 						f_salida = fecha, 
 						tipo_compra = None, 
 						actividad= None,
+						id=None
 						)
 					db.session.add(inve)
 					db.session.commit()
@@ -451,13 +477,17 @@ def EntradaOrden():
 				listas = list()
 				listas.append('Proveedor:')
 				listas.append('Nombre Comercial:')
+				print(listas)
+				#print(generales)
 				x = entradaPdf("Entrada", listas, generales, session['listatotal'])
 				session.pop('listatotal')
+				session.pop('total')
 				session['listatotal']=[]
+				session['total']=0
 				return x
 			else:
 				flash("La orden núm. {} ya ha sido capturada anteriormente".format(orden1))
-	return render_template("entradaOrden.html", nombre=nombre, form=form, listaglobal=session['listatotal'])
+	return render_template("entradaOrden.html", nombre=nombre, form=form, listaglobal=session['listatotal'],folio_e=folio_e(), total1=session['total'])
 
 
 @app.route('/consultayreportes/reimpresiondeE_S/entradas', methods=['GET', 'POST'])
@@ -659,6 +689,20 @@ def ConsultaSalida():
 				return render_template("entradaOrden.html", nombre=nombre, reporte=entra, form=form, lista=arti)
 	return render_template("consulta.html", nombre=nombre, form=form, titulo="Salidas")
 
+#FUNCION QUE GENERA EL FOLIO DE LA ENTRADA, EL FOLIO NUNCA SE REPETIRA EN EL ESPACIO-TIEMPO
+def folio_e():
+	a= datetime.today().year
+	b=datetime.today().month
+	c=datetime.today().day
+	e=datetime.today()
+	x = str(e)
+
+	if len(str(b))==1:
+		bb='0'+ (str(b))
+    
+	if len(str(c))==1:
+		cc='0'+ (str(c))
+	return str(a)+bb+cc+'H'+x[11:19]
 	
 if __name__ == '__main__':
     crsf.init_app(app)
