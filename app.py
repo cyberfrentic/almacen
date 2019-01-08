@@ -539,12 +539,7 @@ def salidas():
 	form_buscasalida = formbuscasalida(request.form)
 	if request.method == 'POST':
 		print("RECIBIO NUMERO DE ORDEN DE SALIDA ")
-		#print(request.form['addOSalida'])
 		id_orden = form_buscasalida.order_id.data
-		print(len(id_orden))
-		# if len(id_orden)==0:
-		# 	flash('Debe capturar un numero de orden')
-		# 	return redirect(url_for('salidas'))
 		if id_orden:			
 			if 'buscar' in request.form['addentrada']:
 				SqlQueryE = """SELECT * FROM entradas  WHERE entradas.ordencompra='%s'"""%(id_orden)
@@ -552,7 +547,7 @@ def salidas():
 				Enc_Orden = db.session.execute(SqlQueryE).fetchall()
 				Det_Orden = db.session.execute(SqlQueryD).fetchall()
 				verifica = Salidas.query.filter_by(ordenCompra=id_orden).first()
-				print(verifica)
+				#print(verifica)
 				if verifica:
 					flash('El numero de orden ya ha sido capturado')
 					return redirect(url_for('salidas'))
@@ -571,11 +566,11 @@ def salidas():
 					error_message = 'Debe capturar una actividad'
 					flash(error_message)
 					return redirect(url_for('salidas'))
-				print(request.form['addOSalida'][12:])
+				#print(request.form['addOSalida'][12:])
 				Enc_Orden = Entrada.query.filter_by(ordenCompra=request.form['addOSalida'][12:]).one()
 				Det_Orden = Articulos.query.filter_by(ordenCompra=request.form['addOSalida'][12:]).all()
-				print(Det_Orden)
-				print(Enc_Orden.nomComer)
+				#print(Det_Orden)
+				#print(Enc_Orden.nomComer)
 				Sali = Salidas(Enc_Orden.proveedor,
 					Enc_Orden.nomComer,
 					Enc_Orden.fol_entrada,
@@ -594,7 +589,7 @@ def salidas():
 				db.session.add(Sali)
 				db.session.commit()
 				salida_id = Salidas.query.filter_by(ordenCompra=Enc_Orden.ordenCompra).first()
-				print(salida_id.id)
+				#print(salida_id.id)
 				for item in Det_Orden:
 					Sali_art = Salida_Articulos(salidas_id=salida_id.id,
 						cantidad=item.cantidad,
@@ -608,7 +603,8 @@ def salidas():
 						)
 					db.session.add(Sali_art)
 					db.session.commit()
-					canti = Inventario.query.filter_by(id_item = item.imtemId).one()
+					print(item.ordenCompra, item.imtemId)
+					canti = Inventario.query.filter_by(orden_compra = item.ordenCompra).filter_by(id_item = item.imtemId).one()
 					print(canti)
 					saldo = canti.cant_exist
 					print(saldo)
@@ -618,7 +614,7 @@ def salidas():
 					canti.actividad="Surtido"
 					db.session.commit()
 				arti = Salida_Articulos.query.filter_by(ordenCompra = Enc_Orden.ordenCompra).all()
-				query = Salidas.query.filter_by(ordenCompra=Enc_Orden.ordenCompra).one()
+				query = Salidas.query.filter_by(ordenCompra=Enc_Orden.ordenCompra).first()
 				generales=list()
 				generales.append(query.proveedor)
 				generales.append(query.fecha)
@@ -638,7 +634,7 @@ def salidas():
 				listas.append('Nombre Comercial:')
 				x = entradaPdf("Salida", listas, generales, arti,1)
 				return x
-		elif len(id_orden)==0:
+		else:
 			print("XXXXXXXXXXXXXXXXXXXXX")
 			error_message = 'Debe capturar un numero de orden'
 			flash(error_message)
