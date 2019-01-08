@@ -164,7 +164,7 @@ def login():
 			flash(sucess_message)
 			session['username'] = username
 			session['listatotal']=[]
-			
+			session['listasalida']=[]
 			return redirect(url_for('index'))
 		else:
 			error_message = '{} No es un usuario del sistema'.format(username)
@@ -178,7 +178,8 @@ def logout():
 	if 'username' in session:
 		#connection.close()
 		session.pop('listatotal')
-		session.pop('username')		    
+		session.pop('username')
+		session.pop('listasalida')	    
 	return redirect(url_for('login'))
 
 
@@ -684,6 +685,167 @@ def ConsultaSalida():
 			else:
 				return render_template("entradaOrden.html", nombre=nombre, reporte=entra, form=form, lista=arti)
 	return render_template("consulta.html", nombre=nombre, form=form, titulo="Salidas")
+
+
+@app.route('/salidas_de_almacen/salidas_parciales', methods=['GET', 'POST'])
+def SalidaPar():
+	nombre = session['username']
+	form = formbuscap(request.form)
+	if request.method == 'POST':
+		ArtCodigo =form.product_id.data
+		ArtName = form.product_name.data
+		print(request.form['addsalida'])
+		if 'mostrar' in request.form['addsalida']:
+			#print(session['listasalida'])
+			# Calculamos el costo total de los prods, mult costo x cant en cada tupla
+			cantidades = request.form.getlist('cantidad')
+			print(cantidades)
+			total_lista = 0
+			pos_cant = 0
+			for tupla in session['listasalida']:
+				total_lista += float(tupla[7])*float(tupla[8])
+				pos_cant += 1
+			return render_template("buscar2.html", nombre=nombre, form=form, listatemp2=session['listasalida'],total_lista=total_lista)
+		elif 'entrada' in request.form['addsalida']:
+			x = request.form.getlist('cantidad')
+			y = request.form.getlist('costo')
+			print(x)
+			print(y)
+			indice =0
+			nlista=[]
+			for item in session['listasalida']:
+				if len(item)>8:
+					tem=[item[0],item[1],item[2],item[3],item[4],item[5],item[6], item[8]]
+					item=[]
+					item=tem
+				if x[indice]=="":
+					item.append(1)
+				else:
+					item.append(str(float(x[indice])))
+				item[7]=y[indice]
+				indice+=1
+				nlista.append(item)
+			session.pop('listasalida')
+			session['listasalida']=nlista
+			return redirect(url_for('EntradaOrden'))
+		elif 'eliminar' in request.form['addsalida']:
+			indice=0
+			elementos = request.form.getlist('optcheck')
+			print(elementos)
+			for i in elementos:
+				for x in session['listasalida']:
+					indice+=1
+					if i in x:
+						temporal = session['listasalida']
+						temporal.pop(indice-1)
+						session.pop('listasalida')
+						session['listasalida']=temporal
+					else:
+						pass
+			return render_template("buscar2.html", nombre=nombre, form=form, listatemp2=session['listasalida'])
+		elif 'selec' in request.form['addsalida']:
+			valor = request.form['optradio']
+			print(valor)
+			codigo,item,origen=valor.split(',')
+			if valor:
+				if origen =="inv":
+					local = Inventario.query.filter(Inventario.id_item==codigo).filter(Inventario.cant_exist==item).one()										
+					li=list()
+					lis=list()
+					li.append(local.id_item)
+					li.append(local.nom_prod)
+					li.append("Stock")
+					li.append(str(local.orden_compra))
+					li.append(str(local.um))
+					li.append(str(local.cant_exist))
+					li.append(str(local.costo_unit))
+					li.append("1")
+					lis.append(li)
+					# Le agrego 1 a la cantidad cuando el user selecciona un producto.
+					session['listasalida'] += lis
+					print(session['listasalida'])
+				else:
+					local = Articulos.query.filter(Articulos.ordenCompra==item).filter(Articulos.imtemId==codigo).one()
+					print(local)
+					li=list()
+					lis=list()
+					li.append(local.imtemId)
+					li.append(local.descripcion)
+					li.append(item)
+					li.append(local.ordenCompra)
+					li.append(str(local.udm))
+					li.append(str(local.cantidad))
+					li.append(str(local.p_unit))
+					li.append("1")
+					lis.append(li)
+					# Le agrego 1 a la cantidad cuando el user selecciona un producto.
+					session['listasalida'] += lis
+					print(session['listasalida'])
+				return render_template("buscar2.html", nombre=nombre, form=form,listatemp2=session['listasalida'])
+			else:
+				flash("Debe elegir un articulo")
+				return render_template("buscar2.html", nombre=nombre, form=form,listatemp2=session['listasalida'])
+		elif 'buscar' in request.form['addsalida']:
+			#Buscar por codigo
+			if ArtCodigo:
+				print("buscar x codigo")
+				pxn = ArtCodigo
+				buscapxn = db.session.query(Articulos).filter(Articulos.codigo.like('%'+ArtCodigo+'%')).all()
+				buscainv = db.session.query(Inventario).filter(Inventario.id_item.like('%'+ArtCodigo+'%')).filter(Inventario.actividad=="a").filter(Inventario.cant_exist>0).all()
+				print(buscainv)
+				return render_template("buscar2.html", nombre=nombre, form=form, listainv=buscainv,listatemp=buscapxn,listatemp2=session['listasalida'], productpxn=ArtCodigo)
+			elif ArtName:
+				print("buscar x Nombre")
+				#Buscar por nombre	
+				pxn='%'+ArtName+'%'
+				buscapxn = db.session.query(Articulos).filter(Articulos.descripcion.like('%'+ArtName+'%')).all()
+				buscainv = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).filter(Inventario.actividad=="a").filter(Inventario.cant_exist>0).all()
+				return render_template("buscar2.html", nombre=nombre, form=form, listainv=buscainv,listatemp=buscapxn,listatemp2=session['listasalida'], productpxn=ArtName)
+		elif 'costeo' in request.form['addsalida']:
+	 		if session['listasalida']:
+	 			# item 6 de listasalida es el costo
+	 			total_lista = 0
+	 			cantidades = request.form.getlist('cantidad')
+	 			print("Cantidades cantidades cantidades, recibido lista total")
+	 			print(session['listasalida'])
+	 			print(cantidades)
+	 			# En listasalida posicion 7 estan los costos que por defecto son los del sicopa
+	 			# si el usuario modifica esa cantidad esta parte de codigo las actualiza dentro de listasalida
+	 			pos = 0
+	 			new_cost= request.form.getlist('costo')
+	 			for item in new_cost:
+	 				tmp_cost= session['listasalida']
+	 				j=tmp_cost[pos]
+	 				# para cada lista dentro de la listasalida en la pos 8 cambia la el costo x el que el user modificó
+	 				j[7] = item
+	 				pos += 1
+	 				session['listasalida'] = tmp_cost
+
+	 			pos_cant = 0
+	 			# Calculamos el costo total de los prods, mult costo x cant en cada tupla
+	 			for tupla in session['listasalida']:
+	 				total_lista += float(tupla[7])*float(cantidades[pos_cant])
+	 				pos_cant += 1
+	 			session['total']=total_lista
+	 			pos = 0
+	 			# En listasalida posicion 8 estan las cantidades que por defecto es 1
+	 			# si el usuario modifica esa cantidad esta parte de codigo actualiza las cantidades dentro de listasalida
+	 			for item in cantidades:
+	 				tmp= session['listasalida']
+	 				j=tmp[pos]
+	 				# para cada lista dentro de la listasalida en la pos 7 cambia la cant que el user indicó
+	 				j[8] = item
+	 				pos += 1
+	 				session['listasalida'] = tmp
+	 			print("Lista final para Entrada")
+	 			print(session['listasalida'])
+	 			print("total_lista")
+	 			print(total_lista)
+	 			return render_template("buscar2.html", nombre=nombre, form=form, listatemp2=session['listasalida'],total_lista=total_lista)
+		else:
+			flash("Debe Llenar un campo")
+	return render_template("buscar2.html", nombre=nombre, form=form,listatemp2=session['listasalida'])
+
 
 #FUNCION QUE GENERA EL FOLIO DE LA ENTRADA, EL FOLIO NUNCA SE REPETIRA EN EL ESPACIO-TIEMPO
 def folio_e():

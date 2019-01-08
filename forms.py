@@ -69,7 +69,7 @@ def get_pk(obj): # def necesario para que el QuerySelectField pueda mostrar much
     return str(obj)
 
 def prov():
-    return db.session.query(proveedor.ATTN_NAME).distinct(proveedor.ATTN_NAME).group_by(proveedor.ATTN_NAME)
+    return db.session.query(proveedor.TO_NAME).distinct(proveedor.TO_NAME).group_by(proveedor.TO_NAME)
    
 
 def departamentos():
