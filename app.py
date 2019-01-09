@@ -481,7 +481,7 @@ def EntradaOrden():
 						n_fact_nota = numFactura, 
 						f_salida = fecha, 
 						tipo_compra = None, 
-						actividad= None,
+						actividad='Entrada',
 						id=None
 						)
 					db.session.add(inve)
@@ -777,17 +777,17 @@ def SalidaPar():
 					session['listasalida'] += lis
 					print(session['listasalida'])
 				else:
-					local = Articulos.query.filter(Articulos.ordenCompra==item).filter(Articulos.imtemId==codigo).one()
+					local = Inventario.query.filter(Inventario.id_prod==codigo).filter(Inventario.orden_compra==item).one()
 					print(local)
 					li=list()
 					lis=list()
-					li.append(local.imtemId)
-					li.append(local.descripcion)
-					li.append(item)
-					li.append(local.ordenCompra)
-					li.append(str(local.udm))
-					li.append(str(local.cantidad))
-					li.append(str(local.p_unit))
+					li.append(local.id_item)
+					li.append(local.nom_prod)
+					li.append("Stock")
+					li.append(str(local.orden_compra))
+					li.append(str(local.um))
+					li.append(str(local.cant_exist))
+					li.append(str(local.costo_unit))
 					li.append("1")
 					lis.append(li)
 					# Le agrego 1 a la cantidad cuando el user selecciona un producto.
@@ -802,7 +802,7 @@ def SalidaPar():
 			if ArtCodigo:
 				print("buscar x codigo")
 				pxn = ArtCodigo
-				buscapxn = db.session.query(Articulos).filter(Articulos.codigo.like('%'+ArtCodigo+'%')).all()
+				buscapxn = db.session.query(Inventario).filter(Inventario.id_prod.like('%'+ArtCodigo+'%')).filter(Inventario.actividad=="entrada").filter(Inventario.cant_exist>0).all()
 				buscainv = db.session.query(Inventario).filter(Inventario.id_item.like('%'+ArtCodigo+'%')).filter(Inventario.actividad=="a").filter(Inventario.cant_exist>0).all()
 				print(buscainv)
 				return render_template("buscar2.html", nombre=nombre, form=form, listainv=buscainv,listatemp=buscapxn,listatemp2=session['listasalida'], productpxn=ArtCodigo)
@@ -810,7 +810,7 @@ def SalidaPar():
 				print("buscar x Nombre")
 				#Buscar por nombre	
 				pxn='%'+ArtName+'%'
-				buscapxn = db.session.query(Articulos).filter(Articulos.descripcion.like('%'+ArtName+'%')).all()
+				buscapxn = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).filter(Inventario.actividad=="entrada").all()
 				buscainv = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).filter(Inventario.actividad=="a").filter(Inventario.cant_exist>0).all()
 				return render_template("buscar2.html", nombre=nombre, form=form, listainv=buscainv,listatemp=buscapxn,listatemp2=session['listasalida'], productpxn=ArtName)
 		elif 'costeo' in request.form['addsalida']:

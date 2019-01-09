@@ -72,19 +72,19 @@
 								    <tbody id="myTable">
 								    	{% for item in listatemp %}
 										    	<tr class="info" style="font:11px Arial"> 
-											        <td>{{item.codigo}}</td>
-											        <td>{{item.imtemId}}</td>
-											        <td>{{item.descripcion}}</td>
-											        <td>{{item.ordenCompra}}</td>
-											        <td>{{item.udm}}</td>
-											        <td>{{item.cantidad}}</td>
-											        <td>{{item.p_unit}}</td>
-											        <td><center><input type="radio" class="form-check-input" name="optradio" value="{{item.imtemId}},{{item.ordenCompra}},arti"></center></td>
+											        <td>{{item.id_prod}}</td>
+											        <td>{{item.id_item}}</td>
+											        <td>{{item.nom_prod}}</td>
+											        <td>{{item.orden_compra}}</td>
+											        <td>{{item.um}}</td>
+											        <td>{{item.cant_exist}}</td>
+											        <td>{{item.costo_unit}}</td>
+											        <td><center><input type="radio" class="form-check-input" name="optradio" value="{{item.id_prod}},{{item.orden_compra}},arti"></center></td>
 										    	</tr>
 									     {%endfor%}
 									     {% for item in listainv %}
 										    	<tr class="table-danger" style="font:11px Arial"> 
-											        <td>{{item.id_item}}</td>
+											        <td>{{item.id_id_prod}}</td>
 											        <td>{{item.id_item}}</td>
 											        <td>{{item.nom_prod}}</td>
 											        <td>{{item.orden_compra}}</td>
