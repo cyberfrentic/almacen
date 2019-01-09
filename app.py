@@ -147,6 +147,18 @@ def entradas():
 	else:
 		print("Entradas-No entro al método POST")
 	return render_template("entradas.html", form=form_buscaentrada, nombre=nombre)
+
+
+@app.route('/salidasTit', methods=['GET', 'POST'])	
+def salidasTit():
+	nombre = session['username'].upper()
+	form_buscaentrada = formbuscaentrada(request.form)
+	if request.method == 'POST':
+		if 'buscar' in request.form['addentrada']:
+			print('Salidas-Boton buscar funcionando')
+	else:
+		print("Entradas-No entro al método POST")
+	return render_template("salidasTit.html", form=form_buscaentrada, nombre=nombre)
 	
 	
 @app.route('/login', methods=['GET', 'POST'])
@@ -706,7 +718,7 @@ def SalidaPar():
 				total_lista += float(tupla[7])*float(tupla[8])
 				pos_cant += 1
 			return render_template("buscar2.html", nombre=nombre, form=form, listatemp2=session['listasalida'],total_lista=total_lista)
-		elif 'entrada' in request.form['addsalida']:
+		elif 'salida' in request.form['addsalida']:
 			x = request.form.getlist('cantidad')
 			y = request.form.getlist('costo')
 			print(x)
