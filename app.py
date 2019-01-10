@@ -914,7 +914,7 @@ def salidasImp():
 						seek.cant_exist = t
 						if seek.cant_exist==0:
 							seek.actividad="Surtido"
-						else:
+						elif seek.cant_exist>0 :
 							seek.actividad="PSurtido"
 						db.session.commit()
 						###########################################################
