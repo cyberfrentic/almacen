@@ -20,8 +20,28 @@
     				</div>
     				<div class="col-2"></div>            
     			</div>
-          
-      			<br>
+          <div class="row">
+            <div class="col-2 list-group-item-info">Folio:</div>
+            <div class="col-2 list-group-item-action list-group-item-warning"> <input type="text" class="form-control" value="{{folio_e}}" name="folio">
+            </div>
+            <div class="col-2 list-group-item-info">Requerimiento:</div>
+              <div class="col-2 list-group-item-action list-group-item-warning">{{ render_field(form2.nReq, class="form-control")}}</div>  
+          </div>
+          <div class="row">
+              <div class="col-2 list-group-item-info">Departamento Solicitante:</div>
+              <div class="col-6 list-group-item-action list-group-item-warning">{{ render_field(form2.dep_soli, class="form-control")}}</div>
+              
+            </div>
+            <div class="row">
+              <div class="col-2 list-group-item-info">Oficio Solicitante:</div>
+              <div class="col-6 list-group-item-action list-group-item-warning">{{ render_field(form2.oSoli, class="form-control")}}</div>
+            </div>
+           <div class="row">
+              <div class="col-2 list-group-item-info">Actividad:</div>
+            
+            <div class="col-6 list-group-item-action list-group-item-warning"> {{render_field(form.actividad, class="form-control")}}</div>
+            <br>
+           </div>
 				    <table class="table table-hover table-striped">
     				<thead>
       				<tr class="table-success">
@@ -51,9 +71,7 @@
     				</tbody>
   				</table>
   				<div class="row">
-  					<div class="col-2 list-group-item-info">Actividad:</div>
-            
-  					<div class="col-6 list-group-item-action list-group-item-warning"> {{form.actividad}}</div>
+  					
   					<div class="col-2 list-group-item-info">Total:</div>
   					<div class="col-2 list-group-item-action list-group-item-warning">{{total}}</div>
 

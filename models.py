@@ -186,6 +186,7 @@ class party_group(db.Model):
 	def __repr__(self):
 		return '{}'.format(self.group_name)
 
+
 class proveedor(db.Model):
 	__tablename__= "proveedores"
 	CONTACT_MECH_ID = db.Column(db.String(20), primary_key=True)
@@ -340,3 +341,4 @@ class Salida_Articulos(db.Model):
 		self.p_unit = p_unit
 		self.total = total
 		self.ordenCompra = ordenCompra
+		self.imtemId = imtemId

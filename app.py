@@ -20,6 +20,7 @@ from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada, form_sal
 import os
 from models import db, User, Inventario, Articulos, Entrada, Salidas, Salida_Articulos
 from datetime import datetime
+import time
 from config import DevelopmentConfig
 import pymssql 
 from bs4 import BeautifulSoup
@@ -724,20 +725,6 @@ def SalidaPar():
 			print(session['listasalida'])
 			indice =0
 			nlista=[]
-			# for item in session['listasalida']:
-			# 	if len(item)>8:
-			# 		tem=[item[0],item[1],item[2],item[3],item[4],item[5],item[6], item[8]]
-			# 		item=[]
-			# 		item=tem
-			# 	if x[indice]=="":
-			# 		item.append(1)
-			# 	else:
-			# 		item.append(str(float(x[indice])))
-			# 	item[7]=y[indice]
-			# 	indice+=1
-			# 	nlista.append(item)
-			# session.pop('listasalida')
-			# session['listasalida']=nlista
 			return redirect(url_for('salidasImp'))
 		elif 'eliminar' in request.form['addsalida']:
 			indice=0
@@ -766,7 +753,7 @@ def SalidaPar():
 					li.append(local.id_item)
 					li.append(local.nom_prod)
 					li.append("Stock")
-					li.append(str(local.orden_compra))
+					li.append(str(local.id))
 					li.append(str(local.um))
 					li.append(str(local.cant_exist))
 					li.append(str(local.costo_unit))
@@ -863,10 +850,117 @@ def salidasImp():
 	nombre=session['username']
 	detalle = session['listasalida']
 	total = session['total2']
-	form=formbuscasalida(request.form)
+	form = formbuscasalida(request.form)
+	form2 = form_salida_orden(request.form)
 	if request.method == 'POST':
-		pass
-	return render_template("SalidaParcial.html", nombre=nombre, DetalleOrden=detalle, total=total, form=form)
+		folio = folio_e()
+		req = form2.nReq.data
+		dep = form2.dep_soli.data
+		oficio = form2.oSoli.data
+		actividad = form.actividad.data
+		if actividad and req and dep and oficio:
+			f = time.strftime("%Y-%m-%d")
+			verifica = Salidas.query.filter(Salidas.nReq==req).first()
+			if verifica == None:
+				sali = Salidas(proveedor = '',
+						nomComer = '',
+						fol_entrada = folio,
+						fecha = str(f),
+						factura = '',
+						nFactura = '',
+						ordenCompra = '',
+						depSolici = str(dep),
+						nReq = str(req),
+						oSolicitnte = str(oficio),
+						tCompraContrato = '',
+						total = session['total2'],
+						observaciones = '',
+						actividad = str(actividad),
+					)
+				db.session.add(sali)
+				db.session.commit()
+				identificador = Salidas.query.filter(Salidas.nReq==req).filter(Salidas.fol_entrada==folio).first()
+				print(identificador.id)
+				for item in session['listasalida']:
+					print(item)
+					if item[2]=="Stock":
+						cod=item[0]
+						id_item = "0000"
+						##### Actualiza el inventario ###### Update en SQLAlchemy
+						canti = Inventario.query.filter(Inventario.id_item == cod).filter(Inventario.id==item[3]).one()
+						print(canti)
+						saldo = canti.cant_exist
+						print(saldo)
+						t = float(saldo) - float(item[5])
+						print(t)
+						canti.cant_exist = t
+						if canti.cant_exist==0:
+							canti.actividad="Surtido"
+						else:
+							canti.actividad="PSurtido"
+						db.session.commit()
+						###########################################################
+					else:
+						seek = Inventario.query.filter(Inventario.id_item == item[0]).filter(Inventario.orden_compra==item[3]).one()
+						cod=seek.id_prod
+						id_item = seek.id_item
+						##### Actualiza el inventario ###### Update en SQLAlchemy
+						#canti = Inventario.query.filter(Inventario.id_item == item[0]).filter(Inventario.orden_compra==item[3]).one()
+						print(seek)
+						saldo = seek.cant_exist
+						print(saldo)
+						t = float(saldo) - float(item[5])
+						print(t)
+						seek.cant_exist = t
+						if seek.cant_exist==0:
+							seek.actividad="Surtido"
+						else:
+							seek.actividad="PSurtido"
+						db.session.commit()
+						###########################################################
+					sa = Salida_Articulos(salidas_id = identificador.id,
+							cantidad = item[5],
+							udm = item[4],
+							codigo = cod,
+							descripcion = item[1],
+							p_unit = item[6],
+							total = (float(item[5])*float(item[6])),
+							ordenCompra = "SalidaParcial",
+							imtemId = id_item,
+						)
+					db.session.add(sa)
+					db.session.commit()
+					
+					###########################################################
+				flash("Salida parcial fue guardada con el numero {}".format(identificador.id))
+				arti = Salida_Articulos.query.filter(Salida_Articulos.salidas_id==identificador.id).all()
+				query = Salidas.query.filter(Salidas.id==identificador.id).first()
+				generales=list()
+				generales.append(query.proveedor)
+				generales.append(query.fecha)
+				generales.append(query.nomComer)
+				generales.append(query.fol_entrada)
+				generales.append(query.factura)
+				generales.append(query.nFactura)
+				generales.append(query.ordenCompra)
+				generales.append(query.depSolici)
+				generales.append(query.nReq)
+				generales.append(query.oSolicitnte)
+				generales.append(query.tCompraContrato)
+				generales.append(query.total)
+				generales.append(query.actividad)
+				listas = list()
+				listas.append('Proveedor:')
+				listas.append('Nombre Comercial:')
+				x = entradaPdf("SalidaP", listas, generales, arti,1)
+				session.pop('listasalida')
+				session.pop('total2')
+				return x
+			else:
+				flash("El requerimiento {} ya ha sido capturado anteriormente con numero de oficcio {}".format(req, verifica.oSolicitnte))
+		else:
+			flash("Debe llenar todos los campos, alguno le falto , revise por favor!")
+	return render_template("SalidaParcial.html", nombre=nombre, DetalleOrden=detalle, total=total, form=form, form2=form2, folio_e=folio_e())
 
 
 
@@ -880,9 +974,14 @@ def folio_e():
 
 	if len(str(b))==1:
 		bb='0'+ (str(b))
+	else:
+		bb=str(b)
     
 	if len(str(c))==1:
 		cc='0'+ (str(c))
+	else:
+		cc=str(c)
+
 	return str(a)+bb+cc+'H'+x[11:19]
 	
 if __name__ == '__main__':
