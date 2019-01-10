@@ -69,7 +69,7 @@ def listaGlobal(lista):
 
 @app.before_request
 def before_request():
-	if 'username' not in session and request.endpoint in ['index', 'entradas', 'salidas', 'buscaprod', 'verlista', 'ConsultaEntrada', 'crearUser', 'EntradaOrden', 'ConsultaSalida']:
+	if 'username' not in session and request.endpoint in ['index', 'entradas', 'salidas', 'buscaprod', 'verlista', 'ConsultaEntrada', 'crearUser', 'EntradaOrden', 'ConsultaSalida', 'salidasTit', 'SalidaPar']:
 		return redirect(url_for('login'))
 	elif 'username' in session:
 		usr = session['username']
@@ -720,26 +720,25 @@ def SalidaPar():
 			return render_template("buscar2.html", nombre=nombre, form=form, listatemp2=session['listasalida'],total_lista=total_lista)
 		elif 'salida' in request.form['addsalida']:
 			x = request.form.getlist('cantidad')
-			y = request.form.getlist('costo')
 			print(x)
-			print(y)
+			print(session['listasalida'])
 			indice =0
 			nlista=[]
-			for item in session['listasalida']:
-				if len(item)>8:
-					tem=[item[0],item[1],item[2],item[3],item[4],item[5],item[6], item[8]]
-					item=[]
-					item=tem
-				if x[indice]=="":
-					item.append(1)
-				else:
-					item.append(str(float(x[indice])))
-				item[7]=y[indice]
-				indice+=1
-				nlista.append(item)
-			session.pop('listasalida')
-			session['listasalida']=nlista
-			return redirect(url_for('EntradaOrden'))
+			# for item in session['listasalida']:
+			# 	if len(item)>8:
+			# 		tem=[item[0],item[1],item[2],item[3],item[4],item[5],item[6], item[8]]
+			# 		item=[]
+			# 		item=tem
+			# 	if x[indice]=="":
+			# 		item.append(1)
+			# 	else:
+			# 		item.append(str(float(x[indice])))
+			# 	item[7]=y[indice]
+			# 	indice+=1
+			# 	nlista.append(item)
+			# session.pop('listasalida')
+			# session['listasalida']=nlista
+			return redirect(url_for('salidasImp'))
 		elif 'eliminar' in request.form['addsalida']:
 			indice=0
 			elementos = request.form.getlist('optcheck')
@@ -783,7 +782,7 @@ def SalidaPar():
 					lis=list()
 					li.append(local.id_item)
 					li.append(local.nom_prod)
-					li.append("Stock")
+					li.append(item)
 					li.append(str(local.orden_compra))
 					li.append(str(local.um))
 					li.append(str(local.cant_exist))
@@ -815,7 +814,7 @@ def SalidaPar():
 				return render_template("buscar2.html", nombre=nombre, form=form, listainv=buscainv,listatemp=buscapxn,listatemp2=session['listasalida'], productpxn=ArtName)
 		elif 'costeo' in request.form['addsalida']:
 	 		if session['listasalida']:
-	 			# item 6 de listasalida es el costo
+	 			# item 7 de listasalida es el costo
 	 			total_lista = 0
 	 			cantidades = request.form.getlist('cantidad')
 	 			print("Cantidades cantidades cantidades, recibido lista total")
@@ -838,15 +837,15 @@ def SalidaPar():
 	 			for tupla in session['listasalida']:
 	 				total_lista += float(tupla[7])*float(cantidades[pos_cant])
 	 				pos_cant += 1
-	 			session['total']=total_lista
+	 			session['total2']=total_lista
 	 			pos = 0
-	 			# En listasalida posicion 8 estan las cantidades que por defecto es 1
+	 			# En listasalida posicion 7 estan las cantidades que por defecto es 1
 	 			# si el usuario modifica esa cantidad esta parte de codigo actualiza las cantidades dentro de listasalida
 	 			for item in cantidades:
 	 				tmp= session['listasalida']
 	 				j=tmp[pos]
 	 				# para cada lista dentro de la listasalida en la pos 7 cambia la cant que el user indicó
-	 				j[8] = item
+	 				j[5] = item
 	 				pos += 1
 	 				session['listasalida'] = tmp
 	 			print("Lista final para Entrada")
@@ -857,6 +856,18 @@ def SalidaPar():
 		else:
 			flash("Debe Llenar un campo")
 	return render_template("buscar2.html", nombre=nombre, form=form,listatemp2=session['listasalida'])
+
+
+@app.route('/salidas_de_almacen/salida-parcial/impresion', methods=['GET', 'POST'])
+def salidasImp():
+	nombre=session['username']
+	detalle = session['listasalida']
+	total = session['total2']
+	form=formbuscasalida(request.form)
+	if request.method == 'POST':
+		pass
+	return render_template("SalidaParcial.html", nombre=nombre, DetalleOrden=detalle, total=total, form=form)
+
 
 
 #FUNCION QUE GENERA EL FOLIO DE LA ENTRADA, EL FOLIO NUNCA SE REPETIRA EN EL ESPACIO-TIEMPO

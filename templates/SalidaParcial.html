@@ -1,0 +1,75 @@
+{% extends 'index.html' %}
+{% from "_macros.html" import render_field %}
+{% block content %}
+
+<form method="POST" accept-charset="utf-8">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>  
+<div class="container">
+	<div class="container-fluid">
+  		<div class="row" style="background-image:{{url_for('static', filename='img/logo.jpg') }}; width: 100%; height: 100vh; "">
+    		<div class="col-12">
+    			<div class="row">
+    				<div class="col-2"></div>
+    				<div class="col-8">
+    					<center>
+      						<h5>Comisión de Agua Potable y Alcantarillado del Estado de Quintana Roo</h5>
+      						<h6>Dirección de Recursos Materiales</h6>
+      						<h6>Departamento de Almacén General</h6>
+      						<h6>Formato de Salida de materiales de Almacén</h6>
+      					</center>
+    				</div>
+    				<div class="col-2"></div>            
+    			</div>
+          
+      			<br>
+				    <table class="table table-hover table-striped">
+    				<thead>
+      				<tr class="table-success">
+                <tr>
+                  <th>Código Art.</th>
+                  <th>Descripcion</th>
+                  <th>origen</th>
+                  <th>Costo Unit</th>
+                  <th>Cantidad</th>
+                </tr>
+      				</tr>
+    				</thead>
+    				<tbody>
+    					<tr class="table-warning">
+                {% if DetalleOrden %}
+    						{% for fila in DetalleOrden %}                                 
+                				<tr class="info" style="font:11px Arial">
+                      		<td>{{ fila[0] }}</td>
+                    			<td>{{ fila[1] }}</td>
+                          <td>{{ fila[2] }}</td>
+                          <td>{{ fila[6] }}</td>
+                          <td>{{ fila[5] }}</td>	
+                				</tr>
+                {% endfor %}                                             
+                {% endif %}
+    					</tr>
+    				</tbody>
+  				</table>
+  				<div class="row">
+  					<div class="col-2 list-group-item-info">Actividad:</div>
+            
+  					<div class="col-6 list-group-item-action list-group-item-warning"> {{form.actividad}}</div>
+  					<div class="col-2 list-group-item-info">Total:</div>
+  					<div class="col-2 list-group-item-action list-group-item-warning">{{total}}</div>
+
+  				</div>
+          <br>
+            <div class="col-2">
+              <button type="submit" class="btn btn-danger" name="addOSalida" value="guardaSalida">Guardar</button>
+              <br>
+            </div>
+            <br>
+    <br>
+    <br>
+			</div>
+    	</div>
+    </div>
+
+</div>
+</form>
+{% endblock %}
