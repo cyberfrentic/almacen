@@ -34,24 +34,51 @@ class PDF(FPDF):
         self.ln(4)
         self.cell(150, 10, '', 0, 0)
         self.set_fill_color(184, 188, 191)
-        if len(Titulo)<8:
+        if Titulo =="Entrada":
             self.cell(20, 8, Titulo, 0, 0, 'C', True)
-        else:
-            self.cell(30, 8, Titulo, 0, 0, 'C', True)
-        self.ln(8)
-        #self.set_fill_color(255, 255, 255)
-        self.cell(20, 8, "Proveedor:", 'TL' , 0, 'L')
-        self.cell(130, 8,str(datos1[0]), 'TB',0,'L', 'True' )
-        self.cell(10, 8, "", 'T',0,'C', 'True' )
-        self.cell(10, 8, 'Fecha: ', 'T' , 0, 'L')
-        self.cell(19, 8, str(datos1[1]), 'TBR',0,'R', 'True' )
-        self.ln(8)
-        self.cell(30, 8, "Nombre Comercial", 'L' , 0, 'L')
-        self.cell(120, 8, str(datos1[2])[:55], 'B',0,'C', 'True' )
-        self.cell(1, 8, "", 0,0,'C', 'True' )
-        self.cell(11, 8, 'Folio: ', 0 , 0, 'L')
-        self.cell(27, 8, str(datos1[3]), 'RB',0,'C')
-        self.ln(8)
+            self.cell(20, 8, "Proveedor:", 'TL' , 0, 'L')
+            self.ln(8)
+            self.cell(130, 8,str(datos1[0]), 'TB',0,'L', 'True' )
+            self.cell(10, 8, "", 'T',0,'C', 'True' )
+            self.cell(10, 8, 'Fecha: ', 'T' , 0, 'L')
+            self.cell(19, 8, str(datos1[1]), 'TBR',0,'R', 'True' )
+            self.ln(8)
+            self.cell(30, 8, "Nombre Comercial", 'L' , 0, 'L')
+            self.cell(120, 8, str(datos1[2])[:55], 'B',0,'C', 'True' )
+            self.cell(1, 8, "", 0,0,'C', 'True' )
+            self.cell(11, 8, 'Folio: ', 0 , 0, 'L')
+            self.cell(27, 8, str(datos1[3]), 'RB',0,'C')
+            self.ln(8)
+        elif Titulo=="Salida":
+            self.cell(20, 8, Titulo, 0, 0, 'C', True)
+            self.ln(8)
+            self.cell(20, 8, 'Oficio Solicitante:', 'TL' , 0, 'L')
+            self.cell(130, 8,str(datos1[9]), 'TB',0,'C', 'True' )
+            self.cell(10, 8, "", 'T',0,'C', 'True' )
+            self.cell(10, 8, 'Fecha: ', 'T' , 0, 'L')
+            self.cell(19, 8, str(datos1[1]), 'TBR',0,'R', 'True' )
+            self.ln(8)
+            self.cell(30, 8, "Nombre Recibe", 'L' , 0, 'L')
+            self.cell(120, 8, str(datos1[2])[:55], 'B',0,'C', 'True' )
+            self.cell(1, 8, "", 0,0,'C', 'True' )
+            self.cell(11, 8, 'Folio: ', 0 , 0, 'L')
+            self.cell(27, 8, str(datos1[3]), 'RB',0,'C')
+            self.ln(8)
+        elif Titulo=="SalidaP":
+            self.cell(20, 8, Titulo, 0, 0, 'C', True)
+            self.ln(8)
+            self.cell(20, 8, 'Oficio Solicitante:', 'TL' , 0, 'L')
+            self.cell(130, 8,str(datos1[9]), 'TB',0,'C', 'True' )
+            self.cell(10, 8, "", 'T',0,'C', 'True' )
+            self.cell(10, 8, 'Fecha: ', 'T' , 0, 'L')
+            self.cell(19, 8, str(datos1[1]), 'TBR',0,'R', 'True' )
+            self.ln(8)
+            self.cell(30, 8, "Nombre Recibe", 'L' , 0, 'L')
+            self.cell(120, 8, str(datos1[2])[:55], 'B',0,'C', 'True' )
+            self.cell(1, 8, "", 0,0,'C', 'True' )
+            self.cell(11, 8, 'Folio: ', 0 , 0, 'L')
+            self.cell(27, 8, str(datos1[3]), 'RB',0,'C')
+            self.ln(8)
         self.cell(40, 8, 'Factura, Nota o Cotización:', 'L' , 0, 'L')
         self.cell(25, 8, str(datos1[4]), 'B',0,'C', 'True' )
         self.cell(70, 8, str(datos1[5]), 'B',0,'C', 'True' )
@@ -75,90 +102,73 @@ class PDF(FPDF):
         # Arial italic 8
         self.set_font('Arial', 'B', 8)
         # Texto de pie de pagina
-        self.cell(50, 5, 'LIC.  N. JOAQUIN CORREA RUIZ', 'B', 0, 'C')
-        self.cell(20, 10, '', 0, 0, 'L')
-        self.cell(50, 5, 'LIC. N. JOAQUIN CORREA RUIZ','B',0,'C')
-        self.cell(20, 10, '', 0, 0, 'L')
-        self.cell(50, 5, 'LAE. E. RODRIGO ELJURE FAYAD','B',0,'C')
-        self.ln(5)
-        self.set_font('Arial', 'B', 6)
-        self.cell(50, 5, 'RECIBE', 0, 0, 'C')
-        self.cell(20, 10, '', 0, 0, 'L')
-        self.cell(50, 5, 'VISTO BUENO',0,0,'C')
-        self.cell(20, 10, '', 0, 0, 'L')
-        self.cell(50, 5, 'VISTO BUENO',0,0,'C')
-        self.ln(3)
-        self.set_font('Arial', 'B', 6)
-        self.cell(50, 5, '', 0, 0, 'C')
-        self.cell(20, 10, '', 0, 0, 'L')
-        self.cell(50, 5, '',0,0,'C')
-        self.cell(20, 10, '', 0, 0, 'L')
-        self.cell(50, 5, 'DIRECTOR DE RECURSOS MATERIALES',0,0,'C')
-        self.ln(3)
+        if Titulo == "Salida":
+            self.cell(50, 5, str(datos1[2])[:55], 'B', 0, 'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, str(datos1[0]),'B',0,'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, 'LAE. E. RODRIGO ELJURE FAYAD','B',0,'C')
+            self.ln(5)
+            self.set_font('Arial', 'B', 6)
+            self.cell(50, 5, 'RECIBE', 0, 0, 'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, 'VISTO BUENO',0,0,'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, 'VISTO BUENO',0,0,'C')
+            self.ln(3)
+            self.set_font('Arial', 'B', 6)
+            self.cell(50, 5, '', 0, 0, 'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, '',0,0,'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, 'DIRECTOR DE RECURSOS MATERIALES',0,0,'C')
+            self.ln(3)
+        elif Titulo == "SalidaP":
+            self.cell(50, 5, str(datos1[2])[:55], 'B', 0, 'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, 'LIC.  N. JOAQUIN CORREA RUIZ','B',0,'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, 'LAE. E. RODRIGO ELJURE FAYAD','B',0,'C')
+            self.ln(5)
+            self.set_font('Arial', 'B', 6)
+            self.cell(50, 5, 'RECIBE', 0, 0, 'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, 'VISTO BUENO',0,0,'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, 'VISTO BUENO',0,0,'C')
+            self.ln(3)
+            self.set_font('Arial', 'B', 6)
+            self.cell(50, 5, '', 0, 0, 'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, '',0,0,'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, 'DIRECTOR DE RECURSOS MATERIALES',0,0,'C')
+            self.ln(3)
+        elif Titulo=="Entrada":
+            self.cell(50, 5, 'LIC.  N. JOAQUIN CORREA RUIZ', 'B', 0, 'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, 'LIC. N. JOAQUIN CORREA RUIZ','B',0,'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, 'LAE. E. RODRIGO ELJURE FAYAD','B',0,'C')
+            self.ln(5)
+            self.set_font('Arial', 'B', 6)
+            self.cell(50, 5, 'RECIBE', 0, 0, 'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, 'VISTO BUENO',0,0,'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, 'VISTO BUENO',0,0,'C')
+            self.ln(3)
+            self.set_font('Arial', 'B', 6)
+            self.cell(50, 5, '', 0, 0, 'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, '',0,0,'C')
+            self.cell(20, 10, '', 0, 0, 'L')
+            self.cell(50, 5, 'DIRECTOR DE RECURSOS MATERIALES',0,0,'C')
+            self.ln(3)
         # Page number
         self.set_font('Arial', 'B', 8)
         self.cell(0, 10, 'Página ' + str(self.page_no()) + '/{nb}', 0, 0, 'C')
 
-
-def letras():
-    meses = {
-        '01': 'Enero',
-        '02': 'Febrero',
-        '03': 'Marzo',
-        '04': 'Abril',
-        '05': 'Mayo',
-        '06': 'Junio',
-        '07': 'Julio',
-        '08': 'Agosto',
-        '09': 'Septiembre',
-        '10': 'Octubre',
-        '11': 'Noviembre',
-        '12': 'Diciembre',
-    }
-    dias = {
-        '01': 'Primero',
-        '02': 'Dos',
-        '03': 'Tres',
-        '04': 'Cuatro',
-        '05': 'Cinco',
-        '06': 'Seis',
-        '07': 'Siete',
-        '08': 'Ocho',
-        '09': 'Nueve',
-        '10': 'Diez',
-        '11': 'Once',
-        '12': 'Doce',
-        '13': 'Trece',
-        '14': 'Catorce',
-        '15': 'Quince',
-        '16': 'Dieciseis',
-        '17': 'Diecisiete',
-        '18': 'Dieciocho',
-        '19': 'Diecinueve',
-        '20': 'Veinte',
-        '21': 'VeintiUno',
-        '22': 'VeintiDos',
-        '23': 'VeintiTres',
-        '24': 'VeintiCuatro',
-        '25': 'VeintiCinco',
-        '26': 'VeintiSeis',
-        '27': 'VeintiSiete',
-        '28': 'VeintiOcho',
-        '29': 'VeintiNueve',
-        '30': 'Treinta',
-        '31': 'Treinta y uno',
-    }
-    anios = {
-        '2018': 'Dos mil dieciocho',
-        '2019': 'Dos mil diecinueve',
-        '2020': 'Dos mil veinte',
-        '2021': 'Dos mil veintiuno',
-        '2022': 'Dos mil veintidos',
-    }
-    dia = str(datetime.today())[8:10]
-    mes = str(datetime.today())[5:7]
-    anio = str(datetime.today())[:4]
-    return (dias[dia] + ' dias del mes de ' + meses[mes] + ' de ' + anios[anio]).upper()
 
 
 def SetMoneda(num, simbolo="$", n_decimales=2):
@@ -200,27 +210,6 @@ def SetMoneda(num, simbolo="$", n_decimales=2):
         return "%s %s" % (simbolo, num)
         
     return "%s %s.%s" % (simbolo, num, dec)
-
-
-def fecha_actual():
-    meses = {
-        '01': 'Enero',
-        '02': 'Febrero',
-        '03': 'Marzo',
-        '04': 'Abril',
-        '05': 'Mayo',
-        '06': 'Junio',
-        '07': 'Julio',
-        '08': 'Agosto',
-        '09': 'Septiembre',
-        '10': 'Octubre',
-        '11': 'Noviembre',
-        '12': 'Diciembre',
-    }
-    dia = str(datetime.today())[8:10]
-    mes = str(datetime.today())[5:7]
-    anio = str(datetime.today())[:4]
-    return (dia + ' de ' + meses[mes] + ' de ' + anio).upper()
 
 
 def entradaPdf(titulo, listas, datos, data2,reim=0):

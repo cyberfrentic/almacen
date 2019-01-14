@@ -300,9 +300,10 @@ class Salidas(db.Model):
 	total = db.Column(db.Float)
 	observaciones = db.Column(db.Text)
 	actividad = db.Column(db.Text)
+	solicitante = db.Column(db.String(75))
 
 	def __init__(self, proveedor, nomComer, fol_entrada, fecha, factura, nFactura, ordenCompra,
-		depSolici, nReq, oSolicitnte, tCompraContrato, total, observaciones,actividad):
+		depSolici, nReq, oSolicitnte, tCompraContrato, total, observaciones,actividad,solicitante):
 		self.proveedor = proveedor
 		self.nomComer = nomComer
 		self.fol_entrada = fol_entrada
@@ -317,6 +318,7 @@ class Salidas(db.Model):
 		self.total = total
 		self.observaciones = observaciones
 		self.actividad = actividad
+		self.solicitante = solicitante
 
 
 class Salida_Articulos(db.Model):

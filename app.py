@@ -178,6 +178,8 @@ def login():
 			session['username'] = username
 			session['listatotal']=[]
 			session['listasalida']=[]
+			session['total']=0
+			session['total2']=0
 			return redirect(url_for('index'))
 		else:
 			error_message = '{} No es un usuario del sistema'.format(username)
@@ -188,11 +190,14 @@ def login():
 
 @app.route('/logout')
 def logout():
+	session.clear()
 	if 'username' in session:
 		#connection.close()
 		session.pop('listatotal')
 		session.pop('username')
-		session.pop('listasalida')	    
+		session.pop('listasalida')
+		session.pop('total')
+		session.pop('total2')
 	return redirect(url_for('login'))
 
 
@@ -554,7 +559,8 @@ def salidas():
 	if request.method == 'POST':
 		print("RECIBIO NUMERO DE ORDEN DE SALIDA ")
 		id_orden = form_buscasalida.order_id.data
-		if id_orden:			
+		if id_orden:
+			print(id_orden)			
 			if 'buscar' in request.form['addentrada']:
 				SqlQueryE = """SELECT * FROM entradas  WHERE entradas.ordencompra='%s'"""%(id_orden)
 				SqlQueryD = """SELECT * FROM entarti  WHERE entarti.ordencompra='%s'"""%(id_orden)
@@ -574,6 +580,7 @@ def salidas():
 				return render_template("SalidaOrden.html", nombre=nombre,form=form_buscasalida,DetalleOrden=DetalleOrden,EncabeOrden=EncabeOrden)	
 		elif 'guardaSalida' in request.form['addOSalida'][:12]:
 			actividad = form_buscasalida.actividad.data
+			nombrerecibe = request.form.get('recibe')
 			verifica = Salidas.query.filter_by(ordenCompra=request.form['addOSalida'][:12]).first()
 			if verifica==None:
 				if len(form_buscasalida.actividad.data)==0:
@@ -599,6 +606,7 @@ def salidas():
 					Enc_Orden.total,
 					Enc_Orden.observaciones,
 					form_buscasalida.actividad.data,
+					nombrerecibe,
 				)
 				db.session.add(Sali)
 				db.session.commit()
@@ -632,7 +640,7 @@ def salidas():
 				generales=list()
 				generales.append(query.proveedor)
 				generales.append(query.fecha)
-				generales.append(query.nomComer)
+				generales.append(nombrerecibe)#Nombre de quien recibe
 				generales.append(query.fol_entrada)
 				generales.append(query.factura)
 				generales.append(query.nFactura)
@@ -851,13 +859,15 @@ def salidasImp():
 	detalle = session['listasalida']
 	total = session['total2']
 	form = formbuscasalida(request.form)
-	form2 = form_salida_orden(request.form)
+	form2 = form_salida_orden(request.form)	
 	if request.method == 'POST':
 		folio = folio_e()
 		req = form2.nReq.data
 		dep = form2.dep_soli.data
 		oficio = form2.oSoli.data
 		actividad = form.actividad.data
+		nombrerecibe= request.form.get('recibe')
+		print(nombrerecibe)
 		if actividad and req and dep and oficio:
 			f = time.strftime("%Y-%m-%d")
 			verifica = Salidas.query.filter(Salidas.nReq==req).first()
@@ -876,6 +886,7 @@ def salidasImp():
 						total = session['total2'],
 						observaciones = '',
 						actividad = str(actividad),
+						solicitante=nombrerecibe,
 					)
 				db.session.add(sali)
 				db.session.commit()
@@ -938,7 +949,7 @@ def salidasImp():
 				generales=list()
 				generales.append(query.proveedor)
 				generales.append(query.fecha)
-				generales.append(query.nomComer)
+				generales.append(nombrerecibe) # Nombre solicitante
 				generales.append(query.fol_entrada)
 				generales.append(query.factura)
 				generales.append(query.nFactura)
@@ -955,6 +966,8 @@ def salidasImp():
 				x = entradaPdf("SalidaP", listas, generales, arti,1)
 				session.pop('listasalida')
 				session.pop('total2')
+				session['listasalida']=[]
+				session['total2']=0
 				return x
 			else:
 				flash("El requerimiento {} ya ha sido capturado anteriormente con numero de oficcio {}".format(req, verifica.oSolicitnte))
