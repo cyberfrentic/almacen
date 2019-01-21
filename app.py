@@ -590,8 +590,6 @@ def salidas():
 				#print(request.form['addOSalida'][12:])
 				Enc_Orden = Entrada.query.filter_by(ordenCompra=request.form['addOSalida'][12:]).one()
 				Det_Orden = Articulos.query.filter_by(ordenCompra=request.form['addOSalida'][12:]).all()
-				#print(Det_Orden)
-				#print(Enc_Orden.nomComer)
 				Sali = Salidas(Enc_Orden.proveedor,
 					Enc_Orden.nomComer,
 					Enc_Orden.fol_entrada,
