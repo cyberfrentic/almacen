@@ -36,8 +36,8 @@ class PDF(FPDF):
         self.set_fill_color(184, 188, 191)
         if Titulo =="Entrada":
             self.cell(20, 8, Titulo, 0, 0, 'C', True)
-            self.cell(20, 8, "Proveedor:", 'TL' , 0, 'L')
             self.ln(8)
+            self.cell(20, 8, "Proveedor:", 'TL' , 0, 'L')
             self.cell(130, 8,str(datos1[0]), 'TB',0,'L', 'True' )
             self.cell(10, 8, "", 'T',0,'C', 'True' )
             self.cell(10, 8, 'Fecha: ', 'T' , 0, 'L')
@@ -105,7 +105,7 @@ class PDF(FPDF):
         if Titulo == "Salida":
             self.cell(50, 5, str(datos1[2])[:55], 'B', 0, 'C')
             self.cell(20, 10, '', 0, 0, 'L')
-            self.cell(50, 5, str(datos1[0]),'B',0,'C')
+            self.cell(50, 5, 'LIC.  N. JOAQUIN CORREA RUIZ','B',0,'C')
             self.cell(20, 10, '', 0, 0, 'L')
             self.cell(50, 5, 'LAE. E. RODRIGO ELJURE FAYAD','B',0,'C')
             self.ln(5)
