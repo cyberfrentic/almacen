@@ -668,15 +668,19 @@ def ConsultaSalida():
 	form = form_consul_entrada(request.form)
 	if request.method == 'POST':
 		orden = form.nOrden.data
+		print(request.form['addOrdenSal'])
 		xa = request.form['addOrdenSal'][:10]
 		print(xa)
 		if 'reimprimir' in xa:
-			query = Salidas.query.filter_by(ordenCompra=request.form['addOrdenSal'][10:]).one()
+			if (len(request.form['addOrdenSal'])) == 27:
+				query = Salidas.query.filter_by(fol_entrada=request.form['addOrdenSal'][10:]).one()
+			else:
+				query = Salidas.query.filter_by(ordenCompra=request.form['addOrdenSal'][10:]).one()
 			arti = Salida_Articulos.query.filter_by(ordenCompra = request.form['addOrdenSal'][10:]).all()
 			generales=list()
 			generales.append(query.proveedor)
 			generales.append(query.fecha)
-			generales.append(query.nomComer)
+			generales.append(query.solicitante)
 			generales.append(query.fol_entrada)
 			generales.append(query.factura)
 			generales.append(query.nFactura)
@@ -693,12 +697,23 @@ def ConsultaSalida():
 			x = entradaPdf("Salida Reimpresa", listas, generales, arti,1)
 			return x
 		elif 'buscarOrd' in xa:
-			try:
-				entra = Salidas.query.filter_by(ordenCompra = orden).one()
-			except Exception as e:
-				entra = 0
-			finally:
-				arti = Salida_Articulos.query.filter_by(ordenCompra = orden).all()
+			if len(orden)<17:
+				print(len(orden))
+				try:
+					entra = Salidas.query.filter_by(ordenCompra = orden).one()
+				except Exception as e:
+					entra = 0
+				finally:
+					arti = Salida_Articulos.query.filter_by(ordenCompra = orden).all()
+			elif len(orden)==17:
+				try:
+					entra = Salidas.query.filter_by(fol_entrada = orden).one()
+					print (entra)
+				except Exception as e:
+					entra = 0
+				finally:
+					print(entra.id)
+					arti = Salida_Articulos.query.filter_by(id = entra.id).all()
 			if entra == 0:
 				flash("El numero de orden no existe")
 			else:

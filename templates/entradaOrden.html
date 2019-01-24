@@ -107,7 +107,11 @@
             <div class="col-2 list-group-item-action list-group-item-warning">{{reporte.total}}</div>
             <br>
             <div class="col-2">
-              <button type="submit" class="btn btn-outline-danger" name="addOrdenSal" value="reimprimir{{reporte.ordenCompra}}">Reimprimir</button>
+              {% if reporte.ordenCompra == ''%}
+              <button type="submit" class="btn btn-outline-danger" name="addOrdenSal" value="reimprimir{{reporte.fol_entrada}}">Reimprimir</button>
+              {% else %}
+                <button type="submit" class="btn btn-outline-danger" name="addOrdenSal" value="reimprimir{{reporte.ordenCompra}}">Reimprimir</button>
+              {% endif %}"
             </div>
           </div>
       </div>
