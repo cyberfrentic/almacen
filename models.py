@@ -11,6 +11,7 @@ class User(db.Model):
 	__tablename__= 'users'
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(50), unique=True)
+	nombrecompleto = db.Column(db.String(90))
 	email = db.Column(db.String(40))
 	password = db.Column(db.String(93))
 	created_date = db.Column(db.DateTime, default=datetime.datetime.now)
@@ -301,6 +302,8 @@ class Salidas(db.Model):
 	observaciones = db.Column(db.Text)
 	actividad = db.Column(db.Text)
 	solicitante = db.Column(db.String(75))
+	nombreEntrega = db.Column(db.String(90))
+	
 
 	def __init__(self, proveedor, nomComer, fol_entrada, fecha, factura, nFactura, ordenCompra,
 		depSolici, nReq, oSolicitnte, tCompraContrato, total, observaciones,actividad,solicitante):
