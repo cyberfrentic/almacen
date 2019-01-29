@@ -305,7 +305,6 @@ class Salidas(db.Model):
 	observaciones = db.Column(db.Text)
 	actividad = db.Column(db.Text)
 	solicitante = db.Column(db.String(75))
-	nombreEntrega = db.Column(db.String(90))
 	
 
 

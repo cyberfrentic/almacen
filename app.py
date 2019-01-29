@@ -991,8 +991,7 @@ def salidasImp():
 				listas = list()
 				listas.append('Proveedor:')
 				listas.append('Nombre Comercial:')
-				nombreEntrega = session['nombrecompleto']
-				x = entradaPdf("SalidaP", listas, generales, arti, 1, nombreEntrega)
+				x = entradaPdf("SalidaP", listas, generales, arti, 1, nombrerecibe)
 				session.pop('listasalida')
 				session.pop('total2')
 				session['listasalida']=[]
