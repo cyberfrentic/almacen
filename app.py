@@ -4,14 +4,14 @@
 #Desarrollado en Python 3.4
 #No logré terminarlo en diciembre, pero las pantallas enviadas sirvieron para
 #justificar en contraloría
-#             
+#
 #     ---------|--
-#		| 	   | 
-#       |    (° °) 
+#		| 	   |
+#       |    (° °)
 #       | 	    O...
-#		| 		 	
-#		| 
-#	    | 
+#		|
+#		|
+#	    |
 #
 from flask import url_for
 from flask import Flask, flash, redirect, render_template, request, session, abort
@@ -22,14 +22,14 @@ from models import db, User, Inventario, Articulos, Entrada, Salidas, Salida_Art
 from datetime import datetime
 import time
 from config import DevelopmentConfig
-import pymssql 
+import pymssql
 from bs4 import BeautifulSoup
 from flask_wtf import CSRFProtect
 from tools.fpdf import entradaPdf
 
 ###########################################
 # CONEXION A MYSQL
-# creo la importacion 
+# creo la importacion
 import pymysql
 
 pymysql.install_as_MySQLdb()
@@ -42,7 +42,7 @@ crsf = CSRFProtect()
 
 #################################################
 # CONEXION A SQL SERVER 2012
-# Creo la cadena de conexion 
+# Creo la cadena de conexion
 server ="DESKTOP-TRVGHH8\\SQLHUGO"
 user="sa"
 password="12345"
@@ -51,7 +51,7 @@ connection = pymssql.connect(host=server, user=user, password=password, database
 
 try :
    # Creacion del cursor
-   cursor = connection.cursor()  
+   cursor = connection.cursor()
    print("Conexion establecida con exito")
 except:
    print("No hay Conexion a SQL SERVER")
@@ -122,6 +122,7 @@ def crearUser():
         usuar = User.query.filter_by(username=user).first()
         if usuar is None:
                 user = User(crear.username.data,
+                            crear.nombrecompleto,
                             crear.password.data,
                             crear.email.data,
                             )
@@ -138,7 +139,7 @@ def crearUser():
     return render_template('crearUser.html', form=crear, nombre=nombre)
 
 
-@app.route('/entradas', methods=['GET', 'POST'])	
+@app.route('/entradas', methods=['GET', 'POST'])
 def entradas():
 	nombre = session['username'].upper()
 	form_buscaentrada = formbuscaentrada(request.form)
@@ -150,7 +151,7 @@ def entradas():
 	return render_template("entradas.html", form=form_buscaentrada, nombre=nombre)
 
 
-@app.route('/salidasTit', methods=['GET', 'POST'])	
+@app.route('/salidasTit', methods=['GET', 'POST'])
 def salidasTit():
 	nombre = session['username'].upper()
 	form_buscaentrada = formbuscaentrada(request.form)
@@ -160,13 +161,13 @@ def salidasTit():
 	else:
 		print("Entradas-No entro al método POST")
 	return render_template("salidasTit.html", form=form_buscaentrada, nombre=nombre)
-	
-	
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	username_ =""
 	password_ =""
-	login_form = LoginForm(request.form) 
+	login_form = LoginForm(request.form)
 	if request.method == 'POST' and login_form.validate() :
 		username = login_form.username.data
 		password = login_form.password.data
@@ -180,6 +181,7 @@ def login():
 			session['listasalida']=[]
 			session['total']=0
 			session['total2']=0
+			session['nombrecompleto']=user.nombrecompleto
 			return redirect(url_for('index'))
 		else:
 			error_message = '{} No es un usuario del sistema'.format(username)
@@ -265,7 +267,7 @@ def buscaprod():
 				c_local = cursor.fetchall()
 				#local = Inventario.query.filter_by(id_item=request.form['optradio']).one()
 				local = c_local[0]
-				
+
 				li=list()
 				lis=list()
 				li.append(local[0])
@@ -281,9 +283,9 @@ def buscaprod():
 				# Le agrego 1 a la cantidad cuando el user selecciona un producto.
 
 				session['listatotal'] += lis
-				
+
 				print(session['listatotal'])
-				
+
 				return render_template("buscar.html", nombre=nombre, form=form_buscap,listatemp2=session['listatotal'])
 			else:
 				flash("Debe elegir un articulo")
@@ -299,7 +301,7 @@ def buscaprod():
 				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalCodigo,listatemp2=session['listatotal'], productpxn=ArtCodigo)
 			elif ArtName:
 				print("buscar x Nombre")
-				#Buscar por nombre	
+				#Buscar por nombre
 				pxn='%'+ArtName+'%'
 				buscapxn = """SELECT PRODUCT.PRODUCT_ID, INTERNAL_NAME, PRODUCT_TYPE_ID, FAMILIA_ID, INVENTORY_ITEM_ID, INVENTORY_ITEM.QUANTITY_ON_HAND_TOTAL, INVENTORY_ITEM.UNIT_COST  FROM PRODUCT,INVENTORY_ITEM WHERE PRODUCT_NAME LIKE '%s' AND PRODUCT.PRODUCT_ID = INVENTORY_ITEM.PRODUCT_ID"""%pxn
 				cursor.execute(buscapxn)
@@ -418,6 +420,7 @@ def EntradaOrden():
 					tCompra,
 					total,
 					obser,
+                    session['nombrecompleto'],
 				)
 				generales=list()
 				generales.append(proveedor)
@@ -433,14 +436,15 @@ def EntradaOrden():
 				generales.append(tCompra)
 				generales.append(total)
 				generales.append(obser)
+				generales.append(session['nombrecompleto'])
 				db.session.add(Entra)
 				db.session.commit()
 				query = Entrada.query.filter_by(ordenCompra=orden1)
 				for dato in query:
 					datos = dato.id
 
-				print("Listatotal para entradas antes de darle boton guardar")	
-				print(session['listatotal'])	
+				print("Listatotal para entradas antes de darle boton guardar")
+				print(session['listatotal'])
 				for item in session['listatotal']:
 					#print(item)
 					total = float(item[8])*float(item[7])
@@ -457,36 +461,36 @@ def EntradaOrden():
 					db.session.commit()
 					inve = Inventario(
 						id_item = item[4],
-						id_prod = item[0], 
-						tipo_prod = item[2], 
-						nom_prod = item[1], 
-						nom_interno = item[1], 
-						descripcion = item[1], 
-						um = item[6], 
+						id_prod = item[0],
+						tipo_prod = item[2],
+						nom_prod = item[1],
+						nom_interno = item[1],
+						descripcion = item[1],
+						um = item[6],
 						id_area = None,
-						activo = None, 
-						id_familia = None, 
-						procedencia = None, 
-						modelo = None, 
-						num_parte = None, 
+						activo = None,
+						id_familia = None,
+						procedencia = None,
+						modelo = None,
+						num_parte = None,
 						num_serie = None,
-						cant_exist = item[8], 
-						cant_dispon = item[8], 
-						costo_unit = item[7], 
-						moneda= "MX", 
-						id_area_solici = None, 
-						solic_transfer = None, 
+						cant_exist = item[8],
+						cant_dispon = item[8],
+						costo_unit = item[7],
+						moneda= "MX",
+						id_area_solici = None,
+						solic_transfer = None,
 						observaciones = obser,
-						usuario = session['username'], 
-						fol_entrada = orden1, 
-						fol_salida = None, 
-						oficio_e_s = oSoli, 
-						id_proveed = proveedor[:19], 
-						orden_compra = orden1, 
-						num_requerim = nReq, 
-						n_fact_nota = numFactura, 
-						f_salida = fecha, 
-						tipo_compra = None, 
+						usuario = session['username'],
+						fol_entrada = orden1,
+						fol_salida = None,
+						oficio_e_s = oSoli,
+						id_proveed = proveedor[:19],
+						orden_compra = orden1,
+						num_requerim = nReq,
+						n_fact_nota = numFactura,
+						f_salida = fecha,
+						tipo_compra = None,
 						actividad='Entrada',
 						id=None
 						)
@@ -511,7 +515,7 @@ def EntradaOrden():
 
 @app.route('/consultayreportes/reimpresiondeE_S/entradas', methods=['GET', 'POST'])
 def ConsultaEntrada():
-	nombre = session['username'] 
+	nombre = session['username']
 	form = form_consul_entrada(request.form)
 	if request.method == 'POST':
 		orden = form.nOrden.data
@@ -533,6 +537,7 @@ def ConsultaEntrada():
 			generales.append(query.tCompraContrato)
 			generales.append(query.total)
 			generales.append(query.observaciones)
+			generales.append(query.nombrerecibe)
 			listas = list()
 			listas.append('Proveedor:')
 			listas.append('Nombre Comercial:')
@@ -552,15 +557,15 @@ def ConsultaEntrada():
 	return render_template("consulta.html", nombre=nombre, form=form, titulo="Entradas")
 
 
-@app.route('/salidas_de_almacen/salidas_por_orden_de_compra', methods=['GET', 'POST'])	
-def salidas():	
+@app.route('/salidas_de_almacen/salidas_por_orden_de_compra', methods=['GET', 'POST'])
+def salidas():
 	nombre = session['username'].upper()
 	form_buscasalida = formbuscasalida(request.form)
 	if request.method == 'POST':
 		print("RECIBIO NUMERO DE ORDEN DE SALIDA ")
 		id_orden = form_buscasalida.order_id.data
 		if id_orden:
-			print(id_orden)			
+			print(id_orden)
 			if 'buscar' in request.form['addentrada']:
 				SqlQueryE = """SELECT * FROM entradas  WHERE entradas.ordencompra='%s'"""%(id_orden)
 				SqlQueryD = """SELECT * FROM entarti  WHERE entarti.ordencompra='%s'"""%(id_orden)
@@ -577,7 +582,7 @@ def salidas():
 				if Enc_Orden:
 					EncabeOrden = Enc_Orden[0]
 					DetalleOrden = Det_Orden
-				return render_template("SalidaOrden.html", nombre=nombre,form=form_buscasalida,DetalleOrden=DetalleOrden,EncabeOrden=EncabeOrden)	
+				return render_template("SalidaOrden.html", nombre=nombre,form=form_buscasalida,DetalleOrden=DetalleOrden,EncabeOrden=EncabeOrden)
 		elif 'guardaSalida' in request.form['addOSalida'][:12]:
 			actividad = form_buscasalida.actividad.data
 			nombrerecibe = request.form.get('recibe')
@@ -649,6 +654,7 @@ def salidas():
 				generales.append(query.tCompraContrato)
 				generales.append(query.total)
 				generales.append(query.actividad)
+				generales.append(query.solicitante)
 				listas = list()
 				listas.append('Proveedor:')
 				listas.append('Nombre Comercial:')
@@ -664,7 +670,7 @@ def salidas():
 
 @app.route('/consultayreportes/reimpresiondeE_S/salidas', methods=['GET', 'POST'])
 def ConsultaSalida():
-	nombre = session['username'] 
+	nombre = session['username']
 	form = form_consul_entrada(request.form)
 	if request.method == 'POST':
 		orden = form.nOrden.data
@@ -694,7 +700,7 @@ def ConsultaSalida():
 			listas = list()
 			listas.append('Proveedor:')
 			listas.append('Nombre Comercial:')
-			x = entradaPdf("Salida Reimpresa", listas, generales, arti,1)
+			x = entradaPdf("Salida Reimpresa", listas, generales, arti,1, query.nombreEntrega)
 			return x
 		elif 'buscarOrd' in xa:
 			if len(orden)<17:
@@ -768,7 +774,7 @@ def SalidaPar():
 			codigo,item,origen=valor.split(',')
 			if valor:
 				if origen =="inv":
-					local = Inventario.query.filter(Inventario.id_item==codigo).filter(Inventario.cant_exist==item).one()										
+					local = Inventario.query.filter(Inventario.id_item==codigo).filter(Inventario.cant_exist==item).one()
 					li=list()
 					lis=list()
 					li.append(local.id_item)
@@ -815,7 +821,7 @@ def SalidaPar():
 				return render_template("buscar2.html", nombre=nombre, form=form, listainv=buscainv,listatemp=buscapxn,listatemp2=session['listasalida'], productpxn=ArtCodigo)
 			elif ArtName:
 				print("buscar x Nombre")
-				#Buscar por nombre	
+				#Buscar por nombre
 				pxn='%'+ArtName+'%'
 				buscapxn = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).filter(Inventario.actividad=="entrada").all()
 				buscainv = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).filter(Inventario.actividad=="a").filter(Inventario.cant_exist>0).all()
@@ -872,7 +878,7 @@ def salidasImp():
 	detalle = session['listasalida']
 	total = session['total2']
 	form = formbuscasalida(request.form)
-	form2 = form_salida_orden(request.form)	
+	form2 = form_salida_orden(request.form)
 	if request.method == 'POST':
 		folio = folio_e()
 		req = form2.nReq.data
@@ -926,20 +932,29 @@ def salidasImp():
 						###########################################################
 					else:
 						seek = Inventario.query.filter(Inventario.id_item == item[0]).filter(Inventario.orden_compra==item[3]).one()
+						seek_articulos = Articulos.query.filter (Articulos.imtemId==item[0]).filter(Inventario.ordenCompra==item[3]).one()
 						cod=seek.id_prod
 						id_item = seek.id_item
 						##### Actualiza el inventario ###### Update en SQLAlchemy
 						#canti = Inventario.query.filter(Inventario.id_item == item[0]).filter(Inventario.orden_compra==item[3]).one()
 						print(seek)
 						saldo = seek.cant_exist
+						saldo_articulos = seek_articulos.cantidad
+						print(saldo_articulos)
 						print(saldo)
 						t = float(saldo) - float(item[5])
+						t2 = float(saldo_articulos) - float(item[5])
 						print(t)
 						seek.cant_exist = t
+						seek_articulos.cantidad = t2
 						if seek.cant_exist==0:
 							seek.actividad="Surtido"
 						elif seek.cant_exist>0 :
 							seek.actividad="PSurtido"
+						if seek_articulos.cant_exist==0:
+							seek_articulos.actividad="Surtido"
+						elif seek_articulos.cant_exist>0 :
+							seek_articulos.actividad="PSurtido"
 						db.session.commit()
 						###########################################################
 					sa = Salida_Articulos(salidas_id = identificador.id,
@@ -954,7 +969,7 @@ def salidasImp():
 						)
 					db.session.add(sa)
 					db.session.commit()
-					
+
 					###########################################################
 				flash("Salida parcial fue guardada con el numero {}".format(identificador.id))
 				arti = Salida_Articulos.query.filter(Salida_Articulos.salidas_id==identificador.id).all()
@@ -976,7 +991,8 @@ def salidasImp():
 				listas = list()
 				listas.append('Proveedor:')
 				listas.append('Nombre Comercial:')
-				x = entradaPdf("SalidaP", listas, generales, arti,1)
+				nombreEntrega = session['nombrecompleto']
+				x = entradaPdf("SalidaP", listas, generales, arti, 1, nombreEntrega)
 				session.pop('listasalida')
 				session.pop('total2')
 				session['listasalida']=[]
@@ -987,7 +1003,6 @@ def salidasImp():
 		else:
 			flash("Debe llenar todos los campos, alguno le falto , revise por favor!")
 	return render_template("SalidaParcial.html", nombre=nombre, DetalleOrden=detalle, total=total, form=form, form2=form2, folio_e=folio_e())
-
 
 
 #FUNCION QUE GENERA EL FOLIO DE LA ENTRADA, EL FOLIO NUNCA SE REPETIRA EN EL ESPACIO-TIEMPO
@@ -1002,14 +1017,14 @@ def folio_e():
 		bb='0'+ (str(b))
 	else:
 		bb=str(b)
-    
+
 	if len(str(c))==1:
 		cc='0'+ (str(c))
 	else:
 		cc=str(c)
 
 	return str(a)+bb+cc+'H'+x[11:19]
-	
+
 if __name__ == '__main__':
     crsf.init_app(app)
     db.init_app(app)

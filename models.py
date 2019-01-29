@@ -11,12 +11,14 @@ class User(db.Model):
 	__tablename__= 'users'
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(50), unique=True)
+	nombrecompleto = db.Column(db.String(90))
 	email = db.Column(db.String(40))
 	password = db.Column(db.String(93))
 	created_date = db.Column(db.DateTime, default=datetime.datetime.now)
 
-	def __init__(self, username, password, email):
+	def __init__(self, username, nombrecompleto, password, email):
 		self.username = username
+		self.nombrecompleto = nombrecompleto
 		self.password = self.__crate_password(password)
 		self.email = email
 
@@ -93,7 +95,7 @@ class Inventario(db.Model):
 		#self.f_fabricacion = f_fabricacion
 		#self.f_caducidad = f_caducidad
 		self.cant_exist = cant_exist
-		self.cant_dispon = cant_dispon 
+		self.cant_dispon = cant_dispon
 		self.costo_unit = costo_unit
 		self.moneda = moneda
 		self.id_area_solici  = id_area_solici
@@ -223,7 +225,7 @@ class proveedor(db.Model):
 
 	def __repr__(self):
 		return '{}'.format(self.TO_NAME)
-		
+
 
 class Entrada(db.Model):
 	__tablename__ = "Entradas"
@@ -241,8 +243,9 @@ class Entrada(db.Model):
 	tCompraContrato = db.Column(db.String(20))
 	total = db.Column(db.Float)
 	observaciones = db.Column(db.Text)
+	nombrerecibe = db.Column(db.String(90))
 
-	def __init__(self, proveedor, nomComer, fol_entrada, fecha, factura, nFactura, ordenCompra, depSolici, nReq, oSolicitnte, tCompraContrato, total, observaciones):
+	def __init__(self, proveedor, nomComer, fol_entrada, fecha, factura, nFactura, ordenCompra, depSolici, nReq, oSolicitnte, tCompraContrato, total, observaciones, nombrerecibe):
 		self.proveedor = proveedor
 		self.nomComer = nomComer
 		self.fol_entrada = fol_entrada
@@ -256,6 +259,7 @@ class Entrada(db.Model):
 		self.tCompraContrato = tCompraContrato
 		self.total = total
 		self.observaciones = observaciones
+		self.nombrerecibe = nombrerecibe
 
 
 class Articulos(db.Model):
@@ -301,6 +305,7 @@ class Salidas(db.Model):
 	observaciones = db.Column(db.Text)
 	actividad = db.Column(db.Text)
 	solicitante = db.Column(db.String(75))
+
 
 	def __init__(self, proveedor, nomComer, fol_entrada, fecha, factura, nFactura, ordenCompra,
 		depSolici, nReq, oSolicitnte, tCompraContrato, total, observaciones,actividad,solicitante):

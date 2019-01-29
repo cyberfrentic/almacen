@@ -22,6 +22,10 @@ class Create_Form(Form):
                            [validators.Required(message='El user es requerido!.'),
                             validators.length(min=8, max=20, message='ingrese un username valido!.')
                             ])
+    nombrecompleto = StringField('Nombre Completo',
+                         [validators.Required(message='El nombre completo en necesario'),
+                         validators.length(min=15, message='Ingrese un nombre valido')])
+
     password = PasswordField('Password', [validators.Required(message='El password es Indispensable!.'),
                                           validators.EqualTo('confirm', message='Las contraseñas deben ser iguales')])
     confirm = PasswordField('Repita la Contraseña')
@@ -32,7 +36,7 @@ class Create_Form(Form):
                         ])
     honeypot = HiddenField('', [length_honeypot])
 
-    
+
 def validate_username(form, field):
         username = field.data
         user = User.query.filter_by(username = username).first()
@@ -46,7 +50,7 @@ class LoginForm(Form):
 		validators.length(min= 4, max=25, message= 'ingrese un Nombre de Usuario valido!.')
 		])
 	password = PasswordField('Contraseña', [validators.Required(message='La Contraseña es Requerida!.')])
-		
+
 
 class formbuscap(Form):
     product_id = StringField('',
@@ -70,14 +74,14 @@ def get_pk(obj): # def necesario para que el QuerySelectField pueda mostrar much
 
 def prov():
     return db.session.query(proveedor.TO_NAME).distinct(proveedor.TO_NAME).group_by(proveedor.TO_NAME)
-   
+
 
 def departamentos():
     return db.session.query(data_import_party.group_name).distinct(data_import_party.group_name).group_by(data_import_party.group_name)
 
 def prov2():
      return db.session.query(proveedor.TO_NAME).distinct(proveedor.TO_NAME).group_by(proveedor.TO_NAME)
-    
+
 class form_salida_orden(Form):
     proveedor = QuerySelectField("", query_factory = prov, get_pk=get_pk, allow_blank=True)
     fecha = DateField('', format='%d/%m/%Y',validators=(validators.Optional(),))
@@ -103,7 +107,7 @@ class formbuscasalida(Form):
         [validators.Required(message = 'Debe proporcional el número de entrada u orden!.'),
         validators.length(max = 12, message='El campo debe contener 12 caracteres como máximo')
         ])
-    
+
     actividad = StringField('',
         [validators.Required(message = '¡Debe capturar la actividad para esta salida!')
         ])

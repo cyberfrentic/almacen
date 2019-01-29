@@ -135,7 +135,7 @@ class PDF(FPDF):
         if Titulo == "Salida":
             self.cell(50, 5, str(datos1[2])[:55], 'B', 0, 'C')
             self.cell(20, 10, '', 0, 0, 'L')
-            self.cell(50, 5, 'LIC.  N. JOAQUIN CORREA RUIZ','B',0,'C')
+            self.cell(50, 5, 'LIC. E. JOAQUIN CORREA RUIZ','B',0,'C')
             self.cell(20, 10, '', 0, 0, 'L')
             self.cell(50, 5, 'LAE. E. RODRIGO ELJURE FAYAD','B',0,'C')
             self.ln(5)
@@ -156,7 +156,7 @@ class PDF(FPDF):
         elif Titulo == "SalidaP":
             self.cell(50, 5, str(datos1[2])[:55], 'B', 0, 'C')
             self.cell(20, 10, '', 0, 0, 'L')
-            self.cell(50, 5, 'LIC.  N. JOAQUIN CORREA RUIZ','B',0,'C')
+            self.cell(50, 5, 'LIC. E. JOAQUIN CORREA RUIZ','B',0,'C')
             self.cell(20, 10, '', 0, 0, 'L')
             self.cell(50, 5, 'LAE. E. RODRIGO ELJURE FAYAD','B',0,'C')
             self.ln(5)
@@ -175,7 +175,7 @@ class PDF(FPDF):
             self.cell(50, 5, 'DIRECTOR DE RECURSOS MATERIALES',0,0,'C')
             self.ln(3)
         elif Titulo=="Entrada":
-            self.cell(50, 5, 'LIC.  N. JOAQUIN CORREA RUIZ', 'B', 0, 'C')
+            self.cell(50, 5, str(datos1[13]), 'B', 0, 'C')
             self.cell(20, 10, '', 0, 0, 'L')
             self.cell(50, 5, 'LIC. N. JOAQUIN CORREA RUIZ','B',0,'C')
             self.cell(20, 10, '', 0, 0, 'L')
@@ -196,7 +196,7 @@ class PDF(FPDF):
             self.cell(50, 5, 'DIRECTOR DE RECURSOS MATERIALES',0,0,'C')
             self.ln(3)
         elif Titulo == 'Entrada Reimpresa':
-            self.cell(50, 5, 'LIC.  N. JOAQUIN CORREA RUIZ', 'B', 0, 'C')
+            self.cell(50, 5, str(datos1[13]), 'B', 0, 'C')
             self.cell(20, 10, '', 0, 0, 'L')
             self.cell(50, 5, 'LIC. N. JOAQUIN CORREA RUIZ','B',0,'C')
             self.cell(20, 10, '', 0, 0, 'L')
@@ -219,7 +219,7 @@ class PDF(FPDF):
         elif Titulo == 'Salida Reimpresa':
             self.cell(50, 5, str(datos1[2])[:55], 'B', 0, 'C')
             self.cell(20, 10, '', 0, 0, 'L')
-            self.cell(50, 5, 'LIC.  N. JOAQUIN CORREA RUIZ','B',0,'C')
+            self.cell(50, 5, 'LIC. E. JOAQUIN CORREA RUIZ','B',0,'C')
             self.cell(20, 10, '', 0, 0, 'L')
             self.cell(50, 5, 'LAE. E. RODRIGO ELJURE FAYAD','B',0,'C')
             self.ln(5)
@@ -245,11 +245,11 @@ class PDF(FPDF):
 
 def SetMoneda(num, simbolo="$", n_decimales=2):
     """Convierte el numero en un string en formato moneda
-    SetMoneda(45924.457, 'RD$', 2) --> 'RD$ 45,924.46'     
+    SetMoneda(45924.457, 'RD$', 2) --> 'RD$ 45,924.46'
     """
     #con abs, nos aseguramos que los dec. sea un positivo.
     n_decimales = abs(n_decimales)
-    
+
     #se redondea a los decimales idicados.
     num = round(num, n_decimales)
 
@@ -259,36 +259,37 @@ def SetMoneda(num, simbolo="$", n_decimales=2):
     #si el num tiene menos decimales que los que se quieren mostrar,
     #se completan los faltantes con ceros.
     dec += "0" * (n_decimales - len(dec))
-    
+
     #se invierte el num, para facilitar la adicion de comas.
     num = num[::-1]
-    
+
     #se crea una lista con las cifras de miles como elementos.
     l = [num[pos:pos+3][::-1] for pos in range(0,50,3) if (num[pos:pos+3])]
     l.reverse()
-    
+
     #se pasa la lista a string, uniendo sus elementos con comas.
     num = str.join(",", l)
-    
+
     #si el numero es negativo, se quita una coma sobrante.
     try:
         if num[0:2] == "-,":
             num = "-%s" % num[2:]
     except IndexError:
         pass
-    
+
     #si no se especifican decimales, se retorna un numero entero.
     if not n_decimales:
         return "%s %s" % (simbolo, num)
-        
+
     return "%s %s.%s" % (simbolo, num, dec)
 
 
-def entradaPdf(titulo, listas, datos, data2,reim=0):
-    global Titulo, lista, datos1
+def entradaPdf(titulo, listas, datos, data2,reim=0, nombreEntrega='LIC. N. JOAQUIN CORRE RUIZ'):
+    global Titulo, lista, datos1, nombCom
     Titulo = titulo
     lista = listas
     datos1 = datos
+    nombCom = nombreEntrega
     global tamaño
     tamaño = True #Vertical True
     # Instantiation of inherited class
@@ -301,7 +302,7 @@ def entradaPdf(titulo, listas, datos, data2,reim=0):
     pdf.set_line_width(.3)
     pdf.set_font('', 'B')
     pdf.set_font('Arial', '', 8.0)
-    
+
 
     # Effective page width, or just epw
     epw = pdf.w - 2 * pdf.l_margin
@@ -345,7 +346,7 @@ def entradaPdf(titulo, listas, datos, data2,reim=0):
                 pdf.cell(col_width/2+5, th+2, str(i.codigo), border=1,align='C', fill=False)
                 pdf.cell(col_width*2.5, th+2, str(i.descripcion)[:50], border=1,align='C', fill=False)
                 pdf.cell(col_width/2+5, th+2,str(i.p_unit), border=1,align='C', fill=False)
-                pdf.cell(col_width/2+5, th+2,  str(i.total), border=1,align='R', fill=False)                
+                pdf.cell(col_width/2+5, th+2,  str(i.total), border=1,align='R', fill=False)
             pdf.ln()
     else:
         for i in data2:
@@ -368,7 +369,7 @@ def entradaPdf(titulo, listas, datos, data2,reim=0):
                 pdf.cell(col_width/2+5, th+2, str(i[0]), border=1,align='C', fill=False)
                 pdf.cell(col_width*2.5, th+2, str(i[1])[:50], border=1,align='C', fill=False)
                 pdf.cell(col_width/2+5, th+2, str(i[7]), border=1,align='C', fill=False)
-                pdf.cell(col_width/2+5, th+2, str((float(i[8])*float(i[7]))), border=1,align='R', fill=False)                
+                pdf.cell(col_width/2+5, th+2, str((float(i[8])*float(i[7]))), border=1,align='R', fill=False)
             pdf.ln()
     pdf.cell(col_width*3.46, th+2, ('observaciones: '+datos[12])[:97], 0,0,'L')
     pdf.cell(col_width, th+2, "", border=0,align='C')
