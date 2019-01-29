@@ -305,6 +305,8 @@ class Salidas(db.Model):
 	observaciones = db.Column(db.Text)
 	actividad = db.Column(db.Text)
 	solicitante = db.Column(db.String(75))
+	nombreEntrega = db.Column(db.String(90))
+	
 
 
 	def __init__(self, proveedor, nomComer, fol_entrada, fecha, factura, nFactura, ordenCompra,
