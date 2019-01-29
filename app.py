@@ -518,8 +518,9 @@ def ConsultaEntrada():
 	nombre = session['username']
 	form = form_consul_entrada(request.form)
 	if request.method == 'POST':
+		busqueda =  request.form.get('optradio')
 		orden = form.nOrden.data
-		xa = request.form['addOrdenSal'][:10]
+		xa = request.form['addOrdenSal']
 		if 'reimprimir' in xa:
 			query = Entrada.query.filter_by(ordenCompra=request.form['addOrdenSal'][10:]).one()
 			arti = Articulos.query.filter_by(ordenCompra = request.form['addOrdenSal'][10:]).all()
@@ -544,12 +545,107 @@ def ConsultaEntrada():
 			x = entradaPdf("Entrada Reimpresa", listas, generales, arti,1)
 			return x
 		elif 'buscarOrd' in xa:
+			if busqueda == '8':
+				try:
+					entra = Entrada.query.filter_by(ordenCompra = orden).one()
+				except Exception as e:
+					entra = 0
+				finally:
+					arti = Articulos.query.filter_by(ordenCompra = orden).all()
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					return render_template("entradaOrden.html", nombre=nombre, reporte=entra, form=form, lista=arti)
+			elif busqueda == '1':
+				try:
+					entra = Entrada.query.filter_by(proveedor = orden).all()
+				except Exception as e:
+					entra = 0
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					return render_template("entradaOrden2.html", nombre=nombre, lista=entra, titulo="Proveedor", buscado=orden)
+			elif busqueda == '2':
+				try:
+					entra = Entrada.query.filter_by(nFactura = orden).all()
+				except Exception as e:
+					entra = 0
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					return render_template("entradaOrden2.html", nombre=nombre, lista=entra, titulo="Factura", buscado=orden)
+			elif busqueda == '3':
+				if "/" in orden:
+					d,m,a = orden.split('/')
+				elif "-" in orden:
+					flash("utilice el formato dd/mm/aaaa")
+					return redirect(url_for("ConsultaEntrada"))
+				if len(a)==2:
+					an ="20" + a
+				elif len(a)==4:
+					an = a
+				orden = an +"-"+m+"-"+d
+				print(orden)
+				try:
+					entra = Entrada.query.filter_by(fecha = orden).all()
+				except Exception as e:
+					entra = 0
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					return render_template("entradaOrden2.html", nombre=nombre, lista=entra, titulo="Factura", buscado=orden)
+			elif busqueda == '4':
+				ord = "%"+orden+"%"
+				print(ord)
+				try:
+					print("sinentra")
+					entra = Articulos.query.filter(Articulos.descripcion.like(ord)).group_by(Articulos.ordenCompra).all()
+					print(entra)
+				except Exception as e:
+					entra = 0
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					return render_template("entradaOrden2.html", nombre=nombre, lista=entra, titulo="Articulos", buscado=orden)
+			elif busqueda == '5':
+				try:
+					entra = Entrada.query.filter_by(tCompraContrato = orden).all()
+				except Exception as e:
+					entra = 0
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					return render_template("entradaOrden2.html", nombre=nombre, lista=entra, titulo="Tipo Compra Contrato", buscado=orden)
+			elif busqueda == '6':
+				print(orden)
+				try:
+					entra = Entrada.query.filter(Entrada.nombrerecibe.like("%"+orden+"%")).all()
+				except Exception as e:
+					entra = 0
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					return render_template("entradaOrden2.html", nombre=nombre, lista=entra, titulo="Nombre Solicitante", buscado=orden)
+			elif busqueda == '7':
+				print(orden)
+				try:
+					entra = Entrada.query.filter_by(oSolicitnte  = orden).all()
+				except Exception as e:
+					entra = 0
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					return render_template("entradaOrden2.html", nombre=nombre, lista=entra, titulo="Tipo Compra Contrato", buscado=orden)
+		if "proveedor" in xa:
+			a, b = xa.split(".")
+			entra = Entrada.query.filter_by(ordenCompra = b).one()
 			try:
-				entra = Entrada.query.filter_by(ordenCompra = orden).one()
+				entra = Entrada.query.filter_by(ordenCompra = b).one()
 			except Exception as e:
+				print(e)
 				entra = 0
 			finally:
-				arti = Articulos.query.filter_by(ordenCompra = orden).all()
+				arti = Articulos.query.filter_by(ordenCompra = b).all()
 			if entra == 0:
 				flash("El numero de orden no existe")
 			else:
@@ -887,7 +983,7 @@ def salidasImp():
 		actividad = form.actividad.data
 		nombrerecibe= request.form.get('recibe')
 		print(nombrerecibe)
-		if actividad and req and dep and oficio:
+		if actividad and dep and oficio:
 			f = time.strftime("%Y-%m-%d")
 			verifica = Salidas.query.filter(Salidas.nReq==req).first()
 			if verifica == None:
