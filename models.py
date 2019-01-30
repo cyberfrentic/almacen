@@ -337,7 +337,7 @@ class Salida_Articulos(db.Model):
 	descripcion = db.Column(db.String(150))
 	p_unit = db.Column(db.Float)
 	total = db.Column(db.Float)
-	ordenCompra = db.Column(db.String(15))
+	ordenCompra = db.Column(db.String(25))
 	imtemId = db.Column(db.Integer)
 
 	def __init___(self, salidas_id, cantidad, udm, codigo, descripcion, p_unit, total, ordenCompra, imtemId):

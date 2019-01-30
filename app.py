@@ -629,7 +629,7 @@ def ConsultaEntrada():
 			elif busqueda == '7':
 				print(orden)
 				try:
-					entra = Entrada.query.filter_by(oSolicitnte  = orden).all()
+					entra = Entrada.query.filter_by(oSolicitnte = orden).all()
 				except Exception as e:
 					entra = 0
 				if entra == 0:
@@ -649,7 +649,7 @@ def ConsultaEntrada():
 			if entra == 0:
 				flash("El numero de orden no existe")
 			else:
-				return render_template("entradaOrden.html", nombre=nombre, reporte=entra, form=form, lista=arti)
+				return render_template("entradaOrden.html", nombre=nombre, reporte=entra, form=form, lista=arti, titulo="Entradas")
 	return render_template("consulta.html", nombre=nombre, form=form, titulo="Entradas")
 
 
@@ -770,15 +770,19 @@ def ConsultaSalida():
 	form = form_consul_entrada(request.form)
 	if request.method == 'POST':
 		orden = form.nOrden.data
-		print(request.form['addOrdenSal'])
-		xa = request.form['addOrdenSal'][:10]
+		busqueda =  request.form.get('optradio')
+		orden = form.nOrden.data
+		print(busqueda)
+		print(orden)
+		xa = request.form['addOrdenSal']
 		print(xa)
 		if 'reimprimir' in xa:
-			if (len(request.form['addOrdenSal'])) == 27:
+			if len(request.form['addOrdenSal'][10:])==17:
 				query = Salidas.query.filter_by(fol_entrada=request.form['addOrdenSal'][10:]).one()
 			else:
 				query = Salidas.query.filter_by(ordenCompra=request.form['addOrdenSal'][10:]).one()
-			arti = Salida_Articulos.query.filter_by(ordenCompra = request.form['addOrdenSal'][10:]).all()
+			print(query)
+			arti = Salida_Articulos.query.filter_by(salidas_id=query.id).all()
 			generales=list()
 			generales.append(query.proveedor)
 			generales.append(query.fecha)
@@ -796,30 +800,116 @@ def ConsultaSalida():
 			listas = list()
 			listas.append('Proveedor:')
 			listas.append('Nombre Comercial:')
-			x = entradaPdf("Salida Reimpresa", listas, generales, arti,1, query.nombreEntrega)
+			x = entradaPdf("Salida Reimpresa", listas, generales, arti,1, query.solicitante)
 			return x
 		elif 'buscarOrd' in xa:
-			if len(orden)<17:
-				print(len(orden))
+			if busqueda == '8':
+				print(orden)
 				try:
-					entra = Salidas.query.filter_by(ordenCompra = orden).one()
+					entra = Salidas.query.filter_by(ordenCompra = orden).all()
 				except Exception as e:
 					entra = 0
-				finally:
-					arti = Salida_Articulos.query.filter_by(ordenCompra = orden).all()
-			elif len(orden)==17:
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					print(entra)
+					return render_template("entradaOrden2.html", nombre=nombre, lista=entra, titulo="Proveedor", buscado=orden)
+			elif busqueda == '1':
+				print("hugo")
 				try:
-					entra = Salidas.query.filter_by(fol_entrada = orden).one()
-					print (entra)
+					entra = Salidas.query.filter_by(proveedor = orden).all()
 				except Exception as e:
 					entra = 0
-				finally:
-					print(entra.id)
-					arti = Salida_Articulos.query.filter_by(id = entra.id).all()
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					return render_template("entradaOrden2.html", nombre=nombre, lista=entra, titulo="Proveedor", buscado=orden)
+			elif busqueda == '2':
+				try:
+					entra = Salidas.query.filter_by(nFactura = orden).all()
+				except Exception as e:
+					entra = 0
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					return render_template("entradaOrden2.html", nombre=nombre, lista=entra, titulo="Factura", buscado=orden)
+			elif busqueda == '3':
+				if "/" in orden:
+					d,m,a = orden.split('/')
+				elif "-" in orden:
+					flash("utilice el formato dd/mm/aaaa")
+					return redirect(url_for("ConsultaEntrada"))
+				if len(a)==2:
+					an ="20" + a
+				elif len(a)==4:
+					an = a
+				orden = an +"-"+m+"-"+d
+				print(orden)
+				try:
+					entra = Salidas.query.filter_by(fecha = orden).all()
+				except Exception as e:
+					entra = 0
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					return render_template("entradaOrden2.html", nombre=nombre, lista=entra, titulo="Factura", buscado=orden)
+			elif busqueda == '4':
+				ord = "%"+orden+"%"
+				print(ord)
+				try:
+					entra = Salida_Articulos.query.filter(Salida_Articulos.descripcion.like(ord)).group_by(Salida_Articulos.ordenCompra).all()
+					print(entra)
+				except Exception as e:
+					entra = 0
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					return render_template("entradaOrden2.html", nombre=nombre, lista=entra, titulo="Articulos", buscado=orden)
+			elif busqueda == '5':
+				try:
+					entra = Salidas.query.filter_by(tCompraContrato = orden).all()
+				except Exception as e:
+					entra = 0
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					return render_template("entradaOrden2.html", nombre=nombre, lista=entra, titulo="Tipo Compra Contrato", buscado=orden)
+			elif busqueda == '6':
+				print(orden)
+				try:
+					entra = Salidas.query.filter(Entrada.nombrerecibe.like("%"+orden+"%")).all()
+				except Exception as e:
+					entra = 0
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					return render_template("entradaOrden2.html", nombre=nombre, lista=entra, titulo="Nombre Solicitante", buscado=orden)
+			elif busqueda == '7':
+				print(orden)
+				try:
+					entra = Salidas.query.filter_by(oSolicitnte = orden).all()
+				except Exception as e:
+					entra = 0
+				if entra == 0:
+					flash("El numero de orden no existe")
+				else:
+					return render_template("entradaOrden2.html", nombre=nombre, lista=entra, titulo="Tipo Compra Contrato", buscado=orden)
+		if "proveedor" in xa:
+			a, b = xa.split(".")
+			try:
+				if "SalidaParcial" in b:
+					entra = Salidas.query.filter_by(id = b[13:]).one()
+				else:
+					entra = Salidas.query.filter_by(ordenCompra = b).one()
+			except Exception as e:
+				print(e)
+				entra = 0
+			finally:
+				arti = Salida_Articulos.query.filter_by(ordenCompra = b).all()
 			if entra == 0:
 				flash("El numero de orden no existe")
 			else:
-				return render_template("entradaOrden.html", nombre=nombre, reporte=entra, form=form, lista=arti)
+				return render_template("entradaOrden.html", nombre=nombre, reporte=entra, form=form, lista=arti,titulo="Salidas")
 	return render_template("consulta.html", nombre=nombre, form=form, titulo="Salidas")
 
 
@@ -870,6 +960,7 @@ def SalidaPar():
 			codigo,item,origen=valor.split(',')
 			if valor:
 				if origen =="inv":
+					print(codigo)
 					local = Inventario.query.filter(Inventario.id_item==codigo).filter(Inventario.cant_exist==item).one()
 					li=list()
 					lis=list()
@@ -1028,7 +1119,7 @@ def salidasImp():
 						###########################################################
 					else:
 						seek = Inventario.query.filter(Inventario.id_item == item[0]).filter(Inventario.orden_compra==item[3]).one()
-						seek_articulos = Articulos.query.filter (Articulos.imtemId==item[0]).filter(Inventario.ordenCompra==item[3]).one()
+						seek_articulos = Articulos.query.filter (Articulos.imtemId==item[0]).filter(Articulos.ordenCompra==item[3]).one()
 						cod=seek.id_prod
 						id_item = seek.id_item
 						##### Actualiza el inventario ###### Update en SQLAlchemy
@@ -1047,9 +1138,9 @@ def salidasImp():
 							seek.actividad="Surtido"
 						elif seek.cant_exist>0 :
 							seek.actividad="PSurtido"
-						if seek_articulos.cant_exist==0:
+						if seek_articulos.cantidad==0:
 							seek_articulos.actividad="Surtido"
-						elif seek_articulos.cant_exist>0 :
+						elif seek_articulos.cantidad>0 :
 							seek_articulos.actividad="PSurtido"
 						db.session.commit()
 						###########################################################
@@ -1060,7 +1151,7 @@ def salidasImp():
 							descripcion = item[1],
 							p_unit = item[6],
 							total = (float(item[5])*float(item[6])),
-							ordenCompra = "SalidaParcial",
+							ordenCompra = "SalidaParcial"+str(identificador.id),
 							imtemId = id_item,
 						)
 					db.session.add(sa)
