@@ -1210,6 +1210,29 @@ def folio_e():
 
 	return str(a)+bb+cc+'H'+x[11:19]
 
+
+@app.route('/correcciones/salidas/directas', methods=['GET','POST'])
+def correcionSD():
+	nombre = session['username']
+	if request.method == 'POST':
+		orden=request.form['orden']
+		print(request.form["Cancelar"])
+		if request.form["Cancelar"] == "buscar":
+			try:
+				data = Salidas.query.filter_by(ordenCompra = orden).one()
+			except Exception as e:
+				print(e)
+				data=0
+			if data != 0:
+				dataArti = Salida_Articulos.query.filter_by(salidas_id=data.id).all()
+				return render_template("correcionSD.html", nombre=nombre, data=data, arti=dataArti, titulo="Núm Orden", buscado=orden)
+			else:
+				flash("no existe el registro")
+		elif "Eliminar" in request.form["Cancelar"]:
+			print(request.form["Cancelar"])
+	return render_template("correcionSD.html", nombre=nombre)
+
+
 if __name__ == '__main__':
     crsf.init_app(app)
     db.init_app(app)

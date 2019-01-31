@@ -1,0 +1,98 @@
+{% extends 'index.html' %}
+{% block content %}
+	<form method="POST" accept-charset="utf-8">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+		<div class="container">
+			<div class="flow">
+				<div class="card" style="width:400px">
+		  			<div class="card-header card bg-success text-white">Cancelacion de Salidas Por Orden</div>
+		  			<div class="card-body card bg-primary text-white">
+		  				<input type="text" class="form-control" id="orden" name="orden" placeholder="Ingrese Núm. de Ornden">
+		  			</div>
+		  			<div class="card-footer card bg-info text-white">
+		  				<button type="submint" class="btn btn-outline-danger" name="Cancelar" value="buscar">Cancelar Orden</button>
+		  			</div>
+				</div>
+			</div>
+		</div>
+		{% if data %}
+			 <div class="container">
+				    <!-- The Modal -->
+				  	<div class="modal fade" id="myES">
+				    	<div class="modal-dialog modal-lg">
+				      		<div class="modal-content">
+				      
+				        		<!-- Modal Header -->
+				        		<div class="modal-header">
+				          			<h4 class="modal-title">Criterio de búsqueda: {{titulo}} : {{buscado}}</h4>
+				          			<button type="button" class="close" data-dismiss="modal">&times;</button>
+				        		</div>
+				        
+					        	<!-- Modal body -->
+					        	<div class="modal-body">
+					        		<!--####################################################################-->
+					          		<div class="row">
+									 
+									  <p>Puede buscar por proveedor y por fecha y por orden </p>  
+									  <input class="form-control" id="myInput" type="text" placeholder="Buscar..">
+									  <br>
+									 
+									{% if data %}
+									  <table id="table" class="table table-hover table-responsive table-bordered">
+								        <thead>
+								          <tr class="success" style="font:11px Arial">
+									        <th>Proveedor</th>
+									        <th>fecha</th>
+									        <th>Orden</th>
+									        <th>Total</th>
+									        <th>Acción</th>
+									      </tr>
+									    </thead>
+									    <tbody id="myTable">
+									    	
+										      <tr class="info" style="font:11px Arial"> 
+										        <td>{{data.proveedor}}</td>
+										        <td>{{data.fecha}}</td>
+										        <td>{{data.ordenCompra}}</td>
+										        <td>{{data.total}}</td>
+										        <td><button type="submint" class="btn btn-outline-danger" value="eliminar.{{data.ordenCompra}}" name="Cancelar">Eliminar</button></td>
+										      </tr>
+										    
+									    </tbody>
+									  </table>
+									  {% endif %}
+									</div>
+					          	<!--####################################################################-->	
+					        	</div>
+					        
+					        	<!-- Modal footer -->
+					        	<div class="modal-footer">
+					          		<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+					        	</div>
+				      		</div>
+				    	</div>
+				  	</div> 
+				</div>
+            </form>
+        </div>
+    </div>
+<!-- Ventana Modal automático en pantalla -->
+<script type="text/javascript">
+         $(function(){
+         $("#myES").modal();
+          });
+ </script>
+<!-- Busquedas en la tabla -->
+<script>
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+		{% endif%}
+	</form>
+{% endblock %}

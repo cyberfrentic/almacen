@@ -5,20 +5,20 @@
             <form method="POST">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="container">
-				    <h2>Modal Example</h2>
+				    <!--<h2>Consultar y reimprimir E/S</h2> -->
 				  	<!-- Button to Open the Modal -->
-				  	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-				    	Open modal
-				  	</button>
+				  	<!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+				    	Mostrar Resultados
+				  	</button> -->
 
 				  	<!-- The Modal -->
-				  	<div class="modal fade" id="myModal">
+				  	<div class="modal fade" id="myES">
 				    	<div class="modal-dialog modal-lg">
 				      		<div class="modal-content">
 				      
 				        		<!-- Modal Header -->
 				        		<div class="modal-header">
-				          			<h4 class="modal-title">buscando {{titulo}} : {{buscado}}</h4>
+				          			<h4 class="modal-title">Criterio de búsqueda: {{titulo}} : {{buscado}}</h4>
 				          			<button type="button" class="close" data-dismiss="modal">&times;</button>
 				        		</div>
 				        
@@ -26,121 +26,121 @@
 					        	<div class="modal-body">
 					        		<!--####################################################################-->
 					          		<div class="row">
-									  <h2>Tabla Con Filtro</h2>
+									 
 									  <p>Puede buscar por proveedor y por fecha y por orden </p>  
-									  <input class="form-control" id="myInput" type="text" placeholder="Search..">
+									  <input class="form-control" id="myInput" type="text" placeholder="Buscar..">
 									  <br>
 									  {% if titulo == 'Proveedor'%}
-									  <table class="table">
-									    <thead>
-									      <tr>
+									  <table id="table" class="table table-hover table-responsive table-bordered">
+								         <thead>
+								         <tr class="success" style="font:11px Arial">
 									        <th>Núm. Orden</th>
 									        <th>Fecha</th>
 									        <th>Total</th>
-									        <th>Button</th>
+									        <th>Acción</th>
 									      </tr>
 									    </thead>
 									    <tbody id="myTable">
 									    	{% for item in lista %}
-										      <tr>
+										      <tr class="info" style="font:11px Arial"> 
 										        <td>{{item.ordenCompra}}</td>
 										        <td>{{item.fecha}}</td>
 										        <td>{{item.total}}</td>
-										        <td><button type="submint" class="btn btn-outline-danger" value="proveedor.{{item.ordenCompra}}" name="addOrdenSal">imprimir</button></td>
+										        <td><button type="submint" class="btn btn-outline-danger" value="proveedor.{{item.ordenCompra}}" name="addOrdenSal">Imprimir</button></td>
 										      </tr>
 										     {% endfor %}
 									    </tbody>
 									  </table>
 									  {% endif %}
 									  {% if titulo == 'Factura'%}
-									  <table class="table">
-									    <thead>
-									      <tr>
+									  <table id="table" class="table table-hover table-responsive table-bordered">
+								        <thead>
+								          <tr class="success" style="font:11px Arial">
 									        <th>Proveedor</th>
 									        <th>fecha</th>
 									        <th>Orden</th>
 									        <th>Total</th>
-									        <th>Button</th>
+									        <th>Acción</th>
 									      </tr>
 									    </thead>
 									    <tbody id="myTable">
 									    	{% for item in lista %}
-										      <tr>
+										      <tr class="info" style="font:11px Arial"> 
 										        <td>{{item.proveedor}}</td>
 										        <td>{{item.fecha}}</td>
 										        <td>{{item.ordenCompra}}</td>
 										        <td>{{item.total}}</td>
-										        <td><button type="submint" class="btn btn-outline-danger" value="proveedor.{{item.ordenCompra}}" name="addOrdenSal">imprimir</button></td>
+										        <td><button type="submint" class="btn btn-outline-danger" value="proveedor.{{item.ordenCompra}}" name="addOrdenSal">Imprimir</button></td>
 										      </tr>
 										     {% endfor %}
 									    </tbody>
 									  </table>
 									  {% endif %}
 									   {% if titulo == 'Articulos'%}
-									  <table class="table">
-									    <thead>
-									      <tr>
+									  <table id="table" class="table table-hover table-responsive table-bordered">
+								        <thead>
+								          <tr class="success" style="font:11px Arial">
 									        <th>Descripcion</th>
 									        <th>Orden</th>
 									        <th>Total</th>
-									        <th>Button</th>
+									        <th>Acción</th>
 									      </tr>
 									    </thead>
 									    <tbody id="myTable">
 									    	{% for item in lista %}
-										      <tr>
+										      <tr class="info" style="font:11px Arial"> 
 										        <td>{{item.descripcion}}</td>
 										        <td>{{item.ordenCompra}}</td>
 										        <td>{{item.total}}</td>
-										        <td><button type="submint" class="btn btn-outline-danger" value="proveedor.{{item.ordenCompra}}" name="addOrdenSal">imprimir</button></td>
+										        <td><button type="submint" class="btn btn-outline-danger" value="proveedor.{{item.ordenCompra}}" name="addOrdenSal">Imprimir</button></td>
 										      </tr>
 										     {% endfor %}
 									    </tbody>
 									  </table>
 									  {% endif %}
 									   {% if titulo == 'Tipo Compra Contrato'%}
-									  <table class="table">
-									    <thead>
-									      <tr>
+									  <table id="table" class="table table-hover table-responsive table-bordered">
+								        <thead>
+								          <tr class="success" style="font:11px Arial">
 									        <th>Proveedor</th>
 									        <th>fecha</th>
 									        <th>Orden</th>
 									        <th>Total</th>
-									        <th>Button</th>
+									        <th>Acción</th>
 									      </tr>
 									    </thead>
 									    <tbody id="myTable">
 									    	{% for item in lista %}
-										      <tr>
+										      <tr class="info" style="font:11px Arial"> 
 										        <td>{{item.proveedor}}</td>
 										        <td>{{item.fecha}}</td>
 										        <td>{{item.ordenCompra}}</td>
 										        <td>{{item.total}}</td>
-										        <td><button type="submint" class="btn btn-outline-danger" value="proveedor.{{item.ordenCompra}}" name="addOrdenSal">imprimir</button></td>
+										        <td><button type="submint" class="btn btn-outline-danger" value="proveedor.{{item.ordenCompra}}" name="addOrdenSal">Imprimir</button></td>
 										      </tr>
 										     {% endfor %}
 									    </tbody>
 									  </table>
 									  {% endif %}
 									  {% if titulo == 'Nombre Solicitante'%}
-									  <table class="table">
-									    <thead>
-									      <tr>
+									  <table id="table" class="table table-hover table-responsive table-bordered">
+								        <thead>
+								          <tr class="success" style="font:11px Arial">
 									        <th>Proveedor</th>
 									        <th>fecha</th>
 									        <th>Orden</th>
 									        <th>Total</th>
-									        <th>Button</th>
+									        <th>Acción</th>
 									      </tr>
 									    </thead>
 									    <tbody id="myTable">
 									    	{% for item in lista %}
-										      <tr>
+										      <tr class="info" style="font:11px Arial"> 
 										        <td>{{item.proveedor}}</td>
 										        <td>{{item.fecha}}</td>
 										        <td>{{item.ordenCompra}}</td>
 										        <td>{{item.total}}</td>
-										        <td><button type="submint" class="btn btn-outline-danger" value="proveedor.{{item.ordenCompra}}" name="addOrdenSal">imprimir</button></td>
+										        <td><button type="submint" class="btn btn-outline-danger" value="proveedor.{{item.ordenCompra}}" name="addOrdenSal">Imprimir</button></td>
 										      </tr>
 										     {% endfor %}
 									    </tbody>
@@ -161,8 +161,13 @@
             </form>
         </div>
     </div>
-
-
+<!-- Ventana Modal automático en pantalla -->
+<script type="text/javascript">
+         $(function(){
+         $("#myES").modal();
+          });
+ </script>
+<!-- Busquedas en la tabla -->
 <script>
 $(document).ready(function(){
   $("#myInput").on("keyup", function() {
@@ -173,5 +178,6 @@ $(document).ready(function(){
   });
 });
 </script>
+
 
 {% endblock %}
