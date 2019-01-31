@@ -1002,7 +1002,7 @@ def SalidaPar():
 			if ArtCodigo:
 				print("buscar x codigo")
 				pxn = ArtCodigo
-				buscapxn = db.session.query(Inventario).filter(Inventario.id_prod.like('%'+ArtCodigo+'%')).filter(Inventario.actividad=="entrada").filter(Inventario.cant_exist>0).all()
+				buscapxn = db.session.query(Inventario).filter(Inventario.id_prod.like('%'+ArtCodigo+'%')).filter(Inventario.actividad!="a").filter(Inventario.cant_exist>0).all()
 				buscainv = db.session.query(Inventario).filter(Inventario.id_item.like('%'+ArtCodigo+'%')).filter(Inventario.actividad=="a").filter(Inventario.cant_exist>0).all()
 				print(buscainv)
 				return render_template("buscar2.html", nombre=nombre, form=form, listainv=buscainv,listatemp=buscapxn,listatemp2=session['listasalida'], productpxn=ArtCodigo)
@@ -1010,7 +1010,7 @@ def SalidaPar():
 				print("buscar x Nombre")
 				#Buscar por nombre
 				pxn='%'+ArtName+'%'
-				buscapxn = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).filter(Inventario.actividad=="entrada").all()
+				buscapxn = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).filter(Inventario.actividad!="a").filter(Inventario.cant_exist>0).all()
 				buscainv = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).filter(Inventario.actividad=="a").filter(Inventario.cant_exist>0).all()
 				return render_template("buscar2.html", nombre=nombre, form=form, listainv=buscainv,listatemp=buscapxn,listatemp2=session['listasalida'], productpxn=ArtName)
 		elif 'costeo' in request.form['addsalida']:
@@ -1099,7 +1099,6 @@ def salidasImp():
 				identificador = Salidas.query.filter(Salidas.nReq==req).filter(Salidas.fol_entrada==folio).first()
 				print(identificador.id)
 				for item in session['listasalida']:
-					print(item)
 					if item[2]=="Stock":
 						cod=item[0]
 						id_item = "0000"
