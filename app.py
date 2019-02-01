@@ -1228,8 +1228,41 @@ def correcionSD():
 				return render_template("correcionSD.html", nombre=nombre, data=data, arti=dataArti, titulo="Núm Orden", buscado=orden)
 			else:
 				flash("no existe el registro")
-		elif "Eliminar" in request.form["Cancelar"]:
-			print(request.form["Cancelar"])
+		elif "eliminar" in request.form["Cancelar"]:
+			boton, orde = request.form["Cancelar"].split(".")
+			try:
+				dataS = Salidas.query.filter_by(ordenCompra = orde).one()
+				dataArtiS = Salida_Articulos.query.filter_by(salidas_id=dataS.id).all()
+				dataE = Entrada.query.filter_by(ordenCompra = orde).one()
+				dataArtiE = Articulos.query.filter_by(entradas_id=dataE.id).all()
+				##################################################################
+				############ borro salidas y salidas articulos ###################
+				############ agrego los datos a la tabla entrada #################
+				##################################################################
+				agr=0
+				for item in dataArtiE:
+					saldo = float(item.cantidad)
+					agregar = float(dataArtiS[agr].cantidad)
+					totalA=saldo+agregar
+					total = float(totalA) * float(item.p_unit)
+					dataArtiE = Articulos.query.filter_by(imtemId=dataArtiS[agr].imtemId).filter_by(ordenCompra=dataArtiS[agr].ordenCompra).one()
+					dataArtiE.cantidad=totalA
+					dataArtiE.total=total
+					db.session.commit()
+					agr+=1
+				for item in dataArtiS:
+					daS = Salida_Articulos.query.get(item.id)
+					db.session.delete(daS)
+					db.session.commit()
+				dadS = Salidas.query.get(dataS.id)
+				db.session.delete(dadS)
+				db.session.commit()
+				##################################################################
+			except Exception as e:
+				print (e)
+			else:
+				flash("el registro se encuentra dañado")
+
 	return render_template("correcionSD.html", nombre=nombre)
 
 
