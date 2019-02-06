@@ -83,17 +83,12 @@ class Inventario(db.Model):
 		self.descripcion =descripcion
 		self.um =um
 		self.id_area = id_area
-		#self.f_alta = f_alta
-		#self.ultim_modif = ultim_modif
 		self.activo = activo
 		self.id_familia = id_familia
 		self.procedencia = procedencia
 		self.modelo = modelo
 		self.num_parte = num_parte
 		self.num_serie = num_serie
-		#self.f_recepcion = f_recepcion
-		#self.f_fabricacion = f_fabricacion
-		#self.f_caducidad = f_caducidad
 		self.cant_exist = cant_exist
 		self.cant_dispon = cant_dispon
 		self.costo_unit = costo_unit
@@ -350,3 +345,19 @@ class Salida_Articulos(db.Model):
 		self.total = total
 		self.ordenCompra = ordenCompra
 		self.imtemId = imtemId
+
+
+class Historia(db.Model):
+	__tablename__ = "historia"
+	id = db.Column(db.Integer, primary_key=True)
+	ultim_modif = db.Column(db.DateTime, default=datetime.datetime.now) #Automatico
+	salida = db.Column(db.String(15))
+	salida_articulos = db.Column(db.String(15))
+	entrada_articulos = db.Column(db.String(15))
+	inv = db.Column(db.String(15))
+	
+	def __init__(self, salida, salida_articulos, entrada_articulos, inv,):
+		self.salida = salida
+		self.salida_articulos = salida_articulos
+		self.entrada_articulos = entrada_articulos
+		self.inv = inv

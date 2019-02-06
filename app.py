@@ -18,7 +18,7 @@ from flask import Flask, flash, redirect, render_template, request, session, abo
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
 from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada, form_salida_orden, form_consul_entrada, formbuscasalida
 import os
-from models import db, User, Inventario, Articulos, Entrada, Salidas, Salida_Articulos
+from models import db, User, Inventario, Articulos, Entrada, Salidas, Salida_Articulos, Historia
 from datetime import datetime
 import time
 from config import DevelopmentConfig
@@ -734,8 +734,18 @@ def salidas():
 					canti.cant_exist = t
 					canti.actividad="Surtido"
 					db.session.commit()
+					artiSalidas = Salida_Articulos.query.filter_by(imtemId=item.imtemId).filter_by(ordenCompra=item.ordenCompra).one()
+					print(artiSalidas,"----",Det_Orden[0])
+					his = Historia(
+						salida = salida_id.id,
+						salida_articulos = artiSalidas.id, 
+						entrada_articulos = Det_Orden[0].id, 
+						inv = canti.id,)
+					db.session.add(his)
+					db.session.commit()
 				arti = Salida_Articulos.query.filter_by(ordenCompra = Enc_Orden.ordenCompra).all()
 				query = Salidas.query.filter_by(ordenCompra=Enc_Orden.ordenCompra).first()
+
 				generales=list()
 				generales.append(query.proveedor)
 				generales.append(query.fecha)
@@ -972,7 +982,9 @@ def SalidaPar():
 					li.append(str(local.cant_exist))
 					li.append(str(local.costo_unit))
 					li.append("1")
+					
 					lis.append(li)
+					print(lis)
 					# Le agrego 1 a la cantidad cuando el user selecciona un producto.
 					session['listasalida'] += lis
 					print(session['listasalida'])
@@ -1073,7 +1085,6 @@ def salidasImp():
 		oficio = form2.oSoli.data
 		actividad = form.actividad.data
 		nombrerecibe= request.form.get('recibe')
-		print(nombrerecibe)
 		if actividad and dep and oficio:
 			f = time.strftime("%Y-%m-%d")
 			verifica = Salidas.query.filter(Salidas.nReq==req).first()
@@ -1097,23 +1108,21 @@ def salidasImp():
 				db.session.add(sali)
 				db.session.commit()
 				identificador = Salidas.query.filter(Salidas.nReq==req).filter(Salidas.fol_entrada==folio).first()
-				print(identificador.id)
 				for item in session['listasalida']:
 					if item[2]=="Stock":
 						cod=item[0]
 						id_item = "0000"
 						##### Actualiza el inventario ###### Update en SQLAlchemy
 						canti = Inventario.query.filter(Inventario.id_item == cod).filter(Inventario.id==item[3]).one()
-						print(canti)
 						saldo = canti.cant_exist
-						print(saldo)
 						t = float(saldo) - float(item[5])
-						print(t)
 						canti.cant_exist = t
 						if canti.cant_exist==0:
 							canti.actividad="Surtido"
-						elif canti.cant_exist>0 :
-							canti.actividad="PSurtido"
+						elif canti.cant_exist>0 and (len(canti.id_item)>10) :
+							canti.actividad="a"
+						elif ((canti.cant_exist>0) and (len(canti.id_item)<8)) :	
+							canti.actividad="Psurtido"
 						db.session.commit()
 						###########################################################
 					else:
@@ -1123,14 +1132,11 @@ def salidasImp():
 						id_item = seek.id_item
 						##### Actualiza el inventario ###### Update en SQLAlchemy
 						#canti = Inventario.query.filter(Inventario.id_item == item[0]).filter(Inventario.orden_compra==item[3]).one()
-						print(seek)
 						saldo = seek.cant_exist
 						saldo_articulos = seek_articulos.cantidad
-						print(saldo_articulos)
 						print(saldo)
 						t = float(saldo) - float(item[5])
 						t2 = float(saldo_articulos) - float(item[5])
-						print(t)
 						seek.cant_exist = t
 						seek_articulos.cantidad = t2
 						if seek.cant_exist==0:
@@ -1155,7 +1161,25 @@ def salidasImp():
 						)
 					db.session.add(sa)
 					db.session.commit()
-
+					########### Agregar Valores a la Tabla Hist_salidas ##############
+					artiSalidas = Salida_Articulos.query.filter_by(salidas_id=identificador.id).filter_by(codigo=cod).filter_by(imtemId=id_item).first()
+					if item[2]=="Stock":
+						dataEntra2="Stock"
+						inv = Inventario.query.filter(Inventario.id_item == cod).filter(Inventario.id==item[3]).one()
+						numInv = inv.id
+					else:
+						dataEntra = Articulos.query.filter_by(ordenCompra=item[3]).filter_by(codigo=cod).filter_by(imtemId=id_item).one()
+						dataEntra2 = dataEntra.id
+						inv = Inventario.query.filter(Inventario.id_item == item[0]).filter(Inventario.orden_compra==item[3]).one()
+						numInv = inv.id
+					print(numInv)
+					his = Historia(
+						salida = artiSalidas.salidas_id,
+						salida_articulos = artiSalidas.id, 
+						entrada_articulos = dataEntra2, 
+						inv = numInv,)
+					db.session.add(his)
+					db.session.commit()
 					###########################################################
 				flash("Salida parcial fue guardada con el numero {}".format(identificador.id))
 				arti = Salida_Articulos.query.filter(Salida_Articulos.salidas_id==identificador.id).all()
@@ -1248,6 +1272,9 @@ def correcionSD():
 					dataArtiE = Articulos.query.filter_by(imtemId=dataArtiS[agr].imtemId).filter_by(ordenCompra=dataArtiS[agr].ordenCompra).one()
 					dataArtiE.cantidad=totalA
 					dataArtiE.total=total
+					inven = Inventario.query.filter_by(id_item=dataArtiS[agr].imtemId).filter_by(orden_compra=dataArtiS[agr].ordenCompra).one()
+					cantInve = float(inven.cant_exist) + float(agregar)
+					inven.cant_exist = cantInve
 					db.session.commit()
 					agr+=1
 				for item in dataArtiS:
@@ -1262,8 +1289,96 @@ def correcionSD():
 				print (e)
 			else:
 				flash("el registro se encuentra dañado")
-
 	return render_template("correcionSD.html", nombre=nombre)
+
+
+@app.route('/correcciones/salidas/parciales', methods=['GET','POST'])
+def cancelaMix():
+	nombre = session['username']
+	form = form_consul_entrada(request.form)
+	if request.method == 'POST':
+		choice = request.form.get('optradio')
+		orden = form.nOrden.data
+		if request.form["addOrdenSal"] == "buscarOrd":
+			if choice == "1":
+				if "-" in orden:
+					flash("Utilice el formato de fecha dd/mm/yyyy")
+				elif "/" in orden:
+					print(len(orden))
+					if len(orden)!=10:
+						flash(" la fecha {} que introdujo esta incorrecta".format(orden))
+					else:
+						d,m,a = orden.split('/')
+						if len(a)==2:
+							an ="20" + a
+						elif len(a)==4:
+							an = a
+						orden = an +"-"+m+"-"+d
+						canSal = Salidas.query.filter_by(fecha=orden).all()
+						return render_template("cancelaMix.html", nombre=nombre, form=form, titulo="fecha", buscado=orden, data=canSal)
+			elif choice == "2":
+				if orden:
+					canSal = Salida_Articulos.query.filter(Salida_Articulos.descripcion.like("%"+orden+"%")).all()
+					return render_template("cancelaMix.html", nombre=nombre, form=form, titulo="Articulo", buscado=orden, data=canSal)
+			elif choice == "3":
+				if orden:
+					canSal = Salidas.query.filter(Salidas.solicitante.like("%"+orden+"%")).all()
+					return render_template("cancelaMix.html", nombre=nombre, form=form, titulo="Nombre Recibe", buscado=orden, data=canSal)
+			elif choice == "4":
+				if orden:
+					canSal = Salidas.query.filter_by(oSolicitnte=orden).all()
+					return render_template("cancelaMix.html", nombre=nombre, form=form, titulo="Oficio", buscado=orden, data=canSal)
+			elif choice == "5":
+				if orden:
+					canSal = Salidas.query.filter_by(fol_entrada=orden).all()
+					return render_template("cancelaMix.html", nombre=nombre, form=form, titulo="Folio", buscado=orden, data=canSal)
+		elif "eliminar" in  request.form["addOrdenSal"]:
+			if "H" in request.form["addOrdenSal"]:
+				e, folio = request.form["addOrdenSal"].split(".")
+				xArti=0
+			else:
+				e, folio = request.form["addOrdenSal"].split(".")
+				xArti = 1
+			try:
+				if xArti == 1 :
+					querySalida = Salidas.query.filter_by(id = folio).one()
+					histo = Historia.query.filter_by(salida=querySalida.id).all()
+				else:
+					querySalida = Salidas.query.filter_by(fol_entrada = folio).one()
+					histo = Historia.query.filter_by(salida=querySalida.id).all()
+				
+				##################################################################
+				############ borro salidas y salidas articulos ###################
+				############ agrego los datos a la tabla entrada #################
+				##################################################################
+				for item in histo:
+					salArti = Salida_Articulos.query.filter_by(id=item.salida_articulos).one()
+					if item.entrada_articulos == "Stock": 
+						agregar = float(salArti.cantidad)
+					else:
+						entArti = Articulos.query.filter_by(id=item.entrada_articulos).one()
+						saldo = float(entArti.cantidad)
+						agregar = float(salArti.cantidad)
+						totalA=saldo+agregar
+						total = float(totalA) * float(entArti.p_unit)
+					inven = Inventario.query.filter_by(id=item.inv).one()
+					cantInve = float(inven.cant_exist) + float(agregar)
+					inven.cant_exist = cantInve
+					db.session.commit()
+					print(item.salida_articulos)
+					daS = Salida_Articulos.query.get(item.salida_articulos)
+					db.session.delete(daS)
+					db.session.commit()
+				dadS = Salidas.query.get(querySalida.id)
+				print(dadS)
+				db.session.delete(dadS)
+				db.session.commit()
+				##################################################################
+			except Exception as e:
+				print (e)
+			else:
+				flash("el registro se encuentra dañado")
+	return render_template("cancelaMix.html", nombre=nombre, form=form)
 
 
 if __name__ == '__main__':
