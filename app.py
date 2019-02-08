@@ -501,7 +501,7 @@ def EntradaOrden():
 				return x
 			else:
 				flash("La orden núm. {} ya ha sido capturada anteriormente".format(orden1))
-	return render_template("entradaOrden.html", nombre=nombre, form=form, OrdeCompra=session['listatotal'],folio_e=folio_e(), total1=session['total'])
+	return render_template("entradaOrden.html", nombre=nombre, form=form, listaglobal=session['listatotal'], folio_e=folio_e(), total1=session['total'])
 
 
 @app.route('/consultayreportes/reimpresiondeE_S/entradas', methods=['GET', 'POST'])
@@ -1376,7 +1376,7 @@ def cancelaMix():
 @app.route('/consultayreportes/saldoseninventariofisico', methods=['GET','POST'])
 def saldosInvFis():
 	nombre = session['username']
-	saldo = Inventario.query.filter(Inventario.cant_exist>0).group_by(Inventario.id_prod).all()
+	saldo = Inventario.query.filter(Inventario.cant_exist>0).group_by(Inventario.id_prod).order_by(Inventario.actividad).all()
 	return render_template("inventarios.html", nombre=nombre, saldo=saldo)
 
 
