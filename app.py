@@ -1380,6 +1380,14 @@ def saldosInvFis():
 	return render_template("inventarios.html", nombre=nombre, saldo=saldo)
 
 
+@app.route('/consultayreportes/articulosconexistenciasminimas', methods=['GET','POST'])
+def artCExisMin():
+	nombre = session['username']
+	saldo = Inventario.query.filter(Inventario.cant_exist>0).filter(Inventario.cant_exist<20).group_by(Inventario.id_prod).order_by(Inventario.actividad).all()
+	return render_template("inventarios.html", nombre=nombre, saldo=saldo)
+
+
+
 if __name__ == '__main__':
     crsf.init_app(app)
     db.init_app(app)
