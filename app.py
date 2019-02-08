@@ -52,25 +52,16 @@ connection = pymssql.connect(host=server, user=user, password=password, database
 try :
    # Creacion del cursor
    cursor = connection.cursor()
-   print("Conexion establecida con exito")
 except:
    print("No hay Conexion a SQL SERVER")
 ####################################################
 
-def listaGlobal(lista):
-	listatotal=[]
-	for item in lista:
-		if len(item) > 8:
-			del item[7]
-			listatotal.append(item)
-		else:
-			listatotal.append(item)
-	return listatotal
-
 
 @app.before_request
 def before_request():
-	if 'username' not in session and request.endpoint in ['index', 'entradas', 'salidas', 'buscaprod', 'verlista', 'ConsultaEntrada', 'crearUser', 'EntradaOrden', 'ConsultaSalida', 'salidasTit', 'SalidaPar']:
+	if 'username' not in session and request.endpoint in ['index', 'entradas', 'salidas', 'buscaprod', 'verlista',
+	 'ConsultaEntrada', 'crearUser', 'EntradaOrden', 'ConsultaSalida', 'salidasTit', 'SalidaPar', 'salidasImp', 'correcionSD',
+	 'cancelaMix','saldosInvFis']:
 		return redirect(url_for('login'))
 	elif 'username' in session:
 		usr = session['username']
@@ -510,7 +501,7 @@ def EntradaOrden():
 				return x
 			else:
 				flash("La orden núm. {} ya ha sido capturada anteriormente".format(orden1))
-	return render_template("entradaOrden.html", nombre=nombre, form=form, listaglobal=session['listatotal'],folio_e=folio_e(), total1=session['total'])
+	return render_template("entradaOrden.html", nombre=nombre, form=form, OrdeCompra=session['listatotal'],folio_e=folio_e(), total1=session['total'])
 
 
 @app.route('/consultayreportes/reimpresiondeE_S/entradas', methods=['GET', 'POST'])
@@ -1374,11 +1365,19 @@ def cancelaMix():
 				db.session.delete(dadS)
 				db.session.commit()
 				##################################################################
+				flash("La Salida {} se realizó con éxito". format())
 			except Exception as e:
 				print (e)
 			else:
 				flash("el registro se encuentra dañado")
 	return render_template("cancelaMix.html", nombre=nombre, form=form)
+
+
+@app.route('/consultayreportes/saldoseninventariofisico', methods=['GET','POST'])
+def saldosInvFis():
+	nombre = session['username']
+	saldo = Inventario.query.filter(Inventario.cant_exist>0).group_by(Inventario.id_prod).all()
+	return render_template("inventarios.html", nombre=nombre, saldo=saldo)
 
 
 if __name__ == '__main__':

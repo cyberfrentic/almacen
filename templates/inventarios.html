@@ -1,0 +1,82 @@
+{% extends 'index.html' %}
+{% from "_macros.html" import multi %}
+{% block content %}
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+	<title></title>
+</head>
+<style>
+	#carga {
+		height: 100vh;
+	}
+	
+</style>
+
+<div class="d-none" id="contenido">
+  <h2>Filterable Table</h2>
+  <p>Type something in the input field to search the table for first names, last names or emails:</p>  
+  <input class="form-control" id="myInput" type="text" placeholder="Search..">
+  <br>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Codigo</th>
+        <th>Descripcion</th>
+        <th>Unidad</th>
+        <th>cantidad Exi.</th>
+        <th>Costo</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody id="myTable">
+    	{% for item in saldo%}
+    		{% if item.actividad =="a"%}
+			    <tr class="table-danger">
+			    	<td>{{item.id_prod}}</td>
+			        <td>{{item.nom_prod}}</td>
+			        <td>{{item.um}}</td>
+			        <td>{{item.cant_exist}}</td>
+			        <td>{{item.costo_unit}}</td>
+			        <td> {{multi(item.cant_exist, item.costo_unit)}}</td>
+			    </tr>
+		   	{% else %}
+		   		<tr class="table-primary">
+			    	<td>{{item.id_prod}}</td>
+			        <td>{{item.nom_prod}}</td>
+			        <td>{{item.um}}</td>
+			        <td>{{item.cant_exist}}</td>
+			        <td>{{item.costo_unit}}</td>
+			    </tr>
+			{%endif%}
+		{% endfor %}
+    </tbody>
+  </table>
+  
+  <p>Note that we start the search in tbody, to prevent filtering the table headers.</p>
+</div>
+<div class="d-flex justify-content-center align-items-center" id="carga">
+	<div class="spinner-grow text-success" style="width: 6rem; height: 6rem;" ></div>
+</div>
+<script>
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+
+const contenido = document.getElementById("contenido");
+const carga = document.getElementById("carga")
+setTimeout(()=>{
+	contenido.className ='container mt-3';
+	carga.className = 'd-none';
+},2000)
+</script>
+
+{% endblock content %}
