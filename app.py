@@ -643,7 +643,7 @@ def ConsultaEntrada():
 				return render_template("entradaOrden.html", nombre=nombre, reporte=entra, form=form, lista=arti, titulo="Entradas")
 	return render_template("consulta.html", nombre=nombre, form=form, titulo="Entradas")
 
-
+##falta modificar
 @app.route('/salidas_de_almacen/salidas_por_orden_de_compra', methods=['GET', 'POST'])
 def salidas():
 	nombre = session['username'].upper()
@@ -667,8 +667,26 @@ def salidas():
 					flash('El numero de orden no existe')
 					return redirect(url_for('salidas'))
 				if Enc_Orden:
-					EncabeOrden = Enc_Orden[0]
+					# EncabeOrden = Enc_Orden[0]
+					# DetalleOrden = Det_Orden
 					DetalleOrden = Det_Orden
+					#Convierto EncOrden en listas poder modificarlo
+					Enc_Orden = [list(fila) for fila in Enc_Orden]
+					EncabeOrden = Enc_Orden[0]
+					#Convierto la lista de tuplas DetalleOrden en listas poder modificarlos
+					DetalleOrden = [list(fila) for fila in DetalleOrden]
+					print("ENCABEZADO Y DETALLE DE LA ORDEN")
+					print(EncabeOrden)
+					print(DetalleOrden)
+					total_orden = 0
+					for lista in DetalleOrden:
+						#Calculamos el total del renglon cant x costo
+						lista[7] = lista[2] * lista[6]
+						#Sumo total de renglones para obtener total general
+						total_orden = total_orden + lista[7]
+					#Actualizo el costo del encabezado
+					EncabeOrden[12]	= total_orden
+					session['totalNSalida'] = total_orden
 				return render_template("SalidaOrden.html", nombre=nombre,form=form_buscasalida,DetalleOrden=DetalleOrden,EncabeOrden=EncabeOrden)
 		elif 'guardaSalida' in request.form['addOSalida'][:12]:
 			actividad = form_buscasalida.actividad.data
@@ -693,7 +711,7 @@ def salidas():
 					Enc_Orden.nReq,
 					Enc_Orden.oSolicitnte,
 					Enc_Orden.tCompraContrato,
-					Enc_Orden.total,
+					session['totalNSalida'],
 					Enc_Orden.observaciones,
 					form_buscasalida.actividad.data,
 					nombrerecibe,
@@ -1130,6 +1148,7 @@ def salidasImp():
 						t2 = float(saldo_articulos) - float(item[5])
 						seek.cant_exist = t
 						seek_articulos.cantidad = t2
+						seek_articulos.total = seek_articulos.p_unit * t2
 						if seek.cant_exist==0:
 							seek.actividad="Surtido"
 						elif seek.cant_exist>0 :
@@ -1376,14 +1395,14 @@ def cancelaMix():
 @app.route('/consultayreportes/saldoseninventariofisico', methods=['GET','POST'])
 def saldosInvFis():
 	nombre = session['username']
-	saldo = Inventario.query.filter(Inventario.cant_exist>0).group_by(Inventario.id_prod).order_by(Inventario.actividad).all()
+	saldo = Inventario.query.filter(Inventario.cant_exist>0).group_by(Inventario.id_prod).group_by(Inventario.actividad).all()
 	return render_template("inventarios.html", nombre=nombre, saldo=saldo)
 
 
 @app.route('/consultayreportes/articulosconexistenciasminimas', methods=['GET','POST'])
 def artCExisMin():
 	nombre = session['username']
-	saldo = Inventario.query.filter(Inventario.cant_exist>0).filter(Inventario.cant_exist<20).group_by(Inventario.id_prod).order_by(Inventario.actividad).all()
+	saldo = Inventario.query.filter(Inventario.cant_exist>0).filter(Inventario.cant_exist<20).group_by(Inventario.id_prod).group_by(Inventario.actividad).all()
 	return render_template("inventarios.html", nombre=nombre, saldo=saldo)
 
 
