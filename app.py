@@ -533,7 +533,7 @@ def ConsultaEntrada():
 			listas = list()
 			listas.append('Proveedor:')
 			listas.append('Nombre Comercial:')
-			x = entradaPdf("Entrada Reimpresa", listas, generales, arti,1)
+			x = entradaPdf("Entrada", listas, generales, arti,1)
 			return x
 		elif 'buscarOrd' in xa:
 			if busqueda == '8':
@@ -715,6 +715,7 @@ def salidas():
 					Enc_Orden.observaciones,
 					form_buscasalida.actividad.data,
 					nombrerecibe,
+					session['username'],
 				)
 				db.session.add(Sali)
 				db.session.commit()

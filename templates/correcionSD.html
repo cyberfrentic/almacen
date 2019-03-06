@@ -1,22 +1,120 @@
 {% extends 'index.html' %}
 {% block content %}
+<style>
+	body
+{
+	margin: 0;
+	padding: 0;
+}
+
+	.ring
+{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 150px;
+	height: 150px;
+	background: transparent;
+	border 3px solid #F30B29;
+	border-radius: 50%;
+	text-align: center;
+	line-height: 150px;
+	font-family: sans-serif;
+	font-size: 20px;
+	color:#F30B29;
+	letter-spacing: 4px;
+	text-transform: uppercase;
+	text-shadow: 0 0 10px #F30B29;
+	box-shadow: 0 0 20px rgba(0,0,0,.5);
+}
+.ring:before
+{
+	content: '';
+	position:absolute;
+	top: -3px;
+	left: -3px;
+	width: 100%;
+	height: 100%;
+	border:3px solid transparent;
+	border-top: 3px solid #F30B29;
+	border-right: 3px solid #F30B29;
+	border-radius: 50%;
+	box-shadow: 0 0 20px #F30B29;
+	animation: animateCircle 2s linear infinite;
+}
+span
+{
+	display: block;
+	position: absolute;
+	top: calc(50% - 2px);
+	left: 50%;
+	width: 50%;
+	height: 4px;
+	background: transparent;
+	transform-origin: left;
+	animation: animate 2s linear infinite;
+}
+span:before
+{
+	content: '';
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: #F30B29;
+	top:-6px;
+	right: -8px;
+	box-shadow: 0 0 20px #F30B29;
+}
+@keyframes animate
+{
+	0%
+	{
+		transform: rotate(45deg);
+	}
+	100%
+	{
+		transform: rotate(405deg);
+	}
+}
+@keyframes animateCircle
+{
+	0%
+	{
+		transform: rotate(0deg);
+	}
+	100%
+	{
+		transform: rotate(360deg);
+	}
+}
+	
+</style>
+<div class="ring" id="carga">
+		Loading
+		<span></span>
+</div>
 	<form method="POST" accept-charset="utf-8">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-		<div class="container">
-			<div class="flow">
-				<div class="card" style="width:400px">
-		  			<div class="card-header card bg-success text-white">Cancelacion de Salidas Por Orden</div>
-		  			<div class="card-body card bg-primary text-white">
-		  				<input type="text" class="form-control" id="orden" name="orden" placeholder="Ingrese Núm. de Ornden">
-		  			</div>
-		  			<div class="card-footer card bg-info text-white">
-		  				<button type="submint" class="btn btn-outline-danger" name="Cancelar" value="buscar">Cancelar Orden</button>
-		  			</div>
+		<div class="d-none" id="contenido">
+			<div class="container">
+				<div class="flow">
+					<div class="card" style="width:400px">
+			  			<div class="card-header card bg-success text-white">Cancelacion de Salidas Por Orden</div>
+			  			<div class="card-body card bg-primary text-white">
+			  				<input type="text" class="form-control" id="orden" name="orden" placeholder="Ingrese Núm. de Ornden">
+			  			</div>
+			  			<div class="card-footer card bg-info text-white">
+			  				<button type="submint" class="btn btn-outline-danger" name="Cancelar" value="buscar">Cancelar Orden</button>
+			  			</div>
+					</div>
 				</div>
 			</div>
 		</div>
 		{% if data %}
-			 <div class="container">
+			
+				<div class="container">
 				    <!-- The Modal -->
 				  	<div class="modal fade" id="myES">
 				    	<div class="modal-dialog modal-lg">
@@ -73,11 +171,12 @@
 				    	</div>
 				  	</div> 
 				</div>
-            </form>
-        </div>
-    </div>
+	</form>
+
+
+    
 <!-- Ventana Modal automático en pantalla -->
-<script type="text/javascript">
+<script>
          $(function(){
          $("#myES").modal();
           });
@@ -93,6 +192,16 @@ $(document).ready(function(){
   });
 });
 </script>
+
 		{% endif%}
 	</form>
+
+<script>
+const contenido = document.getElementById("contenido");
+const carga = document.getElementById("carga")
+setTimeout(()=>{
+	contenido.className ='container mt-3';
+	carga.className = 'd-none';
+},2000);
+</script>
 {% endblock %}

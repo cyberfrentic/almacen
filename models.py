@@ -240,7 +240,9 @@ class Entrada(db.Model):
 	observaciones = db.Column(db.Text)
 	nombrerecibe = db.Column(db.String(90))
 
-	def __init__(self, proveedor, nomComer, fol_entrada, fecha, factura, nFactura, ordenCompra, depSolici, nReq, oSolicitnte, tCompraContrato, total, observaciones, nombrerecibe):
+	def __init__(self, proveedor, nomComer, fol_entrada, fecha, factura, nFactura,
+				ordenCompra, depSolici, nReq, oSolicitnte, tCompraContrato, total,
+				observaciones, nombrerecibe):
 		self.proveedor = proveedor
 		self.nomComer = nomComer
 		self.fol_entrada = fol_entrada
@@ -300,11 +302,12 @@ class Salidas(db.Model):
 	observaciones = db.Column(db.Text)
 	actividad = db.Column(db.Text)
 	solicitante = db.Column(db.String(75))
+	nombreElabora = db.Column(db.String(90))
 	
 
 
 	def __init__(self, proveedor, nomComer, fol_entrada, fecha, factura, nFactura, ordenCompra,
-		depSolici, nReq, oSolicitnte, tCompraContrato, total, observaciones,actividad,solicitante):
+		depSolici, nReq, oSolicitnte, tCompraContrato, total, observaciones,actividad,solicitante, nombreElabora):
 		self.proveedor = proveedor
 		self.nomComer = nomComer
 		self.fol_entrada = fol_entrada
@@ -320,6 +323,7 @@ class Salidas(db.Model):
 		self.observaciones = observaciones
 		self.actividad = actividad
 		self.solicitante = solicitante
+		self.nombreElabora = nombreElabora
 
 
 class Salida_Articulos(db.Model):
