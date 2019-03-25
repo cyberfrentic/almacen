@@ -9,6 +9,60 @@
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <style type="text/css" media="screen">
+    	input[type="checkbox"]
+    	{
+    		position: relative;
+    		width: 55px;
+    		height: 30px;
+    		-webkit-appearance: none;
+    		background: linear-gradient(0deg, #333, #000);
+    		outline: none;
+    		border-radius: 20px;
+    		box-shadow: 0 0 0 3px #353535, 0 0 0 2px #3e3e3e, inset 0 0 5px rgba(0,0,0,1), 0 5px 20px rgba(0,0,0,.5), inset 0 0 15px rgba(0,0,0,.2);
+    	}
+    	input:checked[type="checkbox"]
+    	{
+    		background: linear-gradient(0deg, #6dd1ff, #20b7ff);
+    		box-shadow: 0 0 2px #6dd1ff, 0 0 0 3px #353535, 0 0 0 2px #3e3e3e, inset 0 0 5px rgba(0,0,0,1), 0 5px 20px rgba(0,0,0,.5), inset 0 0 15px rgba(0,0,0,.2);
+    	}
+    	input[type="checkbox"]:before
+    	{
+			content: "";
+			position: absolute;
+			top: 0;		
+			left: 0;
+			width: 30px;
+			height: 30px;
+			background: linear-gradient(0deg, #000, #6b6b6b);
+			border-radius: 20px;
+			box-shadow: 0 0 0 1px #232323;
+			transform: scale(.98, .96);
+			transition: .5s;
+    	}
+    	input:checked[type="checkbox"]:before
+    	{
+    		left:24px;
+    	}
+    	input[type="checkbox"]:after
+    	{
+			content: "";
+			position: absolute;
+			top: calc(50% - 1px);		
+			left: 20px;
+			width: 4px;
+			height: 4px;
+			background: linear-gradient(0deg, #6b6b6b, #000);
+			border-radius: 50%;
+			transition: .5s
+    	}
+    	input:checked[type="checkbox"]:after
+    	{
+    		background: #63cdff;
+    		left:46px;
+    		box-shadow: 0 0 5px #13b3ff,  0 0 15px #13b3ff;
+    	}
+    </style>
 </head>
 	<form method="POST">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
@@ -159,7 +213,7 @@
 			        <td>{{item[1]}}</td>
 			        <td><input type="text" class="num-control"  value="{{item[7]}}" name="costo"></td>
 			        <td><input type="text" class="num-control" value="{{item[8]}}" name="cantidad"></td>
-			        <td><center><input type="checkbox" class="form-check-input" name="optcheck" value="{{item[4]}}"></center></td>
+			        <td><center><input type="checkbox"  name="optcheck" value="{{item[4]}}"></center></td>
 			      </tr>
 			     {% endfor %}
 		    </tbody>

@@ -14,7 +14,7 @@
 #	    |
 #
 from flask import url_for
-from flask import Flask, flash, redirect, render_template, request, session, abort
+from flask import Flask, flash, redirect, render_template, request, session
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
 from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada, form_salida_orden, form_consul_entrada, formbuscasalida
 import os
