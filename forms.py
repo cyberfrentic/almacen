@@ -20,11 +20,11 @@ def length_honeypot(form, field):
 class Create_Form(Form):
     username = StringField('Usuario',
                            [validators.Required(message='El user es requerido!.'),
-                            validators.length(min=8, max=20, message='ingrese un username valido!.')
+                            validators.length(min=6, max=20, message='ingrese un username valido!.')
                             ])
     nombrecompleto = StringField('Nombre Completo',
                          [validators.Required(message='El nombre completo en necesario'),
-                         validators.length(min=15, message='Ingrese un nombre valido')])
+                         validators.length(min=15, max=90, message='Ingrese un nombre valido')])
 
     password = PasswordField('Password', [validators.Required(message='El password es Indispensable!.'),
                                           validators.EqualTo('confirm', message='Las contraseñas deben ser iguales')])

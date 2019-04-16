@@ -112,16 +112,16 @@ def crearUser():
         user = crear.username.data
         usuar = User.query.filter_by(username=user).first()
         if usuar is None:
-                user = User(crear.username.data,
-                            crear.nombrecompleto,
-                            crear.password.data,
-                            crear.email.data,
-                            )
-                db.session.add(user)
-                db.session.commit()
-                succes_message = 'Usuario registrado en la base de datos'
-                flash(succes_message)
-                return redirect(url_for('crearUser'))
+            user = User(crear.username.data,
+                        crear.nombrecompleto.data,
+                        crear.password.data,
+                        crear.email.data,
+                        )
+            db.session.add(user)
+            db.session.commit()
+            succes_message = 'Usuario registrado en la base de datos'
+            flash(succes_message)
+            return redirect(url_for('crearUser'))
         else:
             succes_message = 'El usuario existe en la base de datos'
             flash(succes_message)
