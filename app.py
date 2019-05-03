@@ -26,6 +26,7 @@ import pymssql
 from bs4 import BeautifulSoup
 from flask_wtf import CSRFProtect
 from tools.fpdf import entradaPdf
+from sqlalchemy import or_
 
 ###########################################
 # CONEXION A MYSQL
@@ -203,8 +204,6 @@ def buscaprod():
 		ArtName = form_buscap.product_name.data
 		print(request.form['addsalida'])
 		if 'mostrar' in request.form['addsalida']:
-			#print(session['listatotal'])
-			# Calculamos el costo total de los prods, mult costo x cant en cada tupla
 			cantidades = request.form.getlist('cantidad')
 			print(cantidades)
 			total_lista = 0
@@ -1406,6 +1405,41 @@ def artCExisMin():
 	saldo = Inventario.query.filter(Inventario.cant_exist>0).filter(Inventario.cant_exist<20).group_by(Inventario.id_prod).group_by(Inventario.actividad).all()
 	return render_template("inventarios.html", nombre=nombre, saldo=saldo)
 
+
+@app.route('/consultayreportes/actualizaciondearticulos', methods=['GET', 'POST'])
+def actualizaProd():
+	nombre = session['username']
+	form = formbuscap(request.form)
+	if request.method == 'POST':
+		ArtCodigo = form.product_id.data
+		ArtName = form.product_name.data
+		print(request.form['addsalida'])
+		if 'buscar' in request.form['addsalida']:
+			#Buscar por codigo
+			if ArtCodigo:
+				print("buscar x codigo")
+				pxn = ArtCodigo
+				buscapxn = Inventario.query.filter(or_(Inventario.id_item==pxn, Inventario.id_prod==pxn)).filter(Inventario.cant_exist>0).all()
+				print(buscapxn)
+				return render_template("actProd.html", nombre=nombre, form=form, listatemp=buscapxn, productpxn=ArtCodigo)
+			elif ArtName:
+				print("buscar x Nombre")
+				#Buscar por nombre
+				pxn='%'+ArtName+'%'
+				#print(LocalName)
+				buscapxn = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).filter(Inventario.cant_exist>0).all()
+				return render_template("actProd.html", nombre=nombre, form=form, listatemp=buscapxn, productpxn=ArtName)
+			else:
+				flash("Debe elegir un articulo")
+				return render_template("buscar.html", nombre=nombre, form=form_buscap,listatemp2=session['listatotal'])
+	return render_template("actProd.html", nombre=nombre, form=form)
+
+
+@app.route("/modiProd/<numInv>", methods=['GET', 'POST'])
+def editarVehi(numInv):
+	nombre = session['username']
+	print(numInv)
+	return numInv
 
 
 if __name__ == '__main__':

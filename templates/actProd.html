@@ -1,0 +1,113 @@
+{% extends 'index.html' %}
+{% from "_macros.html" import render_field %}
+{% block content %}
+	<form method="POST">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+	    <div class="container">
+	    	<div class="row">
+		  		<div class="card">
+		    		<div class="card-header bg-info text-white">Buscar articulo por Código</div>
+		    		<div class="card-body">
+		    			<div class="p-3 mb-2 bg-success text-white">
+							{{ render_field(form.product_id, class='form-control', placeholder="Ingrese la clave del producto")}}
+		    			</div>
+						<div class="p-3 mb-2 bg-info text-white">Buscar articulo por Nombre</div>
+						<div class="p-3 mb-2 bg-success text-white">
+							{{render_field(form.product_name, class='form-control', placeholder="Ingrese el nombre del producto")}}
+						</div>
+		    		</div> 
+		    		<div class="card-footer bg-info text-white">
+		    			<center>
+		    				<button type="submit" class="btn btn-danger" name="addsalida" value="buscar"> Buscar </button>
+		    			</center>		    			
+		    		</div>
+		  		</div>
+		  	</div>
+		</div>
+		{% if listatemp %}
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/> 
+            <div class="container">                                
+              <!--<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Ver listado de productos</button> -->
+              <!-- Modal -->
+                <div class="modal fade" id="mylistapxn" role="dialog">
+                    <div class="modal-dialog modal-lg" id="mdialTamanio1">
+                        <!-- Contenido Modal-->
+                        <div class="modal-content">
+                               <div class="modal-header">
+                                  <!--button type="button" class="close" data-dismiss="modal">&times;</button-->
+                                  <h4 class="modal-title"> Producto buscado:{{productpxn}} </h4>
+								  <input class="form-control" id="myInput" type="text" placeholder="Search..">
+								 
+								  <br>
+								  <button type="submit" class="btn btn-success" id = "addsalida" name="addsalida"  value="selec">Agregar Selección a la lista</button>                                    
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">CERRAR</button>
+                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
+                               </div>
+                            <div class="modal-body">
+
+								  <table id="table" class="table table-hover table-responsive table-bordered">
+								    <thead>
+								      <tr class="success" style="font:11px Arial">
+								        <th>Código Art.</th>
+								        <th>id_Item</th>
+								        <th>Descripcion</th>
+								        <th>Tipo de Producto</th>
+								        <th>Familia</th>
+								        <th>existencia</th>
+								        <th>Precio Unit</th>
+								        <th>Seleccionar</th>
+								      </tr>
+								    </thead>
+								    <tbody id="myTable">
+								    	{% for item in listatemp %}
+									       <tr class="info" style="font:11px Arial"> 
+									        <td>{{item.id_item}}</td>
+									        <td>{{item.id_prod}}</td>
+									        <td>{{item.nom_prod}}</td>
+									        <td>{{item.tipo_prod}}</td>
+									        <td>{{item.id_familia}}</td>
+									        <td>{{item.cant_exist}}</td>
+									        <td>{{item.costo_unit}}</td>
+									        <td>
+									        	<center>
+									        		{% if item.id_item %}
+									        			<a class="btn btn-outline-warning" href="/modiProd/item:{{item.id_item}}">editar</a>
+									        		{% elif item.id_prod %}
+									        			<a class="btn btn-outline-warning" href="/modiProd/prod:{{item.id_prod}}">editar</a>
+									        		{% endif %}
+									        	</center>
+									        </td>
+									      </tr>
+									     {%endfor%}
+								    </tbody>
+								  </table>	
+                            </div>
+
+                                   <div class="modal-footer">
+                                      <button type="submit" class="btn btn-success" id = "addsalida" name="addsalida"  value="selec">Agregar Selección a la lista</button>                                    
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">CERRAR</button>
+                                    </div>
+                       </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+            	
+				$(document).ready(function(){
+				  $("#myInput").on("keyup", function() {
+				    var value = $(this).val().toLowerCase();
+				    $("#myTable tr").filter(function() {
+				      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+				    });
+				  });
+				});
+			</script>
+
+             <script type="text/javascript">
+              $(function(){
+                $("#mylistapxn").modal();
+              });
+           </script>
+	</form>
+	{% endif %}
+{% endblock %}
