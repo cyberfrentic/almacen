@@ -16,7 +16,7 @@
 from flask import url_for
 from flask import Flask, flash, redirect, render_template, request, session
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
-from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada, form_salida_orden, form_consul_entrada, formbuscasalida
+from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada, form_salida_orden, form_consul_entrada, formbuscasalida, formActInven
 import os
 from models import db, User, Inventario, Articulos, Entrada, Salidas, Salida_Articulos, Historia
 from datetime import datetime
@@ -83,14 +83,18 @@ def page_not_found(e):
 def regreso(e):
     nombre = (session['username']).upper()
     x = request.endpoint
-    if x=='salidas':
+    if x =='salidas':
     	nombre = session['username']
     	form = formbuscasalida(request.form)
-    	return render_template("salidas.html", form=form, nombre=nombre)
+    	return render_template("salidas.html", form=form, nombre=nombre), 400
     elif x == 'buscaprod2':
     	nombre = session['username']
     	form_buscap = formbuscap(request.form)
-    	return render_template("buscar.html", nombre=nombre, form=form_buscap)
+    	return render_template("buscar.html", nombre=nombre, form=form_buscap), 400
+    # elif x == 'modiProd':
+    # 	nombre = session['username']
+    # 	form =  formActInven(request.form)
+    # 	return render_template("modiProd.html", form=form, nombre=nombre), 400
     return render_template(x + '.html', nombre=nombre), 400
 
 
@@ -1435,11 +1439,21 @@ def actualizaProd():
 	return render_template("actProd.html", nombre=nombre, form=form)
 
 
-@app.route("/modiProd/<numInv>", methods=['GET', 'POST'])
-def editarVehi(numInv):
+@app.route("/modiProd/<int:numInv>", methods=['GET', 'POST'])
+def modiProd(numInv):
 	nombre = session['username']
-	print(numInv)
-	return numInv
+	consulta = Inventario.query.filter(Inventario.id==numInv).one()
+	form = formActInven(formdata=request.form, obj=consulta)
+	if request.method == 'POST' and form.validate():
+		consulta.nom_interno = form.nom_interno.data.upper()
+		consulta.descripcion = form.descripcion.data.upper()
+		consulta.id_familia = form.id_familia.data.upper()
+		consulta.procedencia = form.procedencia.data.upper()
+		consulta.f_recepcion = form.f_recepcion.data.upper()
+		db.session.commit()
+		flash("El regsitro se Modifico con Exito, el estante es {}". format(str(form.procedencia.data)))
+		return redirect(url_for("actualizaProd"))
+	return render_template("modiProd.html", form=form, nombre=nombre)
 
 
 if __name__ == '__main__':

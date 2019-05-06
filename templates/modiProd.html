@@ -1,0 +1,36 @@
+{% extends 'index.html' %}
+{% from "_macros.html" import render_field %}
+{% block content %}
+
+	<form  method="POST" accept-charset="utf-8">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+		<div class="container">
+			<div class="col-sm-6 list-group-item-action list-group-item-primary">
+				{{ render_field(form.id_item, disabled=True)}}
+				{{ render_field(form.id_prod, disabled=True)}}
+			</div>
+			<div class="bg-info input-group mb-3">
+				{{ render_field(form.nom_interno, class="form-control")}}
+			</div>
+			<div class="bg-info input-group mb-3">
+				{{ render_field(form.descripcion, class="form-control")}}
+			</div>
+			<div class="bg-info input-group mb-3">
+				{{ render_field(form.id_familia, class="form-control")}}
+			</div>
+			<div class="bg-info input-group mb-3">
+				{{ render_field(form.procedencia, class="form-control")}}
+			</div>
+			<div class="bg-info input-group mb-3">
+				{{ render_field(form.f_recepcion, class="form-control")}}
+			</div>
+			<div class="col-sm-3 list-group-item-action list-group-item-warning">
+				<button type="submit" class="btn btn-outline-danger" name="actualizar" value="actualizar">Actualizar</button>
+			</div>
+		</div>
+	</form>
+	<br>
+	<br>
+	<br>
+
+{% endblock %}

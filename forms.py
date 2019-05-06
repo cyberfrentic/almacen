@@ -111,3 +111,14 @@ class formbuscasalida(Form):
     actividad = StringField('',
         [validators.Required(message = '¡Debe capturar la actividad para esta salida!')
         ])
+
+
+class formActInven(Form):
+    id_item = StringField("ID ITEM: ")#db.Column(db.String(20), comment='codigo producto')
+    id_prod = StringField("ID PRODUCTO: ")#db.Column(db.String(20))
+    nom_interno = StringField("Descripción: ")#db.Column(db.String(255))
+    descripcion = StringField("Unidad: ")#db.Column(db.String(20))
+    id_familia = StringField("ID FAMILIA: ")#db.Column(db.String(20))
+    procedencia = StringField("ESTANTE: ", 
+        [validators.Required(message="Debe capturar el estante donde se encuentra el producto")])#db.Column(db.String(255))
+    f_recepcion = StringField("FECHA DE RECEPCIÓN: ")#db.Column(db.DateTime, default=datetime.datetime.now)

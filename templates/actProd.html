@@ -70,11 +70,7 @@
 									        <td>{{item.costo_unit}}</td>
 									        <td>
 									        	<center>
-									        		{% if item.id_item %}
-									        			<a class="btn btn-outline-warning" href="/modiProd/item:{{item.id_item}}">editar</a>
-									        		{% elif item.id_prod %}
-									        			<a class="btn btn-outline-warning" href="/modiProd/prod:{{item.id_prod}}">editar</a>
-									        		{% endif %}
+									        		<a class="btn btn-outline-warning" href="/modiProd/{{item.id}}">editar</a>
 									        	</center>
 									        </td>
 									      </tr>
