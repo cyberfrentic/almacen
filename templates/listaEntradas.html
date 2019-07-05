@@ -1,0 +1,117 @@
+{% extends 'index.html' %}
+{% from "_macros.html" import multi %}
+{% block content %}
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>    
+
+<style>
+	#carga {
+		height: 50vh;
+	}
+	
+</style>
+
+<div class="container">
+	<div class="row">
+		<form method="POST">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>  
+		<select class="form-control" name="mes">
+			<option value="">Elija un mes</option>
+			<option value="01">Enero</option>
+		    <option value="02">Febrero</option>
+		    <option value="03">Marzo</option>
+		    <option value="04">Abril</option>
+		    <option value="05">Mayo</option>
+		    <option value="06">Junio</option>
+		    <option value="07">Julio</option>
+		    <option value="08">Agosto</option>
+		    <option value="09">Septiembre</option>
+		    <option value="10">Octubre</option>
+		    <option value="11">Noviembre</option>
+		    <option value="12">Diciembre</option>
+		</select>
+		<br>
+		<select class="form-control" name="anio">
+			<option value="">Elija un año</option>
+			<option value="2013">2013</option>
+			<option value="2014">2014</option>
+		    <option value="2015">2015</option>
+		    <option value="2016">2016</option>
+		    <option value="2017">2017</option>
+		    <option value="2018">2018</option>
+		    <option value="2019">2019</option>
+		    <option value="2020">2020</option>
+		    <option value="2021">2021</option>
+		    <option value="2022">2023</option>
+		    <option value="2023">2024</option>
+		    
+		    <option value="12">Diciembre</option>
+		</select>
+		<br><br>
+		<button class="btn btn-outline-danger" type="submit" value="enviar"> consultar </button>
+	</form>
+	</div>
+</div>
+
+{% if saldo %}
+	<div>
+		<div class="d-none" id="contenido">
+		  <table class="table table-bordered" id="tabledinamic">
+		    <thead>
+		      <tr>
+		      	<th>Núm. Entrada</th>
+		        <th>Codigo</th>
+		        <th>Descripcion</th>
+		        <th>Unidad</th>
+		        <th>cantidad Exi.</th>
+		        <th>Costo</th>
+		        <th>Total</th>
+		      </tr>
+		    </thead>
+		    <tbody id="myTable">
+		    	
+		    	{% for item in saldo%}
+		    		{% for item2 in item%}
+					    <tr class="table-danger">
+					    	<td>{{item2.entradas_id}}</td>
+					    	<td>{{item2.codigo}}</td>
+					        <td>{{item2.descripcion}}</td>
+					        <td>{{item2.udm}}</td>
+					        <td>{{item2.cantidad}}</td>
+					        <td>{{item2.p_unit}}</td>
+					        <td> {{multi(item2.cantidad, item2.p_unit)}}</td>
+					    </tr>
+					{%endfor%}
+				{% endfor %}
+		    </tbody>
+		  </table>
+
+		</div>
+		<div class="d-flex justify-content-center align-items-center" id="carga">
+			<div class="spinner-grow text-success" style="width: 6rem; height: 6rem;" ></div>
+		</div>
+	</div>
+{% endif %}
+<br>
+<br>
+<script>
+const contenido = document.getElementById("contenido");
+const carga = document.getElementById("carga")
+setTimeout(()=>{
+	contenido.className ='container mt-3';
+	carga.className = 'd-none';
+},2000);
+
+$(document).ready(function(){
+	$('#tabledinamic').DataTable();
+})
+</script>
+
+{% endblock content %}
