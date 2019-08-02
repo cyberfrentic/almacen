@@ -2,6 +2,8 @@
 #Programadores: Cesar Herrera Mut, Hugo Canul Echazarreta ( Septiembre de 2018)
 #Analista Profesional - Dirección de Informática - Direccion General y Jefe depto Org. Op. FCP Q.Roo
 #Desarrollado en Python 3.4
+#No logré terminarlo en diciembre, pero las pantallas enviadas sirvieron para
+#justificar en contraloría
 #
 #     ---------|--
 #		| 	   |
@@ -43,18 +45,18 @@ crsf = CSRFProtect()
 #################################################
 # CONEXION A SQL SERVER 2012
 # Creo la cadena de conexion
-# server ="192.168.0.170"
-# user="almacen"
-# password="Almacen2019*"
-# base='capa'
+# server ="DESKTOP-TRVGHH8\\SQLHUGO"
+# user="sa"
+# password="12345"
+# base ="capa"
 # connection = pymssql.connect(host=server, user=user, password=password, database=base)
 
 # try :
-#    # Creacion del cursor
+#    #Creacion del cursor
 #    cursor = connection.cursor()
 # except:
 #    print("No hay Conexion a SQL SERVER")
-# ####################################################
+####################################################
 
 
 @app.before_request
@@ -251,45 +253,9 @@ def buscaprod():
 					else:
 						pass
 			return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp2=session['listatotal'])
-	# Boton agregar a la lista  		
 		elif 'selec' in request.form['addsalida']:
 			valor = request.form['optradio']
 			print(valor)
-			pxn = valor[0:11]
-			# En caso que el número de Item no exista. Se traerá el código del producto			
-			if len(valor) >= 12: # Si se trata del código y un numero
-				# El numero de  1 - 3 digos es decir de 1-100
-				# Genero un item nuevo desde la tabla genitem
-				nuevo_item = genera_item()
-				# Ya tengo el nuevo item ahora obtengo los datos desde la consulta y meto el nuevo item en la lista.
-				buscasicopa ="""SELECT TOP 10 PRODUCT.PRODUCT_ID,INTERNAL_NAME,PRODUCT_TYPE_ID,FAMILIA_ID,STATUS_ID,INVENTORY_ITEM.QUANTITY_ON_HAND_TOTAL,PRODUCT.QUANTITY_UOM_ID,INVENTORY_ITEM.UNIT_COST FROM PRODUCT,INVENTORY_ITEM WHERE PRODUCT.PRODUCT_ID LIKE '%s' """%pxn
-				cursor.execute(buscasicopa)
-				LocalCodigo=cursor.fetchall()
-				# Aqui es donde le meto numeros al id_item de los productos para que me lo regrese en 
-				# elif 'selec' in request.form['addsalida']:
-				# Convierto todo en listas para poder modificarlo.
-				LocalName = [list(fila) for fila in LocalCodigo]
-				_ubica = int(valor[11:14])-1
-				lista_prod = LocalName[_ubica] # Localizamos la lista del producto seleccionado
-				lista_prod[4] = nuevo_item # guardamos el nuevo item en la lista !!
-				li=list()
-				lis=list()
-				li.append(lista_prod[0])
-				li.append(lista_prod[1])
-				li.append(lista_prod[2])
-				li.append(str(lista_prod[3]))
-				li.append(str(lista_prod[4]))
-				li.append(str(lista_prod[5]))
-				li.append(str(lista_prod[6]))
-				li.append(str(lista_prod[7]))
-				li.append("1")
-				lis.append(li)
-				# Le agrego 1 a la cantidad cuando el user selecciona un producto.
-				session['listatotal']+=lis
-				#print(session['listatotal'])
-				return render_template("buscar.html", nombre=nombre, form=form_buscap,listatemp2=session['listatotal'])
-
-			# Si el número de Item del producto si esta presente
 			if valor:
 				buscaitem = """SELECT PRODUCT.PRODUCT_ID,INTERNAL_NAME,PRODUCT_TYPE_ID,FAMILIA_ID,INVENTORY_ITEM_ID, INVENTORY_ITEM.QUANTITY_ON_HAND_TOTAL, PRODUCT.QUANTITY_UOM_ID, INVENTORY_ITEM.UNIT_COST FROM PRODUCT,INVENTORY_ITEM WHERE INVENTORY_ITEM_ID = '%s' AND PRODUCT.PRODUCT_ID = INVENTORY_ITEM.PRODUCT_ID"""%valor
 				cursor.execute(buscaitem)
@@ -313,10 +279,10 @@ def buscaprod():
 
 				session['listatotal'] += lis
 
-				#print(session['listatotal'])
+				print(session['listatotal'])
 
 				return render_template("buscar.html", nombre=nombre, form=form_buscap,listatemp2=session['listatotal'])
-			else:				
+			else:
 				flash("Debe elegir un articulo")
 				return render_template("buscar.html", nombre=nombre, form=form_buscap,listatemp2=session['listatotal'])
 		elif 'buscar' in request.form['addsalida']:
@@ -324,29 +290,11 @@ def buscaprod():
 			if ArtCodigo:
 				print("buscar x codigo")
 				pxn = ArtCodigo
-				buscapxn = """SELECT PRODUCT.PRODUCT_ID, INTERNAL_NAME, PRODUCT_TYPE_ID, FAMILIA_ID, INVENTORY_ITEM_ID, INVENTORY_ITEM.QUANTITY_ON_HAND_TOTAL, INVENTORY_ITEM.UNIT_COST  FROM PRODUCT,INVENTORY_ITEM WHERE PRODUCT.PRODUCT_ID LIKE '%s' AND PRODUCT.PRODUCT_ID = INVENTORY_ITEM.PRODUCT_ID"""%pxn			
+				buscapxn = """SELECT PRODUCT.PRODUCT_ID, INTERNAL_NAME, PRODUCT_TYPE_ID, FAMILIA_ID, INVENTORY_ITEM_ID, INVENTORY_ITEM.QUANTITY_ON_HAND_TOTAL, INVENTORY_ITEM.UNIT_COST  FROM PRODUCT,INVENTORY_ITEM WHERE PRODUCT.PRODUCT_ID LIKE '%s' AND PRODUCT.PRODUCT_ID = INVENTORY_ITEM.PRODUCT_ID"""%pxn
 				cursor.execute(buscapxn)
 				LocalCodigo=cursor.fetchall()
-				if LocalCodigo:
-					print("Lista CONTIENE DATOS DE PRODUCT E INVENTORY ITEM")
-				else:
-					print("Lista CONTIENE DATOS DE PRODUCT ")
-					buscasicopa ="""SELECT TOP 10 PRODUCT.PRODUCT_ID,INTERNAL_NAME,PRODUCT_TYPE_ID,FAMILIA_ID,STATUS_ID,INVENTORY_ITEM.QUANTITY_ON_HAND_TOTAL,INVENTORY_ITEM.UNIT_COST FROM PRODUCT,INVENTORY_ITEM WHERE PRODUCT.PRODUCT_ID LIKE '%s' """%pxn
-					cursor.execute(buscasicopa)
-					LocalCodigo=cursor.fetchall()
-					#print(LocalCodigo)
-					# Aqui es donde le meto numeros al id_item de los productos para que me lo regrese en 
-					# elif 'selec' in request.form['addsalida']:
-					# Convierto todo en listas para poder modificarlo.
-					LocalCodigo = [list(fila) for fila in LocalCodigo]
-					pos = 1
-					for items in LocalCodigo:
-						items[4] = items[0]+str(pos) # Codigo del articulo mas un numero
-						pos += 1 
-						#print(LocalCodigo)
 				return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp=LocalCodigo,listatemp2=session['listatotal'], productpxn=ArtCodigo)
 			elif ArtName:
-				serie = 0
 				print("buscar x Nombre")
 				#Buscar por nombre
 				pxn='%'+ArtName+'%'
@@ -354,21 +302,6 @@ def buscaprod():
 				cursor.execute(buscapxn)
 				Localname=list()
 				LocalName = cursor.fetchall()
-				if LocalName:
-					print("Lista CONTIENE DATOS DE PRODUCT E INVENTORY ITEM")
-				else:
-					buscasicopa ="""SELECT TOP 10 PRODUCT.PRODUCT_ID,INTERNAL_NAME,PRODUCT_TYPE_ID,FAMILIA_ID,STATUS_ID,INVENTORY_ITEM.QUANTITY_ON_HAND_TOTAL,INVENTORY_ITEM.UNIT_COST FROM PRODUCT,INVENTORY_ITEM WHERE PRODUCT_NAME LIKE '%s' """%pxn
-					cursor.execute(buscasicopa)
-					LocalName=cursor.fetchall()
-					# Aqui es donde le meto numeros al id_item de los productos para que me lo regrese en 
-					# elif 'selec' in request.form['addsalida']:
-					# Convierto todo en listas para poder modificarlo.
-					LocalName = [list(fila) for fila in LocalName]
-					pos = 1
-					for items in LocalName:
-						items[4] = items[0]+str(pos) # Codigo del articulo mas un numero
-						pos += 1 
-					#print(LocalName)
 				#print(LocalName)
 				#Localname = db.session.execute(buscapxn).fetchall()
 				#LocalName = db.session.query(Inventario).filter(Inventario.nom_prod.like('%'+ArtName+'%')).all()
@@ -380,7 +313,7 @@ def buscaprod():
 	 			total_lista = 0
 	 			cantidades = request.form.getlist('cantidad')
 	 			print("Cantidades cantidades cantidades, recibido lista total")
-	 			#print(session['listatotal'])
+	 			print(session['listatotal'])
 	 			print(cantidades)
 	 			# En listatotal posicion 7 estan los costos que por defecto son los del sicopa
 	 			# si el usuario modifica esa cantidad esta parte de codigo las actualiza dentro de listatotal
@@ -411,9 +344,9 @@ def buscaprod():
 	 				pos += 1
 	 				session['listatotal'] = tmp
 	 			print("Lista final para Entrada")
-	 			#print(session['listatotal'])
-	 			#print("total_lista")
-	 			#print(total_lista)
+	 			print(session['listatotal'])
+	 			print("total_lista")
+	 			print(total_lista)
 	 			return render_template("buscar.html", nombre=nombre, form=form_buscap, listatemp2=session['listatotal'],total_lista=total_lista)
 		else:
 			flash("Debe Llenar un campo")
@@ -506,7 +439,7 @@ def EntradaOrden():
 					datos = dato.id
 
 				print("Listatotal para entradas antes de darle boton guardar")
-				#print(session['listatotal'])
+				print(session['listatotal'])
 				for item in session['listatotal']:
 					#print(item)
 					total = float(item[8])*float(item[7])
@@ -747,12 +680,11 @@ def salidas():
 					#Convierto la lista de tuplas DetalleOrden en listas poder modificarlos
 					DetalleOrden = [list(fila) for fila in DetalleOrden]
 					print("ENCABEZADO Y DETALLE DE LA ORDEN")
-					#print(EncabeOrden)
+					print(EncabeOrden)
 					print(DetalleOrden)
 					total_orden = 0
 					for lista in DetalleOrden:
 						#Calculamos el total del renglon cant x costo
-						print(lista)
 						lista[7] = lista[2] * lista[6]
 						#Sumo total de renglones para obtener total general
 						total_orden = total_orden + lista[7]
@@ -811,7 +743,7 @@ def salidas():
 					print(canti)
 					saldo = canti.cant_exist
 					print(saldo)
-					t = float(saldo) - float(item.cantidad)
+					t = float(saldo) - item.cantidad
 					print(t)
 					canti.cant_exist = t
 					canti.actividad="Surtido"
@@ -1054,6 +986,7 @@ def SalidaPar():
 				if origen =="inv":
 					print(codigo)
 					local = Inventario.query.filter(Inventario.id_item==codigo).filter(Inventario.costo_unit==item).one()
+					print(local)
 					li=list()
 					lis=list()
 					li.append(local.id_item)
@@ -1162,6 +1095,7 @@ def salidasImp():
 	form2 = form_salida_orden(request.form)
 	if request.method == 'POST':
 		folio = request.form['folio']
+		print(folio)
 		req = form2.nReq.data
 		dep = form2.dep_soli.data
 		oficio = form2.oSoli.data
@@ -1318,26 +1252,6 @@ def folio_e():
 
 	return str(a)+bb+cc+'H'+x[11:19]
 
-def genera_item():
-	    # Obtendo datos de la tabla que controla los números de items
-		obtenitem = "SELECT * FROM genitem WHERE position = 1"
-		_campos = db.session.execute(obtenitem).fetchall()
-		print(_campos)
-		_tuplaitem = _campos[0] # Obtengo la tupla con los datos de la tabla genitem
-		_prefijo =_tuplaitem[1] # Obtengo el campo prefijo
-		_miitem = _tuplaitem[0] # Obtengo el numero de item a usar
-		idpro = _miitem # Conformo un nuevo item
-		print("MI ITEM")
-		print(_miitem)
-		#Incremento en 1 el número de item y preparo para incrementarlo en la tabla genitem
-		_miitem = int(_tuplaitem[0]) # convierto a numerico el item
-		_miitem += 1
-		_miitem = str(_miitem) # convierto a caracteres
-		_miitem = _miitem.zfill(5) # agrego 00 a la izquierda
-		# Guardo en la tabla genitem
-		nuevoitem = """UPDATE genitem SET mi_item = '%s' WHERE position = 1"""%_miitem
-		db.engine.execute(nuevoitem)
-		return idpro
 
 @app.route('/correcciones/salidas/directas', methods=['GET','POST'])
 def correcionSD():
@@ -1701,5 +1615,5 @@ if __name__ == '__main__':
     crsf.init_app(app)
     db.init_app(app)
     with app.app_context():
-    	db.create_all()
+        db.create_all()
     app.run(port=8000, host='0.0.0.0')

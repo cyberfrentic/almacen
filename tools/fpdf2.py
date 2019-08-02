@@ -32,6 +32,7 @@ class PDF(FPDF):
         self.cell(0, 10, 'Formato de {} de Materiales al Almacen'.format(Titulo), 0, 0, 'C')
         # Line break
         self.set_fill_color(184, 188, 191)
+        self.ln()
 
 
 
@@ -227,6 +228,7 @@ def InventarioQuery(listado, titulo):
             pdf.cell(col_width/2+5, th+2, str(item),fill=True,border=1,align='C')
     pdf.ln()
     i=1
+    total=0
     for item in listado:
         if i%2==0:
             pdf.set_fill_color(184, 188, 191)
@@ -253,7 +255,10 @@ def InventarioQuery(listado, titulo):
             pdf.cell(col_width/2+5, th+2, str(SetMoneda(float(item.cant_dispon)*float(item.costo_unit))),fill=True,border=1,align='C')
             pdf.ln()
         i+=1
+        total+=float(item.cant_dispon)*float(item.costo_unit)
     pdf.ln()
+    pdf.cell(col_width/2+5, th+2, "Total", border=1,align='C')
+    pdf.cell(col_width/2+15, th+2, SetMoneda(total,'$',2), border=1,align='R')
 
     #########################################
     response = make_response(pdf.output(dest='S').encode('latin-1'))
