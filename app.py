@@ -12,7 +12,7 @@
 #	    |
 #
 from flask import url_for
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, redirect, render_template, request, session, send_from_directory
 from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
 from forms import Create_Form, LoginForm, formbuscap, formbuscaentrada, form_salida_orden, form_consul_entrada, formbuscasalida, formActInven
 import os
@@ -24,7 +24,8 @@ import pymssql
 from bs4 import BeautifulSoup
 from flask_wtf import CSRFProtect
 from tools.fpdf import entradaPdf
-from tools.fpdf2 import entradasQuery, InventarioQuery, salidasQuery
+from tools.fpdf2 import entradasQuery, InventarioQuery
+from tools.tool import ToExcel
 from sqlalchemy import or_, extract
 
 ###########################################
@@ -1565,13 +1566,20 @@ def listaEntradas():
 					flash("El campo fecha final esta vacio")
 			else:
 				flash("El campo fecha inicial esta vacio")
+		elif "excell" in request.form['boton']:
+			fi =session['fechas'][0]
+			ff =session['fechas'][1]
+			query = db.session.query(Entrada.id, Entrada.proveedor, Entrada.fol_entrada, Entrada.fecha, Entrada.factura, Entrada.nFactura, Entrada.ordenCompra, Entrada.depSolici, Entrada.nReq, Entrada.oSolicitnte, Entrada.total, Entrada.observaciones).filter(Entrada.fecha.between(fi,ff)).all()
+			session.pop('fechas')
+			x = ToExcel(query,"Entradas")
+			return send_from_directory(directory=os.path.abspath("static/excell/") , filename=x, as_attachment=True)
 		elif "imprimir" in request.form['boton']:
 			fi =session['fechas'][0]
 			ff =session['fechas'][1]
 			query = db.session.query(Entrada.id, Entrada.proveedor, Entrada.fol_entrada, Entrada.fecha, Entrada.factura, Entrada.nFactura, Entrada.ordenCompra, Entrada.depSolici, Entrada.nReq, Entrada.oSolicitnte, Entrada.total, Entrada.observaciones).filter(Entrada.fecha.between(fi,ff)).all()
 			session.pop('fechas')
 			tamano = False
-			return entradasQuery(query,"Listado de las entradas de almacen")
+			return entradasQuery(query,"Entradas")
 	return render_template("listaEntradas.html", nombre=nombre, saldo=query)
 
 
@@ -1594,14 +1602,21 @@ def listaSalidas():
 					flash("El campo fecha final esta vacio")
 			else:
 				flash("El campo fecha inicial esta vacio")
+		elif "excell" in request.form['boton']:
+			fi =session['fechas'][0]
+			ff =session['fechas'][1]
+			query = db.session.query(Salidas.id, Salidas.proveedor, Salidas.fol_entrada, Salidas.fecha, Salidas.factura, Salidas.nFactura, Salidas.ordenCompra, Salidas.depSolici, Salidas.nReq, Salidas.oSolicitnte, Salidas.total, Salidas.observaciones).filter(Salidas.fecha.between(fi,ff)).all()
+			session.pop('fechas')
+			x = ToExcel(query,"Entradas")
+			return send_from_directory(directory=os.path.abspath("static/excell/") , filename=x, as_attachment=True)
 		elif "imprimir" in request.form['boton']:
 			fi =session['fechas'][0]
 			ff =session['fechas'][1]
 			query = db.session.query(Salidas.id, Salidas.proveedor, Salidas.fol_entrada, Salidas.fecha, Salidas.factura, Salidas.nFactura, Salidas.ordenCompra, Salidas.depSolici, Salidas.nReq, Salidas.oSolicitnte, Salidas.total, Salidas.observaciones).filter(Salidas.fecha.between(fi,ff)).all()
 			session.pop('fechas')
 			tamano = False
-			return salidasQuery(query,"Listado de las Salidas de almacen")
-	return render_template("listaSalidas.html", nombre=nombre, saldo=query)
+			return entradasQuery(query,"Salidas")
+	return render_template("listaEntradas.html", nombre=nombre, saldo=query)
 
 
 @app.route('/consultayreportes/inventarioFisico', methods=['GET', 'POST'])
