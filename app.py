@@ -24,7 +24,7 @@ import pymssql
 from bs4 import BeautifulSoup
 from flask_wtf import CSRFProtect
 from tools.fpdf import entradaPdf
-from tools.fpdf2 import entradasQuery, InventarioQuery
+from tools.fpdf2 import entradasQuery, InventarioQuery, salidasQuery
 from sqlalchemy import or_, extract
 
 ###########################################
@@ -1549,33 +1549,59 @@ def modiProd(numInv):
 @app.route('/consultayreportes/entradasAlmacen', methods=['GET', 'POST'])
 def listaEntradas():
 	nombre = session['username']
-	saldo=[]
+	query=[]
 	if request.method == 'POST':
-		mes = request.form.get('mes')
-		anio = request.form.get('anio')
-		i=1
-		saldo=[]
-		query = Entrada.query.filter(extract( "year", Entrada.fecha) == anio).filter(extract("month", Entrada.fecha) == mes).all()
-		for i in range(len(query)):
-			query2 = Articulos.query.filter(Articulos.entradas_id==query[i-1].id).order_by(Articulos.entradas_id).all()
-			saldo.append(query2)
-	return render_template("listaEntradas.html", nombre=nombre, saldo=saldo)
+		print(request.form['boton'])
+		fi = request.form['fi']
+		ff = request.form['ff']
+		if "enviar" in request.form['boton']:
+			session['fechas']=[fi,ff]
+			if fi:
+				if ff:
+					# consulta que toma el mes y año y lo compara con la fecha de un campo
+					# query = Entrada.query.filter(extract( "year", Entrada.fecha) == anio).filter(extract("month", Entrada.fecha) == mes).all()
+					query = db.session.query(Entrada.id, Entrada.proveedor, Entrada.fol_entrada, Entrada.fecha, Entrada.factura, Entrada.nFactura, Entrada.ordenCompra, Entrada.depSolici, Entrada.nReq, Entrada.oSolicitnte, Entrada.total, Entrada.observaciones).filter(Entrada.fecha.between(fi,ff)).all()
+				else:
+					flash("El campo fecha final esta vacio")
+			else:
+				flash("El campo fecha inicial esta vacio")
+		elif "imprimir" in request.form['boton']:
+			fi =session['fechas'][0]
+			ff =session['fechas'][1]
+			query = db.session.query(Entrada.id, Entrada.proveedor, Entrada.fol_entrada, Entrada.fecha, Entrada.factura, Entrada.nFactura, Entrada.ordenCompra, Entrada.depSolici, Entrada.nReq, Entrada.oSolicitnte, Entrada.total, Entrada.observaciones).filter(Entrada.fecha.between(fi,ff)).all()
+			session.pop('fechas')
+			tamano = False
+			return entradasQuery(query,"Listado de las entradas de almacen")
+	return render_template("listaEntradas.html", nombre=nombre, saldo=query)
 
 
 @app.route('/consultayreportes/salidasAlmacen', methods=['GET', 'POST'])
 def listaSalidas():
 	nombre = session['username']
-	saldo=[]
+	query=[]
 	if request.method == 'POST':
-		mes = request.form.get('mes')
-		anio = request.form.get('anio')
-		i=1
-		saldo=[]
-		query = Salidas.query.filter(extract( "year", Salidas.fecha) == anio).filter(extract("month", Salidas.fecha) == mes).all()
-		for i in range(len(query)):
-			query2 = Salida_Articulos.query.filter(Salida_Articulos.salidas_id==query[i-1].id).order_by(Salida_Articulos.salidas_id).all()
-			saldo.append(query2)
-	return render_template("listaSalidas.html", nombre=nombre, saldo=saldo)
+		print(request.form['boton'])
+		fi = request.form['fi']
+		ff = request.form['ff']
+		if "enviar" in request.form['boton']:
+			session['fechas']=[fi,ff]
+			if fi:
+				if ff:
+					# consulta que toma el mes y año y lo compara con la fecha de un campo
+					# query = Entrada.query.filter(extract( "year", Entrada.fecha) == anio).filter(extract("month", Entrada.fecha) == mes).all()
+					query = db.session.query(Entrada.id, Entrada.proveedor, Entrada.fol_entrada, Entrada.fecha, Entrada.factura, Entrada.nFactura, Entrada.ordenCompra, Entrada.depSolici, Entrada.nReq, Entrada.oSolicitnte, Entrada.total, Entrada.observaciones).filter(Entrada.fecha.between(fi,ff)).all()
+				else:
+					flash("El campo fecha final esta vacio")
+			else:
+				flash("El campo fecha inicial esta vacio")
+		elif "imprimir" in request.form['boton']:
+			fi =session['fechas'][0]
+			ff =session['fechas'][1]
+			query = db.session.query(Salidas.id, Salidas.proveedor, Salidas.fol_entrada, Salidas.fecha, Salidas.factura, Salidas.nFactura, Salidas.ordenCompra, Salidas.depSolici, Salidas.nReq, Salidas.oSolicitnte, Salidas.total, Salidas.observaciones).filter(Salidas.fecha.between(fi,ff)).all()
+			session.pop('fechas')
+			tamano = False
+			return salidasQuery(query,"Listado de las Salidas de almacen")
+	return render_template("listaSalidas.html", nombre=nombre, saldo=query)
 
 
 @app.route('/consultayreportes/inventarioFisico', methods=['GET', 'POST'])
@@ -1693,7 +1719,7 @@ def listaInventario():
 							queryInvEntra[n].cant_dispon= (queryInvEntra[n].cant_dispon) - i.cantidad
 							n+=2
 			saldo = queryInvEntra+queryInvStock
-			return InventarioQuery(saldo,"Listado entradas de Almacen")
+			return InventarioQuery(saldo,"Inventario fisico")
 	return render_template("listaInventario.html", nombre=nombre, saldo= saldo)
 
 

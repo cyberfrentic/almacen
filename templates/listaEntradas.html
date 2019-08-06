@@ -15,89 +15,74 @@
 	#carga {
 		height: 50vh;
 	}
-	
+	.left{
+    	float: left;
+	}
 </style>
 
 <div class="container">
 	<div class="row">
-		<form method="POST">
-		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>  
-		<select class="form-control" name="mes">
-			<option value="">Elija un mes</option>
-			<option value="01">Enero</option>
-		    <option value="02">Febrero</option>
-		    <option value="03">Marzo</option>
-		    <option value="04">Abril</option>
-		    <option value="05">Mayo</option>
-		    <option value="06">Junio</option>
-		    <option value="07">Julio</option>
-		    <option value="08">Agosto</option>
-		    <option value="09">Septiembre</option>
-		    <option value="10">Octubre</option>
-		    <option value="11">Noviembre</option>
-		    <option value="12">Diciembre</option>
-		</select>
+	<form method="POST">
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/> 
+		<input class="form-control" type="date" name="fi"> 
 		<br>
-		<select class="form-control" name="anio">
-			<option value="">Elija un año</option>
-			<option value="2013">2013</option>
-			<option value="2014">2014</option>
-		    <option value="2015">2015</option>
-		    <option value="2016">2016</option>
-		    <option value="2017">2017</option>
-		    <option value="2018">2018</option>
-		    <option value="2019">2019</option>
-		    <option value="2020">2020</option>
-		    <option value="2021">2021</option>
-		    <option value="2022">2023</option>
-		    <option value="2023">2024</option>
-		    
-		    <option value="12">Diciembre</option>
-		</select>
+		<input class="form-control" type="date" name="ff">
 		<br><br>
-		<button class="btn btn-outline-danger" type="submit" value="enviar"> consultar </button>
-	</form>
+		<button class="btn btn-outline-danger" type="submit" value="enviar" name="boton"> consultar </button>
+
 	</div>
 </div>
 
 {% if saldo %}
-	<div>
-		<div class="d-none" id="contenido">
-		  <table class="table table-bordered" id="tabledinamic">
-		    <thead>
-		      <tr>
-		      	<th>Núm. Entrada</th>
-		        <th>Codigo</th>
-		        <th>Descripcion</th>
-		        <th>Unidad</th>
-		        <th>cantidad Exi.</th>
-		        <th>Costo</th>
-		        <th>Total</th>
-		      </tr>
-		    </thead>
-		    <tbody id="myTable">
-		    	
-		    	{% for item in saldo%}
-		    		{% for item2 in item%}
+	
+		<div class="table-responsive">
+			<div class="d-none" id="contenido">
+				<br>
+				<button class="btn btn-outline-danger left" type="submit" value="imprimir" name="boton"> imprimir </button>
+			  <table class="table table-bordered table-hover" id="tabledinamic">
+			    <thead>
+			      <tr>
+			      	<th>Núm. Entrada</th>
+			        <th>Proveedor</th>
+			        <th>Fol. Entrada</th>
+			        <th>Fecha</th>
+			        <th>Factura</th>
+			        <th>Núm Factura</th>
+			        <th>Orden de Compra</th>
+			        <th>Dep. Solicitante</th>
+			        <th>Núm. Req.</th>
+			        <th>Núm. Oficio</th>
+			        <th>Total</th>
+			        <th>Observaciones</th>
+			      </tr>
+			    </thead>
+			    <tbody id="myTable">
+			    	
+			    	{% for item in saldo%}
 					    <tr class="table-danger">
-					    	<td>{{item2.entradas_id}}</td>
-					    	<td>{{item2.codigo}}</td>
-					        <td>{{item2.descripcion}}</td>
-					        <td>{{item2.udm}}</td>
-					        <td>{{item2.cantidad}}</td>
-					        <td>{{item2.p_unit}}</td>
-					        <td> {{multi(item2.cantidad, item2.p_unit)}}</td>
+					    	<td><center>{{item[0]}}</center></td>
+					    	<td>{{item[1]}}</td>
+					        <td>{{item[2]}}</td>
+					        <td>{{item[3]}}</td>
+					        <td>{{item[4]}}</td>
+					        <td>{{item[5]}}</td>
+					        <td>{{item[6]}}</td>
+					        <td>{{item[7]}}</td>
+					        <td>{{item[8]}}</td>
+					        <td>{{item[9]}}</td>
+					        <td>{{item[10]}}</td>
+					        <td>{{item[11]}}</td>
 					    </tr>
-					{%endfor%}
-				{% endfor %}
-		    </tbody>
-		  </table>
+					{% endfor %}
+			    </tbody>
+			  </table>
 
+			</div>
+			<div class="d-flex justify-content-center align-items-center" id="carga">
+				<div class="spinner-grow text-success" style="width: 6rem; height: 6rem;" ></div>
+			</div>
 		</div>
-		<div class="d-flex justify-content-center align-items-center" id="carga">
-			<div class="spinner-grow text-success" style="width: 6rem; height: 6rem;" ></div>
-		</div>
-	</div>
+	</form>
 {% endif %}
 <br>
 <br>
