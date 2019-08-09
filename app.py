@@ -26,6 +26,7 @@ from flask_wtf import CSRFProtect
 from tools.fpdf import entradaPdf
 from tools.fpdf2 import entradasQuery, InventarioQuery
 from tools.tool import ToExcel
+from sqlalchemy.sql import func
 from sqlalchemy import or_, extract
 
 ###########################################
@@ -1586,9 +1587,8 @@ def listaEntradas():
 @app.route('/consultayreportes/salidasAlmacen', methods=['GET', 'POST'])
 def listaSalidas():
 	nombre = session['username']
-	query=[]
+	sali=[]
 	if request.method == 'POST':
-		print(request.form['boton'])
 		fi = request.form['fi']
 		ff = request.form['ff']
 		if "enviar" in request.form['boton']:
@@ -1597,7 +1597,12 @@ def listaSalidas():
 				if ff:
 					# consulta que toma el mes y año y lo compara con la fecha de un campo
 					# query = Entrada.query.filter(extract( "year", Entrada.fecha) == anio).filter(extract("month", Entrada.fecha) == mes).all()
-					query = db.session.query(Entrada.id, Entrada.proveedor, Entrada.fol_entrada, Entrada.fecha, Entrada.factura, Entrada.nFactura, Entrada.ordenCompra, Entrada.depSolici, Entrada.nReq, Entrada.oSolicitnte, Entrada.total, Entrada.observaciones).filter(Entrada.fecha.between(fi,ff)).all()
+					lista=[]
+					query = db.session.query(Salidas.id, Salidas.proveedor, Salidas.fol_entrada, Salidas.fecha, Salidas.factura, Salidas.nFactura, Salidas.ordenCompra, Salidas.depSolici, Salidas.nReq, Salidas.oSolicitnte, Salidas.total, Salidas.observaciones).filter(Salidas.fecha.between(fi,ff)).all()
+					for item in query:
+						gasto = db.session.query(func.sum(Salida_Articulos.total).label("gasto")).filter(Salida_Articulos.salidas_id==item.id).filter(Salida_Articulos.codigo.between(20000000000,29999999999)).all()
+						activo = db.session.query(func.sum(Salida_Articulos.total).label("gasto")).filter(Salida_Articulos.salidas_id==item.id).filter(Salida_Articulos.codigo.between(50000000000,59999999999)).all()
+						sali.append([item.id, item.proveedor, item.fol_entrada, item.fecha, item.factura, item.nFactura, item.ordenCompra, item.depSolici, item.nReq, item.oSolicitnte, item.total, item.observaciones, gasto[0][0] if str(gasto[0][0])!="None" else 0, activo[0][0] if str(activo[0][0])!="None" else 0])
 				else:
 					flash("El campo fecha final esta vacio")
 			else:
@@ -1606,8 +1611,12 @@ def listaSalidas():
 			fi =session['fechas'][0]
 			ff =session['fechas'][1]
 			query = db.session.query(Salidas.id, Salidas.proveedor, Salidas.fol_entrada, Salidas.fecha, Salidas.factura, Salidas.nFactura, Salidas.ordenCompra, Salidas.depSolici, Salidas.nReq, Salidas.oSolicitnte, Salidas.total, Salidas.observaciones).filter(Salidas.fecha.between(fi,ff)).all()
+			for item in query:
+				gasto = db.session.query(func.sum(Salida_Articulos.total).label("gasto")).filter(Salida_Articulos.salidas_id==item.id).filter(Salida_Articulos.codigo.between(20000000000,29999999999)).all()
+				activo = db.session.query(func.sum(Salida_Articulos.total).label("gasto")).filter(Salida_Articulos.salidas_id==item.id).filter(Salida_Articulos.codigo.between(50000000000,59999999999)).all()
+				sali.append([item.id, item.proveedor, item.fol_entrada, item.fecha, item.factura, item.nFactura, item.ordenCompra, item.depSolici, item.nReq, item.oSolicitnte, item.total, item.observaciones, gasto[0][0] if str(gasto[0][0])!="None" else 0, activo[0][0] if str(activo[0][0])!="None" else 0])
 			session.pop('fechas')
-			x = ToExcel(query,"Entradas")
+			x = ToExcel(sali,"Salidas")
 			return send_from_directory(directory=os.path.abspath("static/excell/") , filename=x, as_attachment=True)
 		elif "imprimir" in request.form['boton']:
 			fi =session['fechas'][0]
@@ -1616,7 +1625,7 @@ def listaSalidas():
 			session.pop('fechas')
 			tamano = False
 			return entradasQuery(query,"Salidas")
-	return render_template("listaEntradas.html", nombre=nombre, saldo=query)
+	return render_template("listaEntradas.html", nombre=nombre, saldo=sali)
 
 
 @app.route('/consultayreportes/inventarioFisico', methods=['GET', 'POST'])
