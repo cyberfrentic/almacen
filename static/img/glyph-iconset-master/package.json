@@ -24,7 +24,7 @@
   "homepage": "https://github.com/frexy/glyph-iconset",
   "dependencies": {
     "commander": "^2.8.1",
-    "handlebars": "^3.0.3",
+    "handlebars": "^4.5.3",
     "icon-webcomponent": "0.0.5",
     "svg-sprite-generator": "0.0.5"
   },
